@@ -16,8 +16,7 @@
       "autoIncrement": true,
       "distribution": "internal",
       "android": {
-        "buildType": "app-bundle",
-        "autoIncrement": "version"
+        "buildType": "app-bundle"
       },
       "channel": "preview"
     },
@@ -25,8 +24,7 @@
       "environment": "production",
       "autoIncrement": true,
       "android": {
-        "buildType": "app-bundle",
-        "autoIncrement": "version"
+        "buildType": "app-bundle"
       },
       "channel": "production"
     }
