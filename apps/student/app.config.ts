@@ -7,7 +7,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ...config,
     name,
     slug: "instello",
-    version: "1.0.0",
+    version: "1.0.0-alpha",
     owner: "tech.jbportals.team",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
