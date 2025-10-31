@@ -13,11 +13,14 @@ import { Icon } from "./ui/icon";
 import { Text } from "./ui/text";
 
 export function CourseSelectionForm() {
-  const router = useRouter();
   const { setField, course } = useOnboardingStore();
   const { data: courses, isLoading } = useQuery(
     trpc.lms.courseOrBranch.list.queryOptions(),
   );
+
+  React.useEffect(() => {
+    setField("isCoursesLoading", isLoading);
+  }, [isLoading]);
 
   if (isLoading) return <BranchCourseSkeleton />;
 
@@ -59,17 +62,27 @@ export function CourseSelectionForm() {
           </TouchableOpacity>
         ))}
       </View>
-      <Button
-        disabled={!course}
-        onPress={() => router.push(`/(onboarding)/step-three`)}
-        size={"lg"}
-      >
-        <Text>Continue</Text>
-        <Icon
-          as={ArrowCircleRightIcon}
-          className="text-primary-foreground size-5"
-        />
-      </Button>
     </View>
+  );
+}
+
+export function CourseSelectionFormFooter() {
+  const router = useRouter();
+  const { course, isCoursesLoading } = useOnboardingStore();
+
+  if (isCoursesLoading) return null;
+
+  return (
+    <Button
+      disabled={!course}
+      onPress={() => router.push(`/(onboarding)/step-three`)}
+      size={"lg"}
+    >
+      <Text>Continue</Text>
+      <Icon
+        as={ArrowCircleRightIcon}
+        className="text-primary-foreground size-5"
+      />
+    </Button>
   );
 }

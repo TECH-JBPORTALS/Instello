@@ -16,22 +16,38 @@
       "autoIncrement": true,
       "distribution": "internal",
       "android": {
-        "withoutCredentials": false,
-        "buildType": "apk",
-        "image": "latest"
+        "buildType": "app-bundle"
       },
-      "channel": "preview"
+      "channel": "preview",
+      "environment": "preview"
     },
     "production": {
       "environment": "production",
       "autoIncrement": true,
       "android": {
-        "buildType": "apk"
+        "buildType": "app-bundle"
       },
       "channel": "production"
     }
   },
   "submit": {
-    "production": {}
+    "alpha": {
+      "android": {
+        "track": "alpha",
+        "serviceAccountKeyPath": "./google-services.json"
+      }
+    },
+    "beta": {
+      "android": {
+        "track": "beta",
+        "serviceAccountKeyPath": "./google-services.json"
+      }
+    },
+    "production": {
+      "android": {
+        "track": "production",
+        "serviceAccountKeyPath": "./google-services.json"
+      }
+    }
   }
 }

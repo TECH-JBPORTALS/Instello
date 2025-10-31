@@ -14,9 +14,7 @@ import { Icon } from "./ui/icon";
 import { Text } from "./ui/text";
 
 export function BranchSelectionForm() {
-  const { user } = useUser();
-  const { setField, course, branch, firstName, lastName, dob, reset } =
-    useOnboardingStore();
+  const { setField, course, branch } = useOnboardingStore();
   const { data: branches, isLoading } = useQuery(
     trpc.lms.courseOrBranch.list.queryOptions(
       { byCourseId: course!.id },
@@ -24,31 +22,13 @@ export function BranchSelectionForm() {
     ),
   );
 
-  const { mutateAsync: updatePreference, isPending } = useMutation(
-    trpc.lms.preference.update.mutationOptions({
-      onSuccess() {
-        user?.reload();
-      },
-      onError(error) {
-        ToastAndroid.show(error.message, ToastAndroid.SHORT);
-      },
-    }),
-  );
+  React.useEffect(() => {
+    setField("isBranchesLoading", isLoading);
+  }, [isLoading]);
 
   if (!course?.id) return <Redirect href={"/(onboarding)/step-two"} />;
 
   if (isLoading) return <BranchCourseSkeleton />;
-
-  async function onSubmit() {
-    if (!course || !branch) return;
-    await updatePreference({
-      firstName,
-      lastName,
-      dob,
-      branchId: branch?.id,
-      courseId: course?.id,
-    });
-  }
 
   return (
     <View className="relative gap-3.5">
@@ -63,7 +43,6 @@ export function BranchSelectionForm() {
       <View className="flex-1 gap-2">
         {branches?.map((b) => (
           <TouchableOpacity
-            disabled={isPending}
             onPress={() => setField("branch", b)}
             key={b.id}
             activeOpacity={0.8}
@@ -87,19 +66,52 @@ export function BranchSelectionForm() {
           </TouchableOpacity>
         ))}
       </View>
-      <Button disabled={!branch || isPending} onPress={onSubmit} size={"lg"}>
-        {isPending ? (
-          <Text>Finishing up...</Text>
-        ) : (
-          <>
-            <Text>Finish</Text>
-            <Icon
-              as={CheckCircleIcon}
-              className="text-primary-foreground size-5"
-            />
-          </>
-        )}
-      </Button>
     </View>
+  );
+}
+
+export function BranchSelectionFormFooter() {
+  const { course, branch, firstName, lastName, dob, isBranchesLoading } =
+    useOnboardingStore();
+  const { user } = useUser();
+
+  const { mutateAsync: updatePreference, isPending } = useMutation(
+    trpc.lms.preference.update.mutationOptions({
+      onSuccess() {
+        user?.reload();
+      },
+      onError(error) {
+        ToastAndroid.show(error.message, ToastAndroid.SHORT);
+      },
+    }),
+  );
+
+  async function onSubmit() {
+    if (!course || !branch) return;
+    await updatePreference({
+      firstName,
+      lastName,
+      dob,
+      branchId: branch?.id,
+      courseId: course?.id,
+    });
+  }
+
+  if (isBranchesLoading) return null;
+
+  return (
+    <Button disabled={!branch || isPending} onPress={onSubmit} size={"lg"}>
+      {isPending ? (
+        <Text>Finishing up...</Text>
+      ) : (
+        <>
+          <Text>Finish</Text>
+          <Icon
+            as={CheckCircleIcon}
+            className="text-primary-foreground size-5"
+          />
+        </>
+      )}
+    </Button>
   );
 }

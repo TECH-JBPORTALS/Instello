@@ -14,6 +14,8 @@ type OnboardingState = {
   dob: Date;
   course?: Course;
   branch?: Branch;
+  isCoursesLoading: boolean;
+  isBranchesLoading: boolean;
   setField: <K extends keyof OnboardingState>(
     key: K,
     value: OnboardingState[K],
@@ -25,6 +27,8 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
   firstName: "",
   lastName: "",
   dob: new Date(),
+  isCoursesLoading: false,
+  isBranchesLoading: false,
   setField: (key, value) => set({ [key]: value }),
   reset: () =>
     set({
@@ -33,5 +37,7 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
       dob: new Date(),
       course: undefined,
       branch: undefined,
+      isBranchesLoading: false,
+      isCoursesLoading: false,
     }),
 }));

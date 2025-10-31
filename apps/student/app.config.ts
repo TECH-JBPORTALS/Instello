@@ -7,7 +7,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ...config,
     name,
     slug: "instello",
-    version: "1.0.0",
+    version: "1.0.0-alpha",
     owner: "tech.jbportals.team",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
@@ -47,6 +47,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       },
     },
     plugins: [
+      "expo-font",
       "expo-router",
       "expo-web-browser",
       "expo-secure-store",
@@ -66,7 +67,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       [
         "expo-splash-screen",
         {
-          backgroundColor: "#232323",
+          backgroundColor: "#FFFFFF",
           image: "./assets/images/splash-icon.png",
           dark: {
             image: "./assets/images/splash-icon-dark.png",
@@ -87,22 +88,22 @@ export function getConfig() {
   switch (process.env.APP_ENV) {
     case "development":
       return {
-        name: "instello (Dev)",
+        name: "iNSTELLO (Dev)",
         scheme: "in.instello.dev",
       };
     case "preview":
       return {
-        name: "instello (Preview)",
+        name: "iNSTELLO (Preview)",
         scheme: "in.instello.preview",
       };
     case "production":
       return {
-        name: "instello",
+        name: "iNSTELLO",
         scheme: "in.instello.app",
       };
     default:
       return {
-        name: "instello",
+        name: "iNSTELLO",
         scheme: "in.instello.app",
       };
   }

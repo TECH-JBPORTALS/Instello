@@ -1,20 +1,14 @@
 import React from "react";
-import { View } from "react-native";
-
-import { Skeleton } from "./ui/skeleton";
+import { ActivityIndicator, useColorScheme, View } from "react-native";
 
 export function BranchCourseSkeleton() {
+  const theme = useColorScheme();
   return (
-    <View className="relative gap-3.5">
-      <Skeleton className={"h-6 w-[90%]"} />
-      <Skeleton className={"h-2 w-full"} />
-      <Skeleton className={"h-2 w-[50%]"} />
-
-      <View className="flex-1 gap-2">
-        {Array.from({ length: 10 })?.map((_, i) => (
-          <Skeleton key={i} className={"h-12 w-full "} />
-        ))}
-      </View>
+    <View className="bg-foreground relative h-screen flex-1 gap-3.5">
+      <ActivityIndicator
+        size={"large"}
+        color={theme == "dark" ? "white" : "black"}
+      />
     </View>
   );
 }

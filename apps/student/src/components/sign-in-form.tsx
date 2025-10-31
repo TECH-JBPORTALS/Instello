@@ -104,7 +104,7 @@ export function SignInForm() {
               ) : null}
             </View>
             <View className="gap-1.5">
-              <View className="flex-row items-center">
+              <View className="flex-row items-center justify-between">
                 <Label htmlFor="password">Password</Label>
                 <Link asChild href={`/(auth)/forgot-password?email=${email}`}>
                   <Button variant="link" className="ml-auto px-1 py-0">

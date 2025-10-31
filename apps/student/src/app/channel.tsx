@@ -92,7 +92,7 @@ function ChannelDetailsSection() {
                 onPress={() => router.back()}
                 size={"icon"}
                 variant={"outline"}
-                className="size-11 rounded-full bg-transparent"
+                className="mt-safe size-11 rounded-full bg-transparent"
               >
                 <Icon
                   as={ArrowLeftIcon}
@@ -139,11 +139,8 @@ function ChannelDetailsSection() {
           </View>
         </View>
       ) : (
-        <View className="gap-2.5 px-4 py-4">
-          <Text
-            variant={"h4"}
-            className="leading-0.5 font-medium tracking-wide"
-          >
+        <View className="gap-2.5 px-4">
+          <Text variant={"h4"} className="font-medium tracking-wide">
             {channel?.title}
           </Text>
           <View className="flex-row items-center gap-1">

@@ -35,7 +35,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <main className="pattern-polka-v2 flex h-svh w-full flex-col items-center justify-center gap-16 px-4">
+    <main className="flex h-svh w-full flex-col items-center justify-center gap-16 px-4">
       <Button variant={"outline"} asChild className="fixed left-4 top-4">
         <Link href={"/"}>
           <ArrowCircleLeftIcon weight="duotone" /> Back to Home
