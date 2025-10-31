@@ -47,6 +47,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       },
     },
     plugins: [
+      "expo-font",
       "expo-router",
       "expo-web-browser",
       "expo-secure-store",
@@ -66,7 +67,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       [
         "expo-splash-screen",
         {
-          backgroundColor: "#232323",
+          backgroundColor: "#FFFFFF",
           image: "./assets/images/splash-icon.png",
           dark: {
             image: "./assets/images/splash-icon-dark.png",
