@@ -15,14 +15,8 @@ export function Header() {
         />
       </Link>
 
-      <div className="space-x-2.5">
-        <Button variant={"ghost"} size={"sm"}>
-          Account Deletion
-        </Button>
-        <Button variant={"ghost"} size={"sm"}>
-          Privacy & Policy
-        </Button>
-        <Button variant={"outline"}>
+      <div className="space-x-1.5">
+        <Button variant={"outline"} asChild>
           <Link href={"/get-started"}>Get started</Link>
         </Button>
       </div>

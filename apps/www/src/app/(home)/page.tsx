@@ -58,7 +58,7 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <div className="bg-accent/30 rounded-4xl flex h-full flex-col items-center justify-center gap-6 border px-10 sm:gap-10">
-        <div className="bg-accent/50 shadow-accent-foreground/50 mb-8 flex size-28 items-center justify-center rounded-3xl shadow-2xl backdrop-blur-2xl sm:size-32 dark:border">
+        <div className="bg-accent/50 shadow-accent-foreground/20 mb-8 flex size-28 items-center justify-center rounded-3xl shadow-sm backdrop-blur-2xl sm:size-32 dark:border">
           <Image
             src={"/instello-feather.svg"}
             alt="Instello Feather Logo"
@@ -86,7 +86,16 @@ export default function Home() {
             </Link>
           </Button>
         </div>
-        <footer className="h-16">
+        <footer className="flex h-16 flex-col items-center">
+          <div className="flex items-center">
+            <Button variant={"link"} size={"sm"} asChild>
+              <Link href={"/account-deletion"}>Account Deletion</Link>
+            </Button>
+            <span>·</span>
+            <Button variant={"link"} size={"sm"} asChild>
+              <Link href={"/privacy-policy"}>Privacy & Policy</Link>
+            </Button>
+          </div>
           <span className="text-muted-foreground text-sm">
             © 2025 Instello. All rights reserved.
           </span>
