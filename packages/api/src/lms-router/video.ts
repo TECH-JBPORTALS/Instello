@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, getTableColumns } from "@instello/db";
+import { and, asc, desc, eq, getTableColumns, gte } from "@instello/db";
 import {
   channel,
   chapter,
@@ -9,6 +9,7 @@ import {
 } from "@instello/db/lms";
 import { createId } from "@paralleldrive/cuid2";
 import { TRPCError } from "@trpc/server";
+import { endOfDay } from "date-fns";
 import { z } from "zod/v4";
 
 import type { withTx } from "../router.helpers";
@@ -89,10 +90,15 @@ export const videoRouter = {
               where: and(
                 eq(subscription.clerkUserId, ctx.auth.userId),
                 eq(subscription.channelId, video.channelId),
+                // Check if the subscription end date is still greater than today, means still valid
+                gte(subscription.endDate, endOfDay(new Date())),
               ),
             });
 
-            return { ...video, canWatch: userSubscription ? true : false };
+            return {
+              ...video,
+              canWatch: !!userSubscription,
+            };
           }),
         );
 
