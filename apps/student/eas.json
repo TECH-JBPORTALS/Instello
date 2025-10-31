@@ -16,9 +16,8 @@
       "autoIncrement": true,
       "distribution": "internal",
       "android": {
-        "withoutCredentials": false,
-        "buildType": "apk",
-        "image": "latest"
+        "buildType": "app-bundle",
+        "autoIncrement": "version"
       },
       "channel": "preview"
     },
