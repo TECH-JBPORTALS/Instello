@@ -30,6 +30,23 @@
     }
   },
   "submit": {
-    "production": {}
+    "alpha": {
+      "android": {
+        "track": "alpha",
+        "serviceAccountKeyPath": "./google-services.json"
+      }
+    },
+    "beta": {
+      "android": {
+        "track": "beta",
+        "serviceAccountKeyPath": "./google-services.json"
+      }
+    },
+    "production": {
+      "android": {
+        "track": "production",
+        "serviceAccountKeyPath": "./google-services.json"
+      }
+    }
   }
 }
