@@ -8,7 +8,7 @@ import {
 
 export default function OnboardingStepThree() {
   return (
-    <View>
+    <View className="flex-1">
       <ScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerClassName="sm:flex-1 items-center p-4"
