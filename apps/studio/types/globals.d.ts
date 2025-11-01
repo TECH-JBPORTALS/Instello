@@ -7,11 +7,3 @@ declare global {
     };
   }
 }
-
-declare module "@clerk/types" {
-  interface JwtSessionClaims extends CustomJwtSessionClaims {
-    metadata: {
-      hasCreatorRole?: boolean;
-    };
-  }
-}

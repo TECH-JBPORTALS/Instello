@@ -70,11 +70,9 @@ export function CourseSelectionFormFooter() {
   const router = useRouter();
   const { course, isCoursesLoading } = useOnboardingStore();
 
-  if (isCoursesLoading) return null;
-
   return (
     <Button
-      disabled={!course}
+      disabled={!course || isCoursesLoading}
       onPress={() => router.push(`/(onboarding)/step-three`)}
       size={"lg"}
     >

@@ -97,10 +97,12 @@ export function BranchSelectionFormFooter() {
     });
   }
 
-  if (isBranchesLoading) return null;
-
   return (
-    <Button disabled={!branch || isPending} onPress={onSubmit} size={"lg"}>
+    <Button
+      disabled={!branch || isPending || isBranchesLoading}
+      onPress={onSubmit}
+      size={"lg"}
+    >
       {isPending ? (
         <Text>Finishing up...</Text>
       ) : (

@@ -1,13 +1,15 @@
 import type { ConfigContext, ExpoConfig } from "expo/config";
 
+import { version } from "./package.json";
+
 export default ({ config }: ConfigContext): ExpoConfig => {
-  const { name, scheme } = getConfig();
+  const { name, scheme, slug } = getConfig();
 
   return {
     ...config,
     name,
-    slug: "instello",
-    version: "1.0.0-alpha",
+    version,
+    slug,
     owner: "tech.jbportals.team",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
@@ -57,13 +59,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           initialOrientation: "DEFAULT",
         },
       ],
-      [
-        "expo-video",
-        {
-          supportsBackgroundPlayback: true,
-          supportsPictureInPicture: true,
-        },
-      ],
+      ["expo-video"],
       [
         "expo-splash-screen",
         {
@@ -88,23 +84,27 @@ export function getConfig() {
   switch (process.env.APP_ENV) {
     case "development":
       return {
-        name: "iNSTELLO (Dev)",
+        name: "Instello (Dev)",
         scheme: "in.instello.dev",
+        slug: "instello-dev",
       };
     case "preview":
       return {
-        name: "iNSTELLO (Preview)",
+        name: "Instello (Preview)",
         scheme: "in.instello.preview",
+        slug: "instello-preview",
       };
     case "production":
       return {
-        name: "iNSTELLO",
+        name: "Instello",
         scheme: "in.instello.app",
+        slug: "instello",
       };
     default:
       return {
-        name: "iNSTELLO",
+        name: "Instello",
         scheme: "in.instello.app",
+        slug: "instello",
       };
   }
 }
