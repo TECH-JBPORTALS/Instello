@@ -13,6 +13,7 @@ export default function OnboardingStepThree() {
         keyboardShouldPersistTaps="handled"
         contentContainerClassName="sm:flex-1 items-center p-4"
         keyboardDismissMode="interactive"
+        showsVerticalScrollIndicator={false}
       >
         <Stack.Screen
           options={{
@@ -22,7 +23,7 @@ export default function OnboardingStepThree() {
         />
         <BranchSelectionForm />
       </ScrollView>
-      <View className="border-1 px-4 py-8">
+      <View className="border-t-1 border-t-border px-4 py-8">
         <BranchSelectionFormFooter />
       </View>
     </View>
