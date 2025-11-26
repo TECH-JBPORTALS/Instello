@@ -8,17 +8,17 @@ import { useUser } from "@clerk/clerk-expo";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { CheckCircleIcon } from "phosphor-react-native";
 
-import { BranchCourseSkeleton } from "./branch-course-skeleton";
+import { BranchCollegeSkeleton } from "./branch-college-skeleton";
 import { Button } from "./ui/button";
 import { Icon } from "./ui/icon";
 import { Text } from "./ui/text";
 
 export function BranchSelectionForm() {
-  const { setField, course, branch } = useOnboardingStore();
+  const { setField, college, branch } = useOnboardingStore();
   const { data: branches, isLoading } = useQuery(
-    trpc.lms.courseOrBranch.list.queryOptions(
-      { byCourseId: course!.id },
-      { enabled: !!course },
+    trpc.lms.collegeOrBranch.list.queryOptions(
+      { byCollegeId: college!.id },
+      { enabled: !!college },
     ),
   );
 
@@ -26,9 +26,9 @@ export function BranchSelectionForm() {
     setField("isBranchesLoading", isLoading);
   }, [isLoading]);
 
-  if (!course?.id) return <Redirect href={"/(onboarding)/step-two"} />;
+  if (!college?.id) return <Redirect href={"/(onboarding)/step-two"} />;
 
-  if (isLoading) return <BranchCourseSkeleton />;
+  if (isLoading) return <BranchCollegeSkeleton />;
 
   return (
     <View className="relative gap-3.5">
@@ -71,7 +71,7 @@ export function BranchSelectionForm() {
 }
 
 export function BranchSelectionFormFooter() {
-  const { course, branch, firstName, lastName, dob, isBranchesLoading } =
+  const { college, branch, firstName, lastName, dob, isBranchesLoading } =
     useOnboardingStore();
   const { user } = useUser();
 
@@ -87,13 +87,13 @@ export function BranchSelectionFormFooter() {
   );
 
   async function onSubmit() {
-    if (!course || !branch) return;
+    if (!college || !branch) return;
     await updatePreference({
       firstName,
       lastName,
       dob,
       branchId: branch?.id,
-      courseId: course?.id,
+      collegeId: college?.id,
     });
   }
 

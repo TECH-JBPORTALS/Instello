@@ -73,9 +73,6 @@ export function ChapterList() {
           value={item.id}
         >
           <AccordionHeader className="group inline-flex w-full flex-1 items-center justify-between space-x-3.5 px-6">
-            <div className="bg-accent flex size-6 items-center justify-center rounded-sm border font-mono text-xs font-bold">
-              {item.order}
-            </div>
             <ChangeVisibilityChapter chapterId={item.id} />
             <AccordionTrigger>{item.title}</AccordionTrigger>
             <DropdownMenu>
@@ -83,7 +80,7 @@ export function ChapterList() {
                 <Button
                   variant={"outline"}
                   size={"icon"}
-                  className="[&>svg]:size-3! size-6 opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100"
+                  className="size-6 opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100 [&>svg]:size-3!"
                 >
                   <DotsThreeOutlineIcon weight="duotone" />
                 </Button>

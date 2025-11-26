@@ -58,6 +58,7 @@ export const videoRouter = {
     async ({ ctx, input }) =>
       await ctx.db.query.video.findMany({
         where: eq(video.chapterId, input.chapterId),
+        orderBy: asc(video.title),
       }),
   ),
 
@@ -81,7 +82,7 @@ export const videoRouter = {
           .where(
             and(eq(channel.id, input.channelId), eq(video.isPublished, true)),
           )
-          .orderBy(() => [asc(chapter.order), desc(video.createdAt)]); // if you have ordering fields
+          .orderBy(() => [asc(chapter.title), desc(video.title)]);
 
         const videosWithAuthorization = await Promise.all(
           videos.map(async (video) => {

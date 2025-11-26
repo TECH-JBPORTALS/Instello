@@ -1,4 +1,4 @@
-import { asc, desc, eq } from "@instello/db";
+import { asc, eq } from "@instello/db";
 import {
   chapter,
   CreateChapterSchema,
@@ -17,18 +17,10 @@ export const chapterRouter = {
   create: protectedProcedure
     .input(CreateChapterSchema)
     .mutation(async ({ ctx, input }) => {
-      const last = await ctx.db.query.chapter.findFirst({
-        where: eq(chapter.channelId, input.channelId),
-        orderBy: desc(chapter.order),
-      });
-
-      const nextOrder = last ? last.order + 1 : 1;
-
       return await ctx.db
         .insert(chapter)
         .values({
           ...input,
-          order: nextOrder,
           createdByClerkUserId: ctx.auth.userId,
         })
         .returning();
@@ -39,7 +31,7 @@ export const chapterRouter = {
     .query(async ({ ctx, input }) => {
       return await ctx.db.query.chapter.findMany({
         where: eq(chapter.channelId, input.channelId),
-        orderBy: asc(chapter.order),
+        orderBy: asc(chapter.title),
       });
     }),
 
@@ -99,19 +91,6 @@ export function deleteChapter(
           message: "Unable to delete the chapter",
           code: "INTERNAL_SERVER_ERROR",
         });
-      }
-
-      // 4. Re-arrange the chapter number
-      const remainingChapters = await tx.query.chapter.findMany({
-        where: eq(chapter.channelId, deletedChapter.channelId),
-        orderBy: asc(chapter.createdAt),
-      });
-
-      for (const [index, current] of remainingChapters.entries()) {
-        await tx
-          .update(chapter)
-          .set({ order: index + 1 })
-          .where(eq(chapter.id, current.id));
       }
 
       return deletedChapter;

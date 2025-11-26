@@ -104,7 +104,7 @@ function VideoItem({ video }: { video: UnifiedVideo }) {
     >
       {/* Status Icon */}
 
-      <div className="flex-shrink-0">
+      <div className="shrink-0">
         <div className="bg-accent relative aspect-video h-full w-20 overflow-hidden rounded-sm">
           {video.status === "ready" && (
             <Image
@@ -128,7 +128,7 @@ function VideoItem({ video }: { video: UnifiedVideo }) {
               </p>
             )}
           </div>
-          <span className="text-muted-foreground ml-2 inline-flex flex-shrink-0 items-center gap-0.5 text-xs">
+          <span className="text-muted-foreground ml-2 inline-flex shrink-0 items-center gap-0.5 text-xs">
             {/** Local Uploading status */}
             {video.isUploading && !video.interrupted ? (
               <span className="text-accent-foreground">
@@ -238,7 +238,7 @@ function VideoItem({ video }: { video: UnifiedVideo }) {
         )}
 
         {video.status == "ready" && (
-          <div className="from-accent/50 to-accent/0 absolute bottom-0 right-0 top-0 flex h-16 items-center gap-1.5 bg-gradient-to-l px-2 opacity-0 group-hover:opacity-100 has-[button[data-loading=true]]:opacity-100 has-[button[data-state=open]]:opacity-100">
+          <div className="from-accent/50 to-accent/0 absolute top-0 right-0 bottom-0 flex h-16 items-center gap-1.5 bg-linear-to-l px-2 opacity-0 group-hover:opacity-100 has-[button[data-loading=true]]:opacity-100 has-[button[data-state=open]]:opacity-100">
             <ChangeVisibilityVideoDropdown videoId={video.id} />
             <Button
               onClick={() => router.push(`/c/${channelId}/v/${video.id}`)}

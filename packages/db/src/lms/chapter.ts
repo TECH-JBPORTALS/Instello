@@ -15,7 +15,6 @@ export const chapter = lmsPgTable("chapter", (d) => ({
     .text()
     .notNull()
     .references(() => channel.id, { onDelete: "cascade" }),
-  order: d.integer().notNull(),
   isPublished: d.boolean().default(false),
 }));
 
@@ -29,7 +28,6 @@ export const CreateChapterSchema = createInsertSchema(chapter, {
   isPublished: true,
   createdByClerkUserId: true,
   updatedAt: true,
-  order: true,
 });
 
 export const UpdateChapterSchema = createUpdateSchema(chapter, {

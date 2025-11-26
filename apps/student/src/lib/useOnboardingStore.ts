@@ -1,18 +1,18 @@
 import { RouterOutputs } from "@instello/api";
 import { create } from "zustand";
 
-export type Course = Omit<
-  RouterOutputs["lms"]["courseOrBranch"]["list"][number],
-  "courseId"
+export type College = Omit<
+  RouterOutputs["lms"]["collegeOrBranch"]["list"][number],
+  "collegeId"
 >;
 
-export type Branch = RouterOutputs["lms"]["courseOrBranch"]["list"][number];
+export type Branch = RouterOutputs["lms"]["collegeOrBranch"]["list"][number];
 
 type OnboardingState = {
   firstName: string;
   lastName: string;
   dob: Date;
-  course?: Course;
+  college?: College;
   branch?: Branch;
   isCoursesLoading: boolean;
   isBranchesLoading: boolean;
@@ -35,7 +35,7 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
       firstName: "",
       lastName: "",
       dob: new Date(),
-      course: undefined,
+      college: undefined,
       branch: undefined,
       isBranchesLoading: false,
       isCoursesLoading: false,

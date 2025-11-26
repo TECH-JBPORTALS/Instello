@@ -45,11 +45,11 @@
     },
     "generate-erp": {
       "cache": false,
-      "interactive": false
+      "interactive": true
     },
     "generate-lms": {
       "cache": false,
-      "interactive": false
+      "interactive": true
     },
     "migrate-erp": {
       "cache": false,
