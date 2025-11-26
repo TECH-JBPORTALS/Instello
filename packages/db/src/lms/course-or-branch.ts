@@ -6,51 +6,51 @@ import { z } from "zod/v4";
 import { initialColumns } from "../columns.helpers";
 import { lmsPgTable } from "../table.helpers";
 
-/** Courses are different from channels. In LMS couses just for mapping the students to right content,
+/** Colleges are different from channels. In LMS couses just for mapping the students to right content,
  * this is not any important entity in LMS itself. Later studio creators can map thier content to
- * particular group of students under different courses and branches */
-export const courseOrBranch = lmsPgTable(
-  "course_or_branch",
+ * particular group of students under different colleges and branches */
+export const collegeOrBranch = lmsPgTable(
+  "college_or_branch",
   (d) => ({
     ...initialColumns,
     name: d.varchar({ length: 100 }).notNull(),
     /** If course id is not null for record then it's a branch */
-    courseId: d.text(),
+    collegeId: d.text(),
   }),
   (self) => [
     foreignKey({
-      columns: [self.courseId],
+      columns: [self.collegeId],
       foreignColumns: [self.id],
-    }),
+    }).onDelete("cascade"),
   ],
 );
 
 export const courseOrBranchRelations = relations(
-  courseOrBranch,
+  collegeOrBranch,
   ({ many, one }) => ({
-    branches: many(courseOrBranch),
-    course: one(courseOrBranch, {
-      fields: [courseOrBranch.courseId],
-      references: [courseOrBranch.id],
+    branches: many(collegeOrBranch),
+    course: one(collegeOrBranch, {
+      fields: [collegeOrBranch.collegeId],
+      references: [collegeOrBranch.id],
     }),
   }),
 );
 
-export const CreateCourseOrBranchSchema = createInsertSchema(courseOrBranch, {
+export const CreateCourseOrBranchSchema = createInsertSchema(collegeOrBranch, {
   name: z
     .string()
-    .min(3, "Title of the course or branch must be atleast 2 characters long"),
+    .min(3, "Title of the college or branch must be atleast 2 characters long"),
 }).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const UpdateCourseOrBranchSchema = createUpdateSchema(courseOrBranch, {
-  id: z.string().min(1, "Course or Branch ID is required for updation"),
+export const UpdateCourseOrBranchSchema = createUpdateSchema(collegeOrBranch, {
+  id: z.string().min(1, "College or Branch ID is required for updation"),
   name: z
     .string()
-    .min(3, "name of the course or branch must be atlease 2 characters long"),
+    .min(3, "name of the college or branch must be atlease 2 characters long"),
 }).omit({
   createdAt: true,
   updatedAt: true,

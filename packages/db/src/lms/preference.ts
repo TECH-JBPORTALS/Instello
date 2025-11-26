@@ -4,22 +4,22 @@ import { z } from "zod/v4";
 
 import { initialColumns } from "../columns.helpers";
 import { lmsPgTable } from "../table.helpers";
-import { courseOrBranch } from "./course-or-branch";
+import { collegeOrBranch } from "./course-or-branch";
 
 export const preference = lmsPgTable("preference", (d) => ({
   ...initialColumns,
-  courseId: d
+  collegeId: d
     .text()
     .notNull()
-    .references(() => courseOrBranch.id, { onDelete: "cascade" }),
+    .references(() => collegeOrBranch.id, { onDelete: "cascade" }),
   branchId: d
     .text()
     .notNull()
-    .references(() => courseOrBranch.id, { onDelete: "cascade" }),
+    .references(() => collegeOrBranch.id, { onDelete: "cascade" }),
 }));
 
 export const CreatePreferenceSchema = createInsertSchema(preference, {
-  courseId: z.string().min(2, "Course ID required"),
+  collegeId: z.string().min(2, "Course ID required"),
   branchId: z.string().min(2, "Branch ID required"),
 }).omit({
   id: true,
@@ -28,7 +28,7 @@ export const CreatePreferenceSchema = createInsertSchema(preference, {
 });
 
 export const UpdatePreferenceSchema = createUpdateSchema(preference, {
-  courseId: z.string().min(2, "Course ID required"),
+  collegeId: z.string().min(2, "Course ID required"),
   branchId: z.string().min(2, "Branch ID required"),
 }).omit({
   id: true,
@@ -37,12 +37,12 @@ export const UpdatePreferenceSchema = createUpdateSchema(preference, {
 });
 
 export const preferenceRealations = relations(preference, ({ one }) => ({
-  course: one(courseOrBranch, {
-    fields: [preference.courseId],
-    references: [courseOrBranch.courseId],
+  course: one(collegeOrBranch, {
+    fields: [preference.collegeId],
+    references: [collegeOrBranch.collegeId],
   }),
-  branch: one(courseOrBranch, {
-    fields: [preference.courseId],
-    references: [courseOrBranch.id],
+  branch: one(collegeOrBranch, {
+    fields: [preference.collegeId],
+    references: [collegeOrBranch.id],
   }),
 }));

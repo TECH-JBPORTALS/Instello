@@ -23,7 +23,7 @@ export default function OnboardingStepThree() {
         />
         <BranchSelectionForm />
       </ScrollView>
-      <View className="border-t-1 border-t-border px-4 py-8">
+      <View className="border-t-border border-t px-4 py-8">
         <BranchSelectionFormFooter />
       </View>
     </View>

@@ -2,9 +2,9 @@ import React from "react";
 import { ScrollView, View } from "react-native";
 import { Stack } from "expo-router";
 import {
-  CourseSelectionForm,
-  CourseSelectionFormFooter,
-} from "@/components/course-selection-form";
+  CollegeSelectionForm,
+  CollegeSelectionFormFooter,
+} from "@/components/college-selection-form";
 
 export default function OnboardingStepTwo() {
   return (
@@ -21,10 +21,10 @@ export default function OnboardingStepTwo() {
             headerTitle: "",
           }}
         />
-        <CourseSelectionForm />
+        <CollegeSelectionForm />
       </ScrollView>
-      <View className="border-t-1 border-border px-4 py-8">
-        <CourseSelectionFormFooter />
+      <View className="border-border border-t px-4 py-8">
+        <CollegeSelectionFormFooter />
       </View>
     </View>
   );
