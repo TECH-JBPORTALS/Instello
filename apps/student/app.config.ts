@@ -53,6 +53,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       "expo-router",
       "expo-web-browser",
       "expo-secure-store",
+      "expo-localization",
       [
         "expo-screen-orientation",
         {
