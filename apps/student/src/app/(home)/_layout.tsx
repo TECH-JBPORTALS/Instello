@@ -1,4 +1,8 @@
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, View } from "react-native";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import { Link, Tabs } from "expo-router";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -10,6 +14,7 @@ import { HouseIcon, ListBulletsIcon } from "phosphor-react-native";
 
 export default function HomeLayout() {
   const { user } = useUser();
+  const { top, bottom } = useSafeAreaInsets();
 
   return (
     <Tabs

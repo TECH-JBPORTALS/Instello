@@ -2,11 +2,12 @@ import { RouterOutputs } from "@instello/api";
 import { create } from "zustand";
 
 export type College = Omit<
-  RouterOutputs["lms"]["collegeOrBranch"]["list"][number],
+  RouterOutputs["lms"]["collegeOrBranch"]["list"]["items"][number],
   "collegeId"
 >;
 
-export type Branch = RouterOutputs["lms"]["collegeOrBranch"]["list"][number];
+export type Branch =
+  RouterOutputs["lms"]["collegeOrBranch"]["list"]["items"][number];
 
 type OnboardingState = {
   firstName: string;

@@ -1,34 +1,50 @@
-import React from "react";
-import { ToastAndroid, TouchableOpacity, View } from "react-native";
+import React, { useState } from "react";
+import {
+  ActivityIndicator,
+  ToastAndroid,
+  TouchableOpacity,
+  useColorScheme,
+  View,
+} from "react-native";
 import { Redirect } from "expo-router";
 import { useOnboardingStore } from "@/lib/useOnboardingStore";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/utils/api";
 import { useUser } from "@clerk/clerk-expo";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { FlashList } from "@shopify/flash-list";
+import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
+import { useDebounce } from "@uidotdev/usehooks";
 import { CheckCircleIcon } from "phosphor-react-native";
 
 import { BranchCollegeSkeleton } from "./branch-college-skeleton";
 import { Button } from "./ui/button";
 import { Icon } from "./ui/icon";
+import { Input } from "./ui/input";
 import { Text } from "./ui/text";
 
 export function BranchSelectionForm() {
+  const theme = useColorScheme();
   const { setField, college, branch } = useOnboardingStore();
-  const { data: branches, isLoading } = useQuery(
-    trpc.lms.collegeOrBranch.list.queryOptions(
-      { byCollegeId: college!.id },
-      { enabled: !!college },
-    ),
-  );
+  const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 300);
+  const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } =
+    useInfiniteQuery(
+      trpc.lms.collegeOrBranch.list.infiniteQueryOptions(
+        { byCollegeId: college!.id, query: debouncedQuery },
+        {
+          enabled: !!college,
+          getNextPageParam: (lastPage) => lastPage.nextCursor,
+        },
+      ),
+    );
+
+  const branches = data?.pages.flatMap((d) => d.items);
 
   React.useEffect(() => {
     setField("isBranchesLoading", isLoading);
   }, [isLoading]);
 
   if (!college?.id) return <Redirect href={"/(onboarding)/step-two"} />;
-
-  if (isLoading) return <BranchCollegeSkeleton />;
 
   return (
     <View className="relative gap-3.5">
@@ -40,31 +56,74 @@ export function BranchSelectionForm() {
         related to that
       </Text>
 
-      <View className="flex-1 gap-2">
-        {branches?.map((b) => (
-          <TouchableOpacity
-            onPress={() => setField("branch", b)}
-            key={b.id}
-            activeOpacity={0.8}
-          >
-            <View
-              className={cn(
-                "border-border w-full flex-row justify-between rounded-lg border p-6",
-                b.id === branch?.id && "bg-primary/10 border-primary",
-              )}
-            >
-              <Text className="font-semibold">{b.name}</Text>
+      <View>
+        <Input
+          value={query}
+          onChangeText={(q) => setQuery(q)}
+          placeholder="Search..."
+          className="h-11 text-lg"
+          style={{ paddingHorizontal: 32 }}
+        />
+      </View>
 
-              <Icon
-                as={CheckCircleIcon}
-                className={cn(
-                  "text-primary size-6 opacity-0",
-                  b.id === branch?.id && "opacity-100",
+      <View className="flex-1 gap-2">
+        {isLoading ? (
+          <BranchCollegeSkeleton />
+        ) : (
+          <FlashList
+            data={branches}
+            onEndReached={() => hasNextPage && fetchNextPage()}
+            ListFooterComponent={
+              <View className="items-center py-2">
+                {isFetchingNextPage && (
+                  <ActivityIndicator
+                    size={"small"}
+                    color={theme == "dark" ? "white" : "black"}
+                  />
                 )}
-              />
-            </View>
-          </TouchableOpacity>
-        ))}
+              </View>
+            }
+            ListEmptyComponent={
+              <View className="flex-1 items-center justify-center p-6">
+                <Text variant={"large"}>No branches</Text>
+                <Text variant={"muted"} className="text-center">
+                  No branches found. Try to clear the query from the input or no
+                  data associated.
+                </Text>
+              </View>
+            }
+            renderItem={({ item: b }) => (
+              <TouchableOpacity
+                onPress={() => setField("branch", b)}
+                key={b.id}
+                activeOpacity={0.8}
+              >
+                <View
+                  className={cn(
+                    "border-border mt-3 w-full flex-row items-center justify-between rounded-lg border p-6",
+                    b.id === branch?.id && "bg-primary/10 border-primary",
+                  )}
+                >
+                  <View>
+                    <Text className="text-muted-foreground text-lg font-bold">
+                      {b.code}
+                    </Text>
+                    <Text className="font-semibold">{b.name}</Text>
+                  </View>
+
+                  <Icon
+                    as={CheckCircleIcon}
+                    className={cn(
+                      "text-primary opacity-0",
+                      b.id === branch?.id && "opacity-100",
+                    )}
+                    size={23}
+                  />
+                </View>
+              </TouchableOpacity>
+            )}
+          />
+        )}
       </View>
     </View>
   );

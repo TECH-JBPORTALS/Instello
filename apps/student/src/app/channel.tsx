@@ -1,6 +1,9 @@
 import React from "react";
 import { ActivityIndicator, ScrollView, View } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { ImageBackground } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
@@ -47,6 +50,7 @@ const blurhash =
 
 function ChannelDetailsSection() {
   const router = useRouter();
+  const { top } = useSafeAreaInsets();
   const { channelId } = useLocalSearchParams<{ channelId: string }>();
   const {
     data: channel,
@@ -88,18 +92,20 @@ function ChannelDetailsSection() {
         >
           <View className="flex-1">
             <View className="justify-between px-4 py-8">
-              <Button
-                onPress={() => router.back()}
-                size={"icon"}
-                variant={"outline"}
-                className="mt-safe size-11 rounded-full bg-transparent"
-              >
-                <Icon
-                  as={ArrowLeftIcon}
-                  className="size-5 text-white"
-                  weight="duotone"
-                />
-              </Button>
+              <View style={{ marginTop: top }}>
+                <Button
+                  onPress={() => router.back()}
+                  size={"icon"}
+                  variant={"outline"}
+                  className="size-11 rounded-full bg-transparent"
+                >
+                  <Icon
+                    as={ArrowLeftIcon}
+                    className="size-5 text-white"
+                    weight="duotone"
+                  />
+                </Button>
+              </View>
             </View>
           </View>
         </LinearGradient>

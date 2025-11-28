@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { foreignKey } from "drizzle-orm/pg-core";
+import { foreignKey, index } from "drizzle-orm/pg-core";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -16,12 +16,14 @@ export const collegeOrBranch = lmsPgTable(
     name: d.varchar({ length: 100 }).notNull(),
     /** If course id is not null for record then it's a branch */
     collegeId: d.text(),
+    code: d.text(),
   }),
   (self) => [
     foreignKey({
       columns: [self.collegeId],
       foreignColumns: [self.id],
     }).onDelete("cascade"),
+    index().on(self.name, self.code),
   ],
 );
 

@@ -59,7 +59,6 @@ export function SignInForm() {
         setError(
           isEmailMessage ? { email: err.message } : { password: err.message },
         );
-        return;
       }
       console.error(JSON.stringify(err, null, 2));
     }

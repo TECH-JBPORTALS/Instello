@@ -120,10 +120,10 @@ export default function Home() {
         data={channelList}
         ListHeaderComponent={
           <Text
-            variant={"lead"}
-            className="px-2 py-1.5 text-base font-semibold"
+            variant={"large"}
+            className="text-muted-foreground px-2 py-1.5 text-xs"
           >
-            Recommended for You
+            RECOMMENDED FOR YOU
           </Text>
         }
         ListEmptyComponent={

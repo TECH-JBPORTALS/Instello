@@ -47,7 +47,6 @@ export function ResetPasswordForm() {
           .toLowerCase()
           .includes("password");
         setError({ code: "", password: isPasswordMessage ? err.message : "" });
-        return;
       }
       console.error(JSON.stringify(err, null, 2));
     }

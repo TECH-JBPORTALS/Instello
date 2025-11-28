@@ -1,13 +1,15 @@
 import type { StartSSOFlowParams } from "@clerk/clerk-expo";
 import type { ImageSourcePropType } from "react-native";
 import * as React from "react";
-import { Image, Platform, View } from "react-native";
+import { Image, Platform, useColorScheme, View } from "react-native";
 import * as AuthSession from "expo-auth-session";
+import Constants from "expo-constants";
+import * as Linking from "expo-linking";
+import { usePathname } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSSO } from "@clerk/clerk-expo";
-import { useColorScheme } from "nativewind";
 
 import { Text } from "./ui/text";
 
@@ -34,9 +36,11 @@ const SOCIAL_CONNECTION_STRATEGIES: {
 
 export function SocialConnections() {
   useWarmUpBrowser();
-  const { colorScheme } = useColorScheme();
+  const theme = useColorScheme();
   const { startSSOFlow } = useSSO();
   const [isLoading, setIsLoading] = React.useState(false);
+  const scheme = (Constants.expoConfig?.scheme as string) ?? "in.instello.app";
+  const path = usePathname();
 
   function onSocialLoginPress(strategy: SocialConnectionStrategy) {
     return async () => {
@@ -48,7 +52,10 @@ export function SocialConnections() {
           // For web, defaults to current path
           // For native, you must pass a scheme, like AuthSession.makeRedirectUri({ scheme, path })
           // For more info, see https://docs.expo.dev/versions/latest/sdk/auth-session/#authsessionmakeredirecturioptions
-          redirectUrl: AuthSession.makeRedirectUri(),
+          redirectUrl: AuthSession.makeRedirectUri({
+            scheme,
+            path,
+          }),
         });
 
         // If sign in was successful, set the active session
@@ -88,7 +95,7 @@ export function SocialConnections() {
               )}
               tintColor={Platform.select({
                 native: strategy.useTint
-                  ? colorScheme === "dark"
+                  ? theme === "dark"
                     ? "white"
                     : "black"
                   : undefined,

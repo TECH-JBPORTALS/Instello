@@ -4,6 +4,7 @@ import * as React from "react";
 import { useColorScheme } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
@@ -11,15 +12,6 @@ import { NAV_THEME } from "@/lib/theme";
 import { queryClient } from "@/utils/api";
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
-import {
-  Montserrat_400Regular,
-  Montserrat_500Medium,
-  Montserrat_600SemiBold,
-  Montserrat_700Bold,
-  Montserrat_800ExtraBold,
-  Montserrat_900Black,
-  useFonts,
-} from "@expo-google-fonts/montserrat";
 import { ThemeProvider } from "@react-navigation/native";
 import { PortalHost } from "@rn-primitives/portal";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -34,36 +26,19 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <PostHogProvider
-      apiKey={process.env.POSTHOG_API_KEY}
-      options={{
-        host: "https://eu.i.posthog.com",
-        enableSessionReplay: true,
-        sessionReplayConfig: {
-          // Whether text inputs are masked. Default is true.
-          // Password inputs are always masked regardless
-          maskAllTextInputs: true,
-          // Whether images are masked. Default is true.
-          maskAllImages: true,
-          // Capture logs automatically. Default is true.
-          // Android only (Native Logcat only)
-          captureLog: true,
-          // Whether network requests are captured in recordings. Default is true
-          // Only metric-like data like speed, size, and response code are captured.
-          // No data is captured from the request or response body.
-          // iOS only
-          captureNetworkTelemetry: true,
-          // Throttling delay used to reduce the number of snapshots captured and reduce performance impact
-          // The lower the number more snapshots will be captured but higher the performance impact
-          // Default is 1000ms
-          throttleDelayMs: 1000,
-        },
-      }}
-    >
-      <SafeAreaProvider>
-        <GestureHandlerRootView style={{ flex: 1 }}>
+    <SafeAreaProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <PostHogProvider
+          apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
+          options={{
+            host: "https://eu.i.posthog.com",
+            enableSessionReplay: true,
+            defaultOptIn: false,
+          }}
+        >
           <ClerkProvider
             polling
+            touchSession
             publishableKey={process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY}
             tokenCache={tokenCache}
           >
@@ -75,9 +50,9 @@ export default function RootLayout() {
               </ThemeProvider>
             </QueryClientProvider>
           </ClerkProvider>
-        </GestureHandlerRootView>
-      </SafeAreaProvider>
-    </PostHogProvider>
+        </PostHogProvider>
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
   );
 }
 
@@ -85,13 +60,13 @@ SplashScreen.preventAutoHideAsync();
 
 function Routes() {
   const { isSignedIn, isLoaded, sessionClaims } = useAuth();
-  const [fontLoaded] = useFonts({
-    Montserrat_400Regular,
-    Montserrat_500Medium,
-    Montserrat_600SemiBold,
-    Montserrat_700Bold,
-    Montserrat_800ExtraBold,
-    Montserrat_900Black,
+  const [fontLoaded, error] = useFonts({
+    MontserratRegular: require("assets/fonts/Montserrat-Regular.ttf"),
+    MontserratMedium: require("assets/fonts/Montserrat-Medium.ttf"),
+    MontserratSemiBold: require("assets/fonts/Montserrat-SemiBold.ttf"),
+    MontserratBold: require("assets/fonts/Montserrat-Bold.ttf"),
+    MontserratExtraBold: require("assets/fonts/Montserrat-ExtraBold.ttf"),
+    MontserratBlack: require("assets/fonts/Montserrat-Black.ttf"),
   });
 
   React.useEffect(() => {
@@ -100,12 +75,18 @@ function Routes() {
     }
   }, [isLoaded, fontLoaded]);
 
-  if (!isLoaded) {
+  if (!isLoaded || error) {
+    console.log(error);
     return null;
   }
 
   return (
-    <Stack screenOptions={{ headerShadowVisible: false }}>
+    <Stack
+      screenOptions={{
+        headerShadowVisible: false,
+        headerTitleStyle: { fontFamily: "MontserratSemiBold" },
+      }}
+    >
       {/* Screens only shown when the user is NOT signed in */}
       <Stack.Protected guard={!isSignedIn}>
         <Stack.Screen
@@ -134,7 +115,10 @@ function Routes() {
         {/** Screens only shown when the user Is completed the onboarding process */}
         <Stack.Protected guard={!!sessionClaims?.metadata?.onBoardingCompleted}>
           <Stack.Screen name="(home)" options={{ headerShown: false }} />
-          <Stack.Screen name="profile" options={{ title: "My Profile" }} />
+          <Stack.Screen
+            name="profile"
+            options={{ title: "My Profile", headerTitleAlign: "center" }}
+          />
           <Stack.Screen name="channel" options={{ headerShown: false }} />
           <Stack.Screen
             name="(subscribe)/index"
