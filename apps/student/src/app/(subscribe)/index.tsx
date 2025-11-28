@@ -50,9 +50,12 @@ function SubscribeToChannelForm() {
   return (
     <View className="items-center gap-3.5 px-6">
       <View className="bg-muted size-20 items-center justify-center rounded-full">
-        <Icon as={TicketIcon} className="text-muted-foreground size-8" />
+        <Icon as={TicketIcon} size={32} className="text-muted-foreground" />
       </View>
       <Label>Enter your coupon code</Label>
+      {isError && (
+        <Text className="text-destructive text-xs">{error.message}</Text>
+      )}
       <Input
         value={code}
         onChangeText={(code) => {
@@ -61,11 +64,9 @@ function SubscribeToChannelForm() {
         }}
         autoCapitalize="characters"
         textAlign="center"
-        className="h-12 rounded-2xl text-lg"
+        className="h-12 rounded-2xl font-[MontserratSemiBold] text-lg"
       />
-      {isError && (
-        <Text className="text-destructive text-xs">{error.message}</Text>
-      )}
+
       <Button
         disabled={!code || isPending}
         variant={"secondary"}

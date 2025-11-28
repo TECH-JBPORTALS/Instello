@@ -34,7 +34,10 @@ function CardTitle({
     <Text
       role="heading"
       aria-level={3}
-      className={cn("font-semibold leading-none", className)}
+      className={cn(
+        "font-[MontserratSemiBold] font-semibold leading-none",
+        className,
+      )}
       {...props}
     />
   );

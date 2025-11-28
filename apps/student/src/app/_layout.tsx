@@ -4,6 +4,7 @@ import * as React from "react";
 import { useColorScheme } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
@@ -11,15 +12,6 @@ import { NAV_THEME } from "@/lib/theme";
 import { queryClient } from "@/utils/api";
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
-import {
-  Montserrat_400Regular,
-  Montserrat_500Medium,
-  Montserrat_600SemiBold,
-  Montserrat_700Bold,
-  Montserrat_800ExtraBold,
-  Montserrat_900Black,
-  useFonts,
-} from "@expo-google-fonts/montserrat";
 import { ThemeProvider } from "@react-navigation/native";
 import { PortalHost } from "@rn-primitives/portal";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -68,13 +60,13 @@ SplashScreen.preventAutoHideAsync();
 
 function Routes() {
   const { isSignedIn, isLoaded, sessionClaims } = useAuth();
-  const [fontLoaded] = useFonts({
-    Montserrat_400Regular,
-    Montserrat_500Medium,
-    Montserrat_600SemiBold,
-    Montserrat_700Bold,
-    Montserrat_800ExtraBold,
-    Montserrat_900Black,
+  const [fontLoaded, error] = useFonts({
+    MontserratRegular: require("assets/fonts/Montserrat-Regular.ttf"),
+    MontserratMedium: require("assets/fonts/Montserrat-Medium.ttf"),
+    MontserratSemiBold: require("assets/fonts/Montserrat-SemiBold.ttf"),
+    MontserratBold: require("assets/fonts/Montserrat-Bold.ttf"),
+    MontserratExtraBold: require("assets/fonts/Montserrat-ExtraBold.ttf"),
+    MontserratBlack: require("assets/fonts/Montserrat-Black.ttf"),
   });
 
   React.useEffect(() => {
@@ -83,7 +75,8 @@ function Routes() {
     }
   }, [isLoaded, fontLoaded]);
 
-  if (!isLoaded) {
+  if (!isLoaded || error) {
+    console.log(error);
     return null;
   }
 
