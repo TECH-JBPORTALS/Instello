@@ -41,7 +41,7 @@ export function SocialConnections() {
   const { startSSOFlow } = useSSO();
   const [isLoading, setIsLoading] = React.useState(false);
   const scheme = (Constants.expoConfig?.scheme as string) ?? "in.instello.app";
-  const path = usePathname();
+  const path = usePathname().split("/")[1] ?? "sign-in";
   const posthog = usePostHog();
 
   function onSocialLoginPress(strategy: SocialConnectionStrategy) {
