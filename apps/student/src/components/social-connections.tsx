@@ -10,6 +10,7 @@ import * as WebBrowser from "expo-web-browser";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSSO } from "@clerk/clerk-expo";
+import { usePostHog } from "posthog-react-native";
 
 import { Text } from "./ui/text";
 
@@ -41,6 +42,7 @@ export function SocialConnections() {
   const [isLoading, setIsLoading] = React.useState(false);
   const scheme = (Constants.expoConfig?.scheme as string) ?? "in.instello.app";
   const path = usePathname();
+  const posthog = usePostHog();
 
   function onSocialLoginPress(strategy: SocialConnectionStrategy) {
     return async () => {
@@ -72,6 +74,7 @@ export function SocialConnections() {
       } catch (err) {
         // See https://go.clerk.com/mRUDrIe for more info on error handling
         console.error(JSON.stringify(err, null, 2));
+        posthog.captureException(err);
       }
       setIsLoading(false);
     };

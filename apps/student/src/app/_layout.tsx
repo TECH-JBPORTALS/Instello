@@ -31,9 +31,16 @@ export default function RootLayout() {
         <PostHogProvider
           apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
           options={{
+            disabled: process.env.NODE_ENV !== "production",
             host: "https://eu.i.posthog.com",
             enableSessionReplay: true,
-            defaultOptIn: false,
+            errorTracking: {
+              autocapture: {
+                console: ["error", "warn"],
+                unhandledRejections: true,
+                uncaughtExceptions: true,
+              },
+            },
           }}
         >
           <ClerkProvider
