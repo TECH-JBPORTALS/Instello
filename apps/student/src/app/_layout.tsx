@@ -34,6 +34,7 @@ export default function RootLayout() {
             disabled: process.env.NODE_ENV !== "production",
             host: "https://eu.i.posthog.com",
             enableSessionReplay: true,
+            defaultOptIn: false,
             errorTracking: {
               autocapture: {
                 console: ["error", "warn"],
