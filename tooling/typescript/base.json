@@ -21,6 +21,7 @@
     "module": "Preserve",
     "moduleResolution": "Bundler",
     "noEmit": true,
+    "typeRoots": ["node_modules/@types"]
   },
   "exclude": ["node_modules", "build", "dist", ".next", ".expo"]
 }
