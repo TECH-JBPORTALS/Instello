@@ -80,7 +80,7 @@ export function ChapterList() {
                 <Button
                   variant={"outline"}
                   size={"icon"}
-                  className="size-6 opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100 [&>svg]:size-3!"
+                  className="[&>svg]:size-3! size-6 opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100"
                 >
                   <DotsThreeOutlineIcon weight="duotone" />
                 </Button>

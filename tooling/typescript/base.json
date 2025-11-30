@@ -18,12 +18,9 @@
     "noUncheckedIndexedAccess": true,
     "checkJs": true,
 
-    "typeRoots": ["./node_modules/@types/*"],
-
     "module": "Preserve",
     "moduleResolution": "Bundler",
-    "noEmit": true
+    "noEmit": true,
   },
-  "exclude": ["node_modules", "build", "dist", ".next", ".expo"],
-  "included":["types/**/*.d.ts"]
+  "exclude": ["node_modules", "build", "dist", ".next", ".expo"]
 }

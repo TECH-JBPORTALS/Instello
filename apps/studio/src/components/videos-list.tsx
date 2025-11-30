@@ -238,7 +238,7 @@ function VideoItem({ video }: { video: UnifiedVideo }) {
         )}
 
         {video.status == "ready" && (
-          <div className="from-accent/50 to-accent/0 absolute top-0 right-0 bottom-0 flex h-16 items-center gap-1.5 bg-linear-to-l px-2 opacity-0 group-hover:opacity-100 has-[button[data-loading=true]]:opacity-100 has-[button[data-state=open]]:opacity-100">
+          <div className="from-accent/50 to-accent/0 bg-linear-to-l absolute bottom-0 right-0 top-0 flex h-16 items-center gap-1.5 px-2 opacity-0 group-hover:opacity-100 has-[button[data-loading=true]]:opacity-100 has-[button[data-state=open]]:opacity-100">
             <ChangeVisibilityVideoDropdown videoId={video.id} />
             <Button
               onClick={() => router.push(`/c/${channelId}/v/${video.id}`)}

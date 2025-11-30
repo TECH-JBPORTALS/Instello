@@ -1,7 +1,4 @@
-/// <reference types="./types.d.ts" />
-
-// @ts-ignore
-import * as path from "node:path";
+import path from "node:path";
 import { includeIgnoreFile } from "@eslint/compat";
 import eslint from "@eslint/js";
 import importPlugin from "eslint-plugin-import";
@@ -26,7 +23,6 @@ export const restrictEnvAccess = defineConfig(
             "Use `import { env } from '~/env'` instead to ensure validated types.",
         },
       ],
-      "@typescript-eslint/no-unsafe-return": "warn",
       "no-restricted-imports": [
         "error",
         {
@@ -40,9 +36,8 @@ export const restrictEnvAccess = defineConfig(
   },
 );
 
-export default defineConfig(
+export const baseConfig = defineConfig(
   // Ignore files not tracked by VCS and any config files
-  // @ts-ignore
   includeIgnoreFile(path.join(import.meta.dirname, "../../.gitignore")),
   { ignores: ["**/*.config.*"] },
   {
@@ -79,17 +74,15 @@ export default defineConfig(
       ],
       "@typescript-eslint/no-non-null-assertion": "error",
       "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
-      "no-restricted-imports": [
-        "error",
-        {
-          name: "zod",
-          message: "Use `import { z } from 'zod/v4'` instead to ensure v4.",
-        },
-      ],
     },
   },
   {
     linterOptions: { reportUnusedDisableDirectives: true },
-    languageOptions: { parserOptions: { projectService: true } },
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
   },
 );

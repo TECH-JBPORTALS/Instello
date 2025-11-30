@@ -2,6 +2,7 @@
   "name": "@instello/studio",
   "version": "1.0.0",
   "private": true,
+  
   "scripts": {
     "build": "pnpm with-env next build",
     "clean": "git clean -xdf .cache .next .turbo node_modules",
