@@ -1,7 +1,8 @@
 import "../global.css";
 
+import type { AppStateStatus } from "react-native";
 import * as React from "react";
-import { useColorScheme } from "react-native";
+import { AppState, Platform, useColorScheme } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useFonts } from "expo-font";
@@ -14,7 +15,7 @@ import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
 import { ThemeProvider } from "@react-navigation/native";
 import { PortalHost } from "@rn-primitives/portal";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { focusManager, QueryClientProvider } from "@tanstack/react-query";
 import { PostHogProvider } from "posthog-react-native";
 
 export {
@@ -64,7 +65,7 @@ export default function RootLayout() {
   );
 }
 
-SplashScreen.preventAutoHideAsync();
+void SplashScreen.preventAutoHideAsync();
 
 function Routes() {
   const { isSignedIn, isLoaded, sessionClaims } = useAuth();
@@ -79,9 +80,21 @@ function Routes() {
 
   React.useEffect(() => {
     if (isLoaded && fontLoaded) {
-      SplashScreen.hideAsync();
+      void SplashScreen.hideAsync();
     }
   }, [isLoaded, fontLoaded]);
+
+  function onAppStateChange(status: AppStateStatus) {
+    if (Platform.OS !== "web") {
+      focusManager.setFocused(status === "active");
+    }
+  }
+
+  React.useEffect(() => {
+    const subscription = AppState.addEventListener("change", onAppStateChange);
+
+    return () => subscription.remove();
+  }, []);
 
   if (!isLoaded || error) {
     console.log(error);
