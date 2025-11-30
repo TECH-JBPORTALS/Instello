@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, getTableColumns, gte } from "@instello/db";
+import { and, asc, eq, getTableColumns, gte } from "@instello/db";
 import {
   channel,
   chapter,
@@ -82,7 +82,7 @@ export const videoRouter = {
           .where(
             and(eq(channel.id, input.channelId), eq(video.isPublished, true)),
           )
-          .orderBy(() => [asc(chapter.title), desc(video.title)]);
+          .orderBy(() => [asc(chapter.title), asc(video.title)]);
 
         const videosWithAuthorization = await Promise.all(
           videos.map(async (video) => {
