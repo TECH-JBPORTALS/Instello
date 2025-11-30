@@ -13,6 +13,7 @@ function IconImpl({ as: IconComponent, ...props }: IconProps) {
   return <IconComponent {...props} />;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const StyledIconIml = styled(IconImpl, {
   className: {
     target: "style",
