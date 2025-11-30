@@ -16,7 +16,7 @@ export default function ExapandableText({
       <Text
         className="sr-only"
         onTextLayout={(e) => {
-          if (e.nativeEvent.lines.length > numberOfLines) {
+          if (e.nativeEvent.lines.length > numberOfLines * 80) {
             setShowMore(true);
           }
           onTextLayout?.(e);
