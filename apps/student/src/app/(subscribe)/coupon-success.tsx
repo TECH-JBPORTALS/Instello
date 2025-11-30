@@ -13,20 +13,21 @@ import {
 import { Text } from "@/components/ui/text";
 import { trpc } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
+import CrownJSON from "assets/animations/shine-crown.json";
 import { format } from "date-fns";
 import LottieView from "lottie-react-native";
 
 export default function CouponSuccessScreen() {
   const { errorMessage, subscriptionId } = useLocalSearchParams<{
     errorMessage?: string;
-    subscriptionId?: string;
+    subscriptionId: string;
   }>();
 
   const router = useRouter();
 
   const { data, isError, error } = useQuery(
     trpc.lms.subscription.getById.queryOptions(
-      { subscriptionId: subscriptionId! },
+      { subscriptionId },
       { enabled: !!subscriptionId },
     ),
   );
@@ -39,7 +40,7 @@ export default function CouponSuccessScreen() {
     );
 
   return (
-    <View entering={FadeIn} exiting={FadeOut} className="flex-1 items-center">
+    <View className="flex-1 items-center">
       <View className="w-full flex-1 items-center gap-3.5 px-6">
         <Animated.View
           entering={FadeIn}
@@ -47,7 +48,7 @@ export default function CouponSuccessScreen() {
           className="flex-1 items-center"
         >
           <LottieView
-            source={require("assets/animations/shine-crown.json")}
+            source={CrownJSON}
             style={{ height: 200, width: 200 }}
             autoPlay
           />
@@ -61,7 +62,7 @@ export default function CouponSuccessScreen() {
           <CardContent className="h-full p-0">
             <Image
               source={{
-                uri: `https://${process.env.EXPO_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${data?.channel?.thumbneilId}`,
+                uri: `https://${process.env.EXPO_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${data.channel?.thumbneilId}`,
               }}
               style={{
                 height: 64,
