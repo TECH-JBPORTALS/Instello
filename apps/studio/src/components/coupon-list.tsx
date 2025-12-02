@@ -30,7 +30,7 @@ function CouponCard({ coupon }: { coupon: Coupon }) {
   return (
     <Card
       className={cn(
-        `bg-accent relative overflow-hidden border-0 transition-all hover:shadow-lg`,
+        `bg-accent relative aspect-auto overflow-hidden border-0 transition-all hover:shadow-lg`,
         isExpired
           ? "bg-accent/50 border border-dashed shadow-none"
           : isActive
@@ -40,9 +40,9 @@ function CouponCard({ coupon }: { coupon: Coupon }) {
     >
       {/* Coupon design with diagonal cut */}
       <div className="relative">
-        <div className="to-background/10 absolute top-0 right-0 h-full w-8 bg-gradient-to-br from-transparent via-transparent" />
-        <div className="bg-background absolute top-1/2 right-0 h-8 w-8 -translate-y-1/2 rounded-full" />
-        <div className="bg-background absolute top-1/2 right-0 h-8 w-8 translate-x-4 -translate-y-1/2 rounded-full" />
+        <div className="to-background/10 bg-linear-to-br absolute right-0 top-0 h-full w-8 from-transparent via-transparent" />
+        <div className="bg-background absolute right-0 top-1/2 h-8 w-8 -translate-y-1/2 rounded-full" />
+        <div className="bg-background absolute right-0 top-1/2 h-8 w-8 -translate-y-1/2 translate-x-4 rounded-full" />
 
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">

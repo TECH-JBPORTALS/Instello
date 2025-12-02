@@ -15,7 +15,7 @@ export function ChannelDetailsSection() {
 
   return (
     <div className="space-y-3.5">
-      <div className="bg-accent relative aspect-video h-58 w-full overflow-hidden rounded-md object-cover">
+      <div className="bg-accent relative aspect-video h-auto w-full overflow-hidden rounded-md object-cover">
         {data.thumbneilId ? (
           <Image
             fill
@@ -33,10 +33,10 @@ export function ChannelDetailsSection() {
       </div>
 
       <div>
-        <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
+        <h4 className="scroll-m-20 font-semibold tracking-tight">
           {data.title}
         </h4>
-        <p className="text-muted-foreground text-sm">{data.description}</p>
+        <p className="text-muted-foreground text-xs">{data.description}</p>
       </div>
     </div>
   );

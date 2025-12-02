@@ -12,6 +12,7 @@ import {
   useUnifiedVideoList,
 } from "@/hooks/useUnifiedVideoList";
 import { useUploadManager } from "@/hooks/useUploadManager";
+import { useTRPC } from "@/trpc/react";
 import { Button } from "@instello/ui/components/button";
 import { Progress } from "@instello/ui/components/progress";
 import { Skeleton } from "@instello/ui/components/skeleton";
@@ -22,6 +23,7 @@ import {
   PenNibIcon,
   TrashIcon,
 } from "@phosphor-icons/react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { ChangeVisibilityVideoDropdown } from "./change-visibility-video-dropdown";
@@ -66,6 +68,19 @@ function VideoItem({ video }: { video: UnifiedVideo }) {
   const { retryUpload, getUpload } = useUploadManager();
   const router = useRouter();
   const { channelId } = useParams<{ channelId: string }>();
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+  const { mutate: deleteVideo } = useMutation(
+    trpc.lms.video.delete.mutationOptions({
+      async onSuccess() {
+        toast.info(`Removed successfuly`);
+        await queryClient.invalidateQueries(trpc.lms.video.list.pathFilter());
+      },
+      onError(error) {
+        toast.error(error.message);
+      },
+    }),
+  );
 
   function handleReselectFile(e: ChangeEvent<HTMLInputElement>) {
     const selectedFile = e.target.files?.[0];
@@ -204,7 +219,7 @@ function VideoItem({ video }: { video: UnifiedVideo }) {
 
       {/** Action */}
       <div className="space-x-1.5">
-        {video.interrupted && (
+        {video.interrupted || video.uploadError ? (
           <>
             <input
               type="file"
@@ -231,14 +246,15 @@ function VideoItem({ video }: { video: UnifiedVideo }) {
               size={"sm"}
               variant={"secondary"}
               className="text-destructive bg-destructive/20 rounded-full"
+              onClick={() => deleteVideo({ videoId: video.id })}
             >
               Remove
             </Button>
           </>
-        )}
+        ) : null}
 
         {video.status == "ready" && (
-          <div className="from-accent/50 to-accent/0 absolute top-0 right-0 bottom-0 flex h-16 items-center gap-1.5 bg-linear-to-l px-2 opacity-0 group-hover:opacity-100 has-[button[data-loading=true]]:opacity-100 has-[button[data-state=open]]:opacity-100">
+          <div className="from-accent/50 to-accent/0 bg-linear-to-l absolute bottom-0 right-0 top-0 flex h-16 items-center gap-1.5 px-2 opacity-0 group-hover:opacity-100 has-[button[data-loading=true]]:opacity-100 has-[button[data-state=open]]:opacity-100">
             <ChangeVisibilityVideoDropdown videoId={video.id} />
             <Button
               onClick={() => router.push(`/c/${channelId}/v/${video.id}`)}

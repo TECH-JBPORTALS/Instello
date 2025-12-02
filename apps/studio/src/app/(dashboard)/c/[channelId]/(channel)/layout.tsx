@@ -13,7 +13,7 @@ export default function ChannelLayout({
     <HydrateClient>
       <SiteHeader startElement={<ChannelPageBreadcrumb />} />
       <Container className="px-16">
-        <div className="grid grid-cols-10 gap-8">
+        <div className="grid grid-cols-8 gap-8">
           {children}
           <div className="col-span-3 h-full">
             <ChannelDetailsSection />
