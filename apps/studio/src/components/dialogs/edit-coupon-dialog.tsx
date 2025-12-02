@@ -1,8 +1,9 @@
 "use client";
 
 import type { RouterOutputs } from "@instello/api";
+import type React from "react";
 import type { z } from "zod/v4";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useParams } from "next/navigation";
 import { useTRPC } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";

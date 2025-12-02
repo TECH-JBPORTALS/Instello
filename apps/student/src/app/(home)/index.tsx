@@ -1,4 +1,4 @@
-import React from "react";
+import type { RouterOutputs } from "@/utils/api";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
@@ -6,9 +6,8 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Icon } from "@/components/ui/icon";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
-import { useVideoPrefetch } from "@/hooks/useVideoPrefetch";
 import { cn } from "@/lib/utils";
-import { queryClient, RouterOutputs, trpc } from "@/utils/api";
+import { trpc } from "@/utils/api";
 import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
 import { formatDate } from "date-fns";
@@ -82,31 +81,8 @@ export default function Home() {
   const { data, isLoading } = useQuery(
     trpc.lms.channel.listPublic.queryOptions(),
   );
-  const { prefetchVideos } = useVideoPrefetch();
 
   const channelList = data ?? [];
-
-  // Prefetch videos for the first few channels when they load
-  React.useEffect(() => {
-    if (channelList.length > 0) {
-      // Prefetch videos for the first 3 channels to improve perceived performance
-      const firstThreeChannels = channelList.slice(0, 3);
-
-      firstThreeChannels.forEach(async (channel) => {
-        try {
-          // Prefetch videos for this channel using query client
-          await queryClient.prefetchQuery(
-            trpc.lms.video.listPublicByChannelId.queryOptions({
-              channelId: channel.id,
-            }),
-          );
-        } catch (error) {
-          // Silently fail - this is just prefetching
-          console.warn("Failed to prefetch videos for channel:", channel.id);
-        }
-      });
-    }
-  }, [channelList, prefetchVideos]);
 
   return (
     <ScrollView

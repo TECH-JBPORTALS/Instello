@@ -74,7 +74,7 @@ export default async function Page({
                 height={26}
                 alt="Instello"
               />
-              <h1 className="scroll-m-20 text-balance text-center text-4xl font-extrabold tracking-tight">
+              <h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance">
                 Download the Mobile App
               </h1>
               <p className="text-muted-foreground text-center text-xl sm:max-w-xl">
@@ -99,7 +99,7 @@ export default async function Page({
                 height={26}
                 alt="Instello"
               />
-              <h1 className="scroll-m-20 text-balance text-center text-4xl font-extrabold tracking-tight">
+              <h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance">
                 ERP Solution – Coming Soon
               </h1>
               <p className="text-muted-foreground max-w-full text-center text-xl sm:max-w-xl">
@@ -119,7 +119,7 @@ export default async function Page({
   }
   return (
     <main className="pattern-polka-v2 flex h-svh w-full flex-col items-center justify-center gap-8 px-4">
-      <Button variant={"outline"} asChild className="fixed left-4 top-4">
+      <Button variant={"outline"} asChild className="fixed top-4 left-4">
         <Link href={"/"}>
           <ArrowCircleLeftIcon weight="duotone" /> Back to Home
         </Link>

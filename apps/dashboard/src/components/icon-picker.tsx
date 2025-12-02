@@ -1,7 +1,7 @@
 "use client";
 
 import type { VariantProps } from "class-variance-authority";
-import React from "react";
+import type React from "react";
 import { Button } from "@instello/ui/components/button";
 import { Input } from "@instello/ui/components/input";
 import {
@@ -64,7 +64,8 @@ const tablerIconVariants = cva("size-7", {
 export type IconPickerIcon = (typeof iconNames)[number];
 
 interface TablerReactIconProps
-  extends React.ComponentProps<typeof Button>,
+  extends
+    React.ComponentProps<typeof Button>,
     VariantProps<typeof tablerIconVariants> {
   name: IconPickerIcon;
   isActive?: boolean;

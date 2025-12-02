@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, getTableColumns, gte } from "@instello/db";
+import { and, asc, eq, getTableColumns, gte, sql } from "@instello/db";
 import {
   channel,
   chapter,
@@ -58,7 +58,7 @@ export const videoRouter = {
     async ({ ctx, input }) =>
       await ctx.db.query.video.findMany({
         where: eq(video.chapterId, input.chapterId),
-        orderBy: asc(video.title),
+        orderBy: asc(sql`(substring(${video.title}, '^[0-9]+'))::integer`),
       }),
   ),
 
@@ -82,7 +82,10 @@ export const videoRouter = {
           .where(
             and(eq(channel.id, input.channelId), eq(video.isPublished, true)),
           )
-          .orderBy(() => [asc(chapter.title), desc(video.title)]);
+          .orderBy(() => [
+            asc(sql`(substring(${chapter.title}, '^[0-9]+'))::integer`),
+            asc(sql`(substring(${video.title}, '^[0-9]+'))::integer`),
+          ]);
 
         const videosWithAuthorization = await Promise.all(
           videos.map(async (video) => {

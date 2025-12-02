@@ -18,7 +18,7 @@ export default function AccountDeletionPage() {
     <main className="flex min-h-screen justify-center">
       <Card className="w-full max-w-lg border-none bg-transparent shadow-none">
         <CardHeader>
-          <CardTitle className="text-center text-2xl font-semibold ">
+          <CardTitle className="text-center text-2xl font-semibold">
             Instello Account Deletion Request
           </CardTitle>
         </CardHeader>

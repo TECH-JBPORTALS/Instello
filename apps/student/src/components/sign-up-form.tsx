@@ -1,5 +1,6 @@
+import type { TextInput } from "react-native";
 import * as React from "react";
-import { TextInput, View } from "react-native";
+import { View } from "react-native";
 import { Link, router } from "expo-router";
 import { SocialConnections } from "@/components/social-connections";
 import { Button } from "@/components/ui/button";

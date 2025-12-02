@@ -1,15 +1,15 @@
 import type { StartSSOFlowParams } from "@clerk/clerk-expo";
+import type { ClerkAPIError } from "@clerk/types";
 import type { ImageSourcePropType } from "react-native";
 import * as React from "react";
 import { Image, Platform, useColorScheme, View } from "react-native";
 import * as AuthSession from "expo-auth-session";
 import Constants from "expo-constants";
-import * as Linking from "expo-linking";
 import { usePathname } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useSSO } from "@clerk/clerk-expo";
+import { isClerkAPIResponseError, useSSO } from "@clerk/clerk-expo";
 import { usePostHog } from "posthog-react-native";
 
 import { Text } from "./ui/text";
@@ -40,16 +40,19 @@ export function SocialConnections() {
   const theme = useColorScheme();
   const { startSSOFlow } = useSSO();
   const [isLoading, setIsLoading] = React.useState(false);
-  const scheme = (Constants.expoConfig?.scheme as string) ?? "in.instello.app";
+  const scheme =
+    (Constants.expoConfig?.scheme as string | undefined) ?? "in.instello.app";
   const path = usePathname().split("/")[1] ?? "sign-in";
   const posthog = usePostHog();
+  const [errors, setErrors] = React.useState<ClerkAPIError[]>();
 
   function onSocialLoginPress(strategy: SocialConnectionStrategy) {
     return async () => {
       setIsLoading(true);
+      setErrors(undefined);
       try {
         // Start the authentication process by calling `startSSOFlow()`
-        const { createdSessionId, setActive } = await startSSOFlow({
+        const { createdSessionId, setActive, signUp } = await startSSOFlow({
           strategy,
           // For web, defaults to current path
           // For native, you must pass a scheme, like AuthSession.makeRedirectUri({ scheme, path })
@@ -61,19 +64,24 @@ export function SocialConnections() {
         });
 
         // If sign in was successful, set the active session
-        if (createdSessionId && setActive) {
-          setActive({ session: createdSessionId });
-          return;
+        if (createdSessionId) {
+          await setActive?.({
+            session: createdSessionId,
+          });
+        } else {
+          // If there is no `createdSessionId`,
+          // there are missing requirements, such as MFA
+          // See https://clerk.com/docs/guides/development/custom-flows/authentication/oauth-connections#handle-missing-requirements
+          posthog.capture("social_login_missing_requirements", {
+            strategy,
+            signUpMissingFields: JSON.stringify(signUp?.missingFields),
+          });
+        }
+      } catch (err) {
+        if (isClerkAPIResponseError(err)) {
+          setErrors(err.errors);
         }
 
-        // TODO: Handle other statuses
-        // If there is no `createdSessionId`,
-        // there are missing requirements, such as MFA
-        // Use the `signIn` or `signUp` returned from `startSSOFlow`
-        // to handle next steps
-      } catch (err) {
-        // See https://go.clerk.com/mRUDrIe for more info on error handling
-        console.error(JSON.stringify(err, null, 2));
         posthog.captureException(err, { scheme, path });
       }
       setIsLoading(false);
@@ -109,21 +117,20 @@ export function SocialConnections() {
           </Button>
         );
       })}
+      <Text variant={"muted"} className="text-destructive">
+        {errors?.map((error) => error.longMessage).join(",")}
+      </Text>
     </View>
   );
 }
 
-const useWarmUpBrowser = Platform.select({
-  web: () => {},
-  default: () => {
-    React.useEffect(() => {
-      // Preloads the browser for Android devices to reduce authentication load time
-      // See: https://docs.expo.dev/guides/authentication/#improving-user-experience
-      void WebBrowser.warmUpAsync();
-      return () => {
-        // Cleanup: closes browser when component unmounts
-        void WebBrowser.coolDownAsync();
-      };
-    }, []);
-  },
-});
+export const useWarmUpBrowser = () => {
+  React.useEffect(() => {
+    if (Platform.OS !== "android") return;
+    void WebBrowser.warmUpAsync();
+    return () => {
+      // Cleanup: closes browser when component unmounts
+      void WebBrowser.coolDownAsync();
+    };
+  }, []);
+};

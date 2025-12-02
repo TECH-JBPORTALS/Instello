@@ -1,8 +1,9 @@
 "use client";
 
 import type { SemesterMode } from "@instello/db/erp";
+import type React from "react";
 import type { z } from "zod/v4";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useTRPC } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateBranchSchema as _CreateBranchSchema } from "@instello/db/erp";

@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import type * as React from "react";
 import { useUploadLeaveGuard } from "@/hooks/useUploadLeaveGuard";
 import { TRPCReactProvider } from "@/trpc/react";
 import { Toaster } from "@instello/ui/components/sonner";

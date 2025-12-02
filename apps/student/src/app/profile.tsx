@@ -1,5 +1,6 @@
 import * as React from "react";
 import { View } from "react-native";
+import { Link } from "expo-router";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
@@ -12,13 +13,13 @@ export default function ProfileScreen() {
   const { signOut } = useAuth();
   const [loading, setLoading] = React.useState(false);
 
-  const fullName = user?.fullName || user?.username || "Unknown";
+  const fullName = user?.fullName ?? user?.username;
   const email =
-    user?.primaryEmailAddress?.emailAddress ||
-    user?.emailAddresses?.[0]?.emailAddress;
+    user?.primaryEmailAddress?.emailAddress ??
+    user?.emailAddresses[0]?.emailAddress;
   const imageSource = user?.imageUrl ? { uri: user.imageUrl } : undefined;
   const initials = React.useMemo(() => {
-    const name = fullName || email || "?";
+    const name = fullName ?? email ?? "Unknown";
     return name
       .split(" ")
       .map((n) => n[0])
@@ -69,7 +70,18 @@ export default function ProfileScreen() {
       </View>
 
       <Text variant="muted" className="py-6 text-center">
-        App Version {appPackage.version}
+        App Version {appPackage.version}{" "}
+        <Text variant={"muted"} className="text-2xl">
+          {" · "}
+        </Text>
+        <Link href={"https://instello.in/privacy-policy"}>
+          <Text variant={"muted"} className="underline">
+            Privacy Policy{" "}
+            <Text variant={"muted"} className="text-lg">
+              ↗
+            </Text>
+          </Text>
+        </Link>
       </Text>
     </View>
   );

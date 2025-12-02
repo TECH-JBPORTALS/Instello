@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import type React from "react";
 import { SpinnerIcon } from "@phosphor-icons/react";
 
 import { cn } from "../lib/utils";

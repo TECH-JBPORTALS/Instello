@@ -36,7 +36,7 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <main className="flex h-svh w-full flex-col items-center justify-center gap-16 px-4">
-      <Button variant={"outline"} asChild className="fixed left-4 top-4">
+      <Button variant={"outline"} asChild className="fixed top-4 left-4">
         <Link href={"/"}>
           <ArrowCircleLeftIcon weight="duotone" /> Back to Home
         </Link>
@@ -49,7 +49,7 @@ export default function Page() {
           height={26}
           alt="Instello"
         />
-        <h1 className="scroll-m-20 text-balance text-center text-4xl font-extrabold tracking-tight">
+        <h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance">
           Choose Your Role
         </h1>
         <p className="text-muted-foreground text-center text-xl">
@@ -59,7 +59,7 @@ export default function Page() {
       </div>
       <div className="flex flex-col items-center justify-center gap-6 lg:flex-row">
         <Link href={`/get-started/student`}>
-          <Card className="min-w-md hover:bg-accent hover:border-primary transition-all duration-200">
+          <Card className="hover:bg-accent hover:border-primary min-w-md transition-all duration-200">
             <CardContent>
               <StudentIcon
                 className="text-muted-foreground size-16"
@@ -75,7 +75,7 @@ export default function Page() {
           </Card>
         </Link>
         <Link href={`/get-started/institute`}>
-          <Card className="min-w-md hover:bg-accent hover:text-accent-foreground hover:border-primary transition-all duration-200">
+          <Card className="hover:bg-accent hover:text-accent-foreground hover:border-primary min-w-md transition-all duration-200">
             <CardContent>
               <BuildingApartmentIcon
                 className="text-muted-foreground size-16"

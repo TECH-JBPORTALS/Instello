@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import type React from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { uploadManager } from "@/store/UploadManager";
 import { useTRPC } from "@/trpc/react";
@@ -108,7 +109,7 @@ export function UploadVideoDialog({
           </Breadcrumb>
         </DialogHeader>
 
-        <DialogBody className="@sm:min-h-96 flex flex-col items-center justify-center gap-5">
+        <DialogBody className="flex flex-col items-center justify-center gap-5 @sm:min-h-96">
           <input
             ref={fileInputRef}
             type="file"
@@ -118,7 +119,7 @@ export function UploadVideoDialog({
             hidden
             disabled={isPending}
           />
-          <div className="size-30 bg-muted relative flex items-center justify-center rounded-full">
+          <div className="bg-muted relative flex size-30 items-center justify-center rounded-full">
             {isPending ? (
               <Image
                 src={"/loading-rocket.gif"}

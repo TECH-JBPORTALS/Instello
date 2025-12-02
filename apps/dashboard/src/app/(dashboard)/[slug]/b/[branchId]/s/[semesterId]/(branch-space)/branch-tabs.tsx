@@ -1,7 +1,6 @@
 "use client";
 
 import type { IconPickerIcon } from "@/components/icon-picker";
-import React from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { TablerReactIcon } from "@/components/icon-picker";
 import { useTRPC } from "@/trpc/react";

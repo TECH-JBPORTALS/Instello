@@ -1,4 +1,3 @@
-import React from "react";
 import { cookies } from "next/headers";
 
 import { SemesterSwitcher } from "./client";

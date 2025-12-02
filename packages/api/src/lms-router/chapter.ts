@@ -1,4 +1,4 @@
-import { asc, eq } from "@instello/db";
+import { asc, eq, sql } from "@instello/db";
 import {
   chapter,
   CreateChapterSchema,
@@ -31,7 +31,7 @@ export const chapterRouter = {
     .query(async ({ ctx, input }) => {
       return await ctx.db.query.chapter.findMany({
         where: eq(chapter.channelId, input.channelId),
-        orderBy: asc(chapter.title),
+        orderBy: asc(sql`(substring(${chapter.title}, '^[0-9]+'))::integer`),
       });
     }),
 

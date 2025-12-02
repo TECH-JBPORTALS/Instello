@@ -1,3 +1,4 @@
+import type { ClerkAPIError } from "@clerk/types";
 import type { TextStyle } from "react-native";
 import * as React from "react";
 import { View } from "react-native";
@@ -13,17 +14,19 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Text } from "@/components/ui/text";
-import { useSignUp } from "@clerk/clerk-expo";
+import { isClerkAPIResponseError, useSignUp } from "@clerk/clerk-expo";
+import { usePostHog } from "posthog-react-native";
 
 const RESEND_CODE_INTERVAL_SECONDS = 30;
 
 const TABULAR_NUMBERS_STYLE: TextStyle = { fontVariant: ["tabular-nums"] };
 
 export function VerifyEmailForm() {
+  const posthog = usePostHog();
   const { signUp, setActive, isLoaded } = useSignUp();
   const { email = "" } = useLocalSearchParams<{ email?: string }>();
   const [code, setCode] = React.useState("");
-  const [error, setError] = React.useState("");
+  const [errors, setErrors] = React.useState<ClerkAPIError[]>();
   const [isLoading, setIsLoading] = React.useState(false);
   const { countdown, restartCountdown } = useCountdown(
     RESEND_CODE_INTERVAL_SECONDS,
@@ -44,19 +47,12 @@ export function VerifyEmailForm() {
       // and redirect the user
       if (signUpAttempt.status === "complete") {
         await setActive({ session: signUpAttempt.createdSessionId });
-        return;
       }
-      // TODO: Handle other statuses
-      // If the status is not complete, check why. User may need to
-      // complete further steps.
-      console.error(JSON.stringify(signUpAttempt, null, 2));
     } catch (err) {
-      // See https://go.clerk.com/mRUDrIe for more info on error handling
-      if (err instanceof Error) {
-        setError(err.message);
-        return;
+      if (isClerkAPIResponseError(err)) {
+        setErrors(err.errors);
       }
-      console.error(JSON.stringify(err, null, 2));
+      posthog.captureException(err, { email, type: "verify_email_form" });
     }
 
     setIsLoading(false);
@@ -70,11 +66,10 @@ export function VerifyEmailForm() {
       restartCountdown();
     } catch (err) {
       // See https://go.clerk.com/mRUDrIe for more info on error handling
-      if (err instanceof Error) {
-        setError(err.message);
-        return;
+      if (isClerkAPIResponseError(err)) {
+        setErrors(err.errors);
       }
-      console.error(JSON.stringify(err, null, 2));
+      posthog.captureException(err, { email, type: "resend_code" });
     }
   }
 
@@ -101,11 +96,12 @@ export function VerifyEmailForm() {
                 keyboardType="numeric"
                 autoComplete="sms-otp"
                 textContentType="oneTimeCode"
+                textAlign="center"
                 onSubmitEditing={onSubmit}
               />
-              {!error ? null : (
+              {!errors ? null : (
                 <Text className="text-destructive text-sm font-medium">
-                  {error}
+                  {errors.map((e) => e.longMessage).join(", ")}
                 </Text>
               )}
               <Button

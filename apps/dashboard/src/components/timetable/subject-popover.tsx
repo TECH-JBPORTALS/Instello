@@ -1,4 +1,3 @@
-import React from "react";
 import { useParams } from "next/navigation";
 import { useTRPC } from "@/trpc/react";
 import {

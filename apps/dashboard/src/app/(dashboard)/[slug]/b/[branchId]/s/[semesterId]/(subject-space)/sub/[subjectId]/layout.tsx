@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 import SemesterSwitcherServer from "@/components/semester-switcher/server";
 import { SiteHeader } from "@/components/site-header";
 import { HydrateClient, prefetch, trpc } from "@/trpc/server";

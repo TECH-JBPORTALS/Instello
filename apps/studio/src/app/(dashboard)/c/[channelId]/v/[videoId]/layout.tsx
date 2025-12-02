@@ -19,7 +19,7 @@ export default async function Layout({
       <SiteHeader startElement={<VideoPageBreadcrumb />} />
 
       <VideoSidebar />
-      <SidebarInset className="@sm:max-w-4xl @md:max-w-5xl @lg:max-w-6xl @xl:max-w-7xl w-full px-16">
+      <SidebarInset className="w-full px-16 @sm:max-w-4xl @md:max-w-5xl @lg:max-w-6xl @xl:max-w-7xl">
         {children}
       </SidebarInset>
     </HydrateClient>
