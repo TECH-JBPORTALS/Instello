@@ -15,7 +15,7 @@ export default async function Page({
 
   return (
     <HydrateClient>
-      <div className="col-span-7 space-y-3.5">
+      <div className="col-span-5 space-y-3.5">
         <div className="flex w-full items-center justify-between">
           <div className="text-lg font-semibold">Coupons</div>
 
@@ -25,7 +25,7 @@ export default async function Page({
             </Button>
           </CreateCouponDialog>
         </div>
-        <div className="grid grid-cols-2 gap-3.5">
+        <div className="@6xl/main:grid-cols-2 grid grid-cols-1 gap-3.5">
           <Suspense>
             <CouponList />
           </Suspense>
