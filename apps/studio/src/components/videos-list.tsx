@@ -70,7 +70,7 @@ function VideoItem({ video }: { video: UnifiedVideo }) {
   const { channelId } = useParams<{ channelId: string }>();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
-  const { mutate: deleteVideo } = useMutation(
+  const { mutate: deleteVideo, isPending } = useMutation(
     trpc.lms.video.delete.mutationOptions({
       async onSuccess() {
         toast.info(`Removed successfuly`);
@@ -245,10 +245,11 @@ function VideoItem({ video }: { video: UnifiedVideo }) {
             <Button
               size={"sm"}
               variant={"secondary"}
+              disabled={isPending}
               className="text-destructive bg-destructive/20 rounded-full"
               onClick={() => deleteVideo({ videoId: video.id })}
             >
-              Remove
+              {isPending ? "Removing..." : "Remove"}
             </Button>
           </>
         ) : null}
