@@ -56,16 +56,19 @@ export function VideoForm() {
   const { mutateAsync: updateVideo } = useMutation(
     trpc.lms.video.update.mutationOptions({
       async onSuccess(data) {
-        toast.info("Details updated");
-        await queryClient.invalidateQueries(
-          trpc.lms.video.getById.queryOptions({ videoId }),
-        );
+        await Promise.all([
+          queryClient.invalidateQueries(
+            trpc.lms.video.getById.queryOptions({ videoId }),
+          ),
+          queryClient.invalidateQueries(trpc.lms.video.list.queryFilter()),
+        ]);
         if (data)
           form.reset({
             title: data.title,
             description: data.description ?? "",
             isPublished: data.isPublished ?? false,
           });
+        toast.info("Details updated");
       },
     }),
   );

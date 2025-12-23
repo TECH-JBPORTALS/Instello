@@ -101,7 +101,7 @@ export function useUnifiedVideoList(chapterId: string) {
       // Sort by upload status first, then by creation time
       if (a.isUploading && !b.isUploading) return -1;
       if (!a.isUploading && b.isUploading) return 1;
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      return 1;
     });
   }, [dbQuery.data, uploads]);
 
