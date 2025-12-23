@@ -58,7 +58,10 @@ export const videoRouter = {
     async ({ ctx, input }) =>
       await ctx.db.query.video.findMany({
         where: eq(video.chapterId, input.chapterId),
-        orderBy: asc(sql`(substring(${video.title}, '^[0-9]+'))::integer`),
+        orderBy: [
+          asc(sql`CAST(SUBSTRING(${video.title} FROM '^[0-9]+') AS INTEGER)`),
+          asc(video.title),
+        ],
       }),
   ),
 

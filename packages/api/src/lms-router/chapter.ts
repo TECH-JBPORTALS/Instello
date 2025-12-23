@@ -31,7 +31,10 @@ export const chapterRouter = {
     .query(async ({ ctx, input }) => {
       return await ctx.db.query.chapter.findMany({
         where: eq(chapter.channelId, input.channelId),
-        orderBy: asc(sql`(substring(${chapter.title}, '^[0-9]+'))::integer`),
+        orderBy: [
+          asc(sql`CAST(SUBSTRING(${chapter.title} FROM '^[0-9]+') AS INTEGER)`),
+          asc(chapter.title),
+        ],
       });
     }),
 
