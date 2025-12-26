@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@instello/ui/components/button";
+import { PaperPlaneTiltIcon } from "@phosphor-icons/react/dist/ssr";
 
 export function Header() {
   return (
@@ -14,9 +15,23 @@ export function Header() {
         />
       </Link>
 
-      <div className="space-x-1.5">
-        <Button variant={"outline"} asChild>
-          <Link href={"/get-started"}>Get started</Link>
+      <div className="flex items-center gap-2">
+        <Button asChild variant={"outline"}>
+          <Link target="_blank" href={"#"}>
+            <PaperPlaneTiltIcon weight="duotone" />
+            Contact Us
+          </Link>
+        </Button>
+        <Button asChild>
+          <Link
+            target="_blank"
+            href={
+              "https://play.google.com/store/apps/details?id=in.instello.app"
+            }
+          >
+            <Image src={"/play.png"} alt="Play" height={16} width={16} />
+            Download App
+          </Link>
         </Button>
       </div>
     </header>
