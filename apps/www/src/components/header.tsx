@@ -1,27 +1,28 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@instello/ui/components/button";
-import { PaperPlaneTiltIcon } from "@phosphor-icons/react/dist/ssr";
 
 export function Header() {
   return (
-    <header className="flex h-16 w-full items-center justify-between px-4 sm:px-8 md:px-10 xl:px-14">
-      <Link href={"/"}>
-        <Image
-          src={"/instello.svg"}
-          height={28}
-          width={140}
-          alt="Instello Logo"
-        />
-      </Link>
+    <header className="bg-background/10 sticky left-0 right-0 top-0 z-50  flex h-16 w-full items-center justify-between px-4  backdrop-blur-3xl  sm:px-8 md:px-10  xl:px-14">
+      <div className="inline-flex items-center gap-14">
+        <Link href={"/"}>
+          <Image
+            src={"/instello.svg"}
+            height={28}
+            width={140}
+            alt="Instello Logo"
+          />
+        </Link>
+
+        <div className="space-x-6">
+          <span>Services</span>
+          <span>Product</span>
+          <span>Contact</span>
+        </div>
+      </div>
 
       <div className="flex items-center gap-2">
-        <Button asChild variant={"outline"}>
-          <Link target="_blank" href={"#"}>
-            <PaperPlaneTiltIcon weight="duotone" />
-            Contact Us
-          </Link>
-        </Button>
         <Button asChild>
           <Link
             target="_blank"
