@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 
 import { Associates } from "./associates";
+import { Courses } from "./courses";
 import { Hero } from "./hero";
+import Services from "./services";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -26,6 +28,8 @@ export default function Home() {
     <>
       <Hero />
       <Associates />
+      <Services />
+      <Courses />
     </>
   );
 }
