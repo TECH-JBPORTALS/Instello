@@ -16,9 +16,12 @@ export function Header() {
         </Link>
 
         <div className="space-x-6">
-          <span>Services</span>
-          <span>Product</span>
-          <span>Contact</span>
+          <Link href={"#services"} scroll>
+            Services
+          </Link>
+          <Link href={"#contact"} scroll>
+            Contact
+          </Link>
         </div>
       </div>
 

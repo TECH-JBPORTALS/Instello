@@ -40,7 +40,10 @@ const services = [
 
 export default function Services() {
   return (
-    <section className="border-primary/10 relative w-full rounded-2xl border-4 py-24">
+    <section
+      id="services"
+      className="border-primary/10 relative w-full rounded-2xl border-4 py-24"
+    >
       {/* Background Gradient */}
       <div className="bg-linear-to-br absolute inset-0 -z-10 from-fuchsia-500/15 via-indigo-500/15 to-cyan-500/15" />
 

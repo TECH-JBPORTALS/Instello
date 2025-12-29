@@ -43,9 +43,12 @@ export function Hero() {
           size={"xl"}
           variant={"secondary"}
           className="rounded-full  shadow-sm"
+          asChild
         >
-          <PaperPlaneTiltIcon weight="duotone" />
-          Contact Us
+          <Link href={"#contact"}>
+            <PaperPlaneTiltIcon weight="duotone" />
+            Contact Us
+          </Link>
         </Button>
 
         <Button size={"xl"} className="rounded-full shadow-sm" asChild>

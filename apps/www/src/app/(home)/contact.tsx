@@ -11,7 +11,7 @@ import { Textarea } from "@instello/ui/components/textarea";
 
 export function ContactSection() {
   return (
-    <section className=" relative w-full py-24">
+    <section id="contact" className=" relative w-full py-24">
       {/* Background Accent */}
       <div className="bg-linear-to-br border-primary/15 absolute inset-0 -z-10 rounded-3xl border-4 from-cyan-500/5 via-indigo-500/5 to-fuchsia-500/5" />
 
