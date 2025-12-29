@@ -9,56 +9,119 @@ import {
 
 export function Hero() {
   return (
-    <section className="rounded-4xl border-secondary/40 bg-linear-to-r to-yello-500 flex h-[calc(100svh-120px)] flex-col items-center justify-center gap-6 border-4 from-blue-500 via-orange-500 to-yellow-500 px-10 shadow-2xl sm:gap-10">
-      <div className="bg-accent/50  shadow-accent-foreground/20 mb-8 flex size-28 items-center justify-center rounded-3xl shadow-sm backdrop-blur-2xl sm:size-32 dark:border">
+    <section
+      className="
+        rounded-4xl
+        border-secondary/40 bg-linear-to-r
+        relative flex min-h-[calc(100svh-96px)]
+        flex-col items-center
+        justify-center gap-6 border-4
+        from-blue-500 via-orange-500 to-yellow-500 px-4
+        py-12 shadow-2xl sm:gap-8
+        sm:px-8 sm:py-16
+        lg:px-12
+      "
+    >
+      {/* Logo */}
+      <div
+        className="
+          bg-accent/50
+          mb-6 flex size-24 items-center
+          justify-center rounded-3xl
+          shadow-sm
+          backdrop-blur-2xl
+          sm:size-28 lg:size-32
+          dark:border
+        "
+      >
         <Image
-          src={"/instello-feather.svg"}
+          src="/instello-feather.svg"
           alt="Instello Feather Logo"
-          height={100}
-          width={100}
+          height={96}
+          width={96}
+          priority
         />
       </div>
-      <h1 className="bg-linear-to-t from-gray-50 to-gray-300 bg-clip-text pb-0.5 text-center text-4xl font-bold text-transparent sm:text-6xl">
+
+      {/* Heading */}
+      <h1
+        className="
+          bg-linear-to-t
+          max-w-4xl
+          from-gray-50 to-gray-300 bg-clip-text
+          text-center text-3xl
+          font-bold leading-tight text-transparent
+          sm:text-5xl lg:text-6xl
+        "
+      >
         One Platform. Every Possibility.
       </h1>
-      <h3 className="max-w-3xl text-center text-base text-white/90 sm:text-xl">
+
+      {/* Subheading */}
+      <p
+        className="
+          max-w-3xl
+          text-center
+          text-sm text-white/90 sm:text-lg
+          lg:text-xl
+        "
+      >
         Instello is a comprehensive educational platform that connects students,
         teachers, and institutions. Learn anywhere, teach better, and manage
         with ease on our unified platform.
-      </h3>
+      </p>
 
-      <span className="inline-flex items-center gap-2.5">
-        <span className="inline-flex items-center gap-1.5 text-white">
-          <StarIcon weight="fill" className="size-5 text-amber-500" />
-          <span className="text-lg font-semibold">5 Ratings</span>
+      {/* Stats */}
+      <div
+        className="
+          mt-2
+          flex flex-wrap items-center justify-center
+          gap-3 text-white
+        "
+      >
+        <span className="inline-flex items-center gap-1.5">
+          <StarIcon weight="fill" className="size-5 text-amber-400" />
+          <span className="text-sm font-semibold sm:text-base">5 Ratings</span>
         </span>
-        <span className="text-3xl text-white">·</span>
-        <span className="inline-flex items-center gap-1.5 text-white">
+
+        <span className="hidden text-2xl sm:inline">·</span>
+
+        <span className="inline-flex items-center gap-1.5">
           <DownloadIcon weight="duotone" className="size-5 text-white/80" />
-          <span className="text-lg font-semibold">100+ Downloads</span>
+          <span className="text-sm font-semibold sm:text-base">
+            100+ Downloads
+          </span>
         </span>
-      </span>
-      <div className="flex w-full flex-col-reverse gap-3.5 sm:w-fit sm:flex-row">
+      </div>
+
+      {/* CTA Buttons */}
+      <div
+        className="
+          mt-4
+          flex w-full max-w-xs
+          flex-col-reverse items-center
+          justify-center
+          gap-3 sm:flex-row
+        "
+      >
         <Button
-          size={"xl"}
-          variant={"secondary"}
-          className="rounded-full  shadow-sm"
+          size="xl"
+          variant="secondary"
+          className="w-full rounded-full shadow-sm"
           asChild
         >
-          <Link href={"#contact"}>
+          <Link href="#contact">
             <PaperPlaneTiltIcon weight="duotone" />
             Contact Us
           </Link>
         </Button>
 
-        <Button size={"xl"} className="rounded-full shadow-sm" asChild>
+        <Button size="xl" className="w-full rounded-full shadow-sm" asChild>
           <Link
+            href="https://play.google.com/store/apps/details?id=in.instello.app"
             target="_blank"
-            href={
-              "https://play.google.com/store/apps/details?id=in.instello.app"
-            }
           >
-            <Image src={"/play.png"} alt="Play" height={16} width={16} />
+            <Image src="/play.png" alt="Play Store" height={18} width={18} />
             Download App
           </Link>
         </Button>

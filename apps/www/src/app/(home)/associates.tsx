@@ -15,7 +15,7 @@ export function Associates() {
       <div className="text-muted-foreground font-mono text-xl font-semibold">
         Associated Institutions
       </div>
-      <div className="flex justify-center gap-10">
+      <div className="flex flex-wrap justify-center gap-10">
         {associatesData.map((v, i) => (
           <Image
             key={i}

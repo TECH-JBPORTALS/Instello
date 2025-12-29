@@ -1,4 +1,9 @@
 import Image from "next/image";
+import Link from "next/link";
+import {
+  GoogleLogoIcon,
+  InstagramLogoIcon,
+} from "@phosphor-icons/react/dist/ssr";
 
 export function Footer() {
   return (
@@ -19,13 +24,13 @@ export function Footer() {
         <div>
           <h4 className=" mb-3 font-semibold">Office Address</h4>
           <p className="text-sm leading-relaxed">
-            Building Name / Street
+            MNR Arcade.1364 41st Main, Kanakapura Main Rd, Sarakki Gate,
             <br />
-            Area / Locality
+            1st Phase, J. P. Nagar
             <br />
-            City, State – Pincode
+            Bengaluru, Karnataka - 560111
             <br />
-            Country
+            India
           </p>
         </div>
 
@@ -35,13 +40,13 @@ export function Footer() {
           <p className="mb-2 text-sm">
             Phone:{" "}
             <a href="tel:+910000000000" className="hover:underline">
-              +91 00000 00000
+              +91 91641 94556
             </a>
           </p>
           <p className="mb-2 text-sm">
             Email:{" "}
             <a href="mailto:info@example.com" className="hover:underline">
-              info@example.com
+              contact@instello.in
             </a>
           </p>
           <p className="text-sm">Working Hours: Mon – Sat, 9:00 AM – 6:00 PM</p>
@@ -50,26 +55,24 @@ export function Footer() {
         {/* Social Links */}
         <div>
           <h4 className="mb-3 font-semibold ">Follow Us</h4>
-          <ul className="space-y-2 text-sm">
+          <ul className="flex items-center gap-2 text-sm">
             <li>
-              <a href="#" className="hover:underline">
-                Instagram
-              </a>
+              <Link
+                href="https://www.instagram.com/instello_by_jbportals?igsh=MTVhMTVhM2p6MmtjdQ=="
+                target="_blank"
+                className="hover:underline"
+              >
+                <InstagramLogoIcon className="size-6" />
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:underline">
-                Facebook
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:underline">
-                LinkedIn
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:underline">
-                Twitter / X
-              </a>
+              <Link
+                href="https://share.google/z27tOj76PE6Cu4SWm"
+                className="hover:underline"
+                target="_blank"
+              >
+                <GoogleLogoIcon className="size-6" />
+              </Link>
             </li>
           </ul>
         </div>
