@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 
 import { Associates } from "./associates";
+import { ContactSection } from "./contact";
 import { Courses } from "./courses";
 import { Hero } from "./hero";
+import { ReviewsSection } from "./reviews";
 import Services from "./services";
+import { SkillsSection } from "./skills";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -30,6 +33,9 @@ export default function Home() {
       <Associates />
       <Services />
       <Courses />
+      <ReviewsSection />
+      <SkillsSection />
+      <ContactSection />
     </>
   );
 }

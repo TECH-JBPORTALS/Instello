@@ -29,9 +29,9 @@ const courses = [
 
 export function Courses() {
   return (
-    <section className="border-primary/10 relative mt-24 w-full  rounded-3xl border-4 py-24">
+    <section className="border-primary/10 relative mt-24 w-full  py-24">
       {/* Background Accent */}
-      <div className="bg-linear-to-br absolute inset-0 -z-10 from-indigo-500/10 via-cyan-500/10 to-fuchsia-500/10" />
+      <div className="bg-linear-to-br absolute inset-0 -z-10 " />
 
       <div className="mx-auto max-w-6xl px-6">
         {/* Header */}

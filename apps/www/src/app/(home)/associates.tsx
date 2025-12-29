@@ -21,7 +21,7 @@ export function Associates() {
             key={i}
             src={v.image}
             alt={v.name}
-            className="grayscale-100 transition-all duration-300 hover:grayscale-0"
+            className="transition-all duration-300"
             height={140}
             width={140}
           />

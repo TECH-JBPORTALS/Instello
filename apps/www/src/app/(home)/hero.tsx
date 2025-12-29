@@ -9,7 +9,7 @@ import {
 
 export function Hero() {
   return (
-    <section className="rounded-4xl border-secondary/40 bg-linear-to-r to-yello-500 flex h-full flex-col items-center justify-center gap-6 border-4 from-blue-500 via-orange-500 to-yellow-500 px-10 shadow-2xl sm:gap-10">
+    <section className="rounded-4xl border-secondary/40 bg-linear-to-r to-yello-500 flex h-[calc(100svh-120px)] flex-col items-center justify-center gap-6 border-4 from-blue-500 via-orange-500 to-yellow-500 px-10 shadow-2xl sm:gap-10">
       <div className="bg-accent/50  shadow-accent-foreground/20 mb-8 flex size-28 items-center justify-center rounded-3xl shadow-sm backdrop-blur-2xl sm:size-32 dark:border">
         <Image
           src={"/instello-feather.svg"}
