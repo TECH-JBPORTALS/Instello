@@ -6,8 +6,10 @@ import {
 } from "@instello/ui/components/card";
 import {
   BookOpenIcon,
+  CubeIcon,
   GraduationCapIcon,
   HammerIcon,
+  PenNibIcon,
   PresentationIcon,
 } from "@phosphor-icons/react/ssr";
 
@@ -35,6 +37,17 @@ const services = [
     description:
       "Complete subject ownership by visiting faculty, including syllabus coverage, academic planning, assessments, and exam support.",
     icon: GraduationCapIcon,
+  },
+  {
+    title: "DCET",
+    description:
+      "Clear study materials and recorded sessions, successfully trained 500+ students",
+    icon: PenNibIcon,
+  },
+  {
+    title: "Project Work",
+    description: "Complete project guidance, supported 1,000+ students",
+    icon: CubeIcon,
   },
 ];
 
