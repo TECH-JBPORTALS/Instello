@@ -17,7 +17,7 @@ export function Header() {
           />
         </Link>
 
-        <div className="hidden space-x-6 sm:block [&>a]:hover:underline">
+        <div className="hidden space-x-6 font-medium sm:block [&>a]:hover:underline">
           <Link href={"#services"} scroll>
             Services
           </Link>

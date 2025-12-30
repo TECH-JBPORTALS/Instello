@@ -15,9 +15,32 @@ export function Footer() {
           <Image
             src={"/instello.svg"}
             height={28}
-            width={140}
+            width={100}
             alt="Instello Logo"
           />
+          <div className="text-muted-foreground py-4 text-sm">
+            Developed by <span className="text-rose-500">❤️</span> JB Portals
+          </div>
+          <ul className="flex items-center gap-2 text-sm">
+            <li>
+              <Link
+                href="https://www.instagram.com/instello_by_jbportals?igsh=MTVhMTVhM2p6MmtjdQ=="
+                target="_blank"
+                className="hover:underline"
+              >
+                <InstagramLogoIcon className="size-6" />
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="https://share.google/z27tOj76PE6Cu4SWm"
+                className="hover:underline"
+                target="_blank"
+              >
+                <GoogleLogoIcon className="size-6" />
+              </Link>
+            </li>
+          </ul>
         </div>
 
         {/* Office Address */}
@@ -52,26 +75,20 @@ export function Footer() {
           <p className="text-sm">Working Hours: Mon – Sat, 9:00 AM – 6:00 PM</p>
         </div>
 
-        {/* Social Links */}
+        {/* Social Links & Legal */}
+
         <div>
-          <h4 className="mb-3 font-semibold ">Follow Us</h4>
-          <ul className="flex items-center gap-2 text-sm">
+          <h4 className="mb-3 font-semibold">Legal</h4>
+          <ul className="space-y-2 text-sm">
             <li>
-              <Link
-                href="https://www.instagram.com/instello_by_jbportals?igsh=MTVhMTVhM2p6MmtjdQ=="
-                target="_blank"
-                className="hover:underline"
-              >
-                <InstagramLogoIcon className="size-6" />
+              <Link href="/privacy-policy" className="hover:underline">
+                Privacy policy
               </Link>
             </li>
             <li>
-              <Link
-                href="https://share.google/z27tOj76PE6Cu4SWm"
-                className="hover:underline"
-                target="_blank"
-              >
-                <GoogleLogoIcon className="size-6" />
+              <Link href="/account-deletion" className="hover:underline">
+                ADP{" "}
+                <span className="text-muted-foreground">{`(Account Deletion Process)`}</span>
               </Link>
             </li>
           </ul>
@@ -79,9 +96,8 @@ export function Footer() {
       </div>
 
       {/* Copyright Bar */}
-      <div className="text-muted-foreground border-t border-gray-800 py-4 text-center text-sm">
-        © {new Date().getFullYear()} Instello by JB Portals. All rights
-        reserved.
+      <div className="text-muted-foreground border-border/20 border-t py-4 text-center text-sm">
+        © {new Date().getFullYear()} Instello. All rights reserved.
       </div>
     </footer>
   );
