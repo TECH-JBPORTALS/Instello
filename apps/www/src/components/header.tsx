@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@instello/ui/components/button";
 
+import { MoreActionsSheet } from "./more-actions.sheet";
+
 export function Header() {
   return (
     <header className="bg-background/10 sticky left-0 right-0 top-0 z-50  flex h-16 w-full items-center justify-between px-4  backdrop-blur-3xl  sm:px-8 md:px-10  xl:px-14">
@@ -10,12 +12,12 @@ export function Header() {
           <Image
             src={"/instello.svg"}
             height={28}
-            width={140}
+            width={120}
             alt="Instello Logo"
           />
         </Link>
 
-        <div className="space-x-6">
+        <div className="hidden space-x-6 sm:block [&>a]:hover:underline">
           <Link href={"#services"} scroll>
             Services
           </Link>
@@ -26,7 +28,7 @@ export function Header() {
       </div>
 
       <div className="flex items-center gap-2">
-        <Button asChild>
+        <Button asChild className="hidden sm:flex">
           <Link
             target="_blank"
             href={
@@ -37,6 +39,7 @@ export function Header() {
             Download App
           </Link>
         </Button>
+        <MoreActionsSheet />
       </div>
     </header>
   );

@@ -80,7 +80,8 @@ export function Footer() {
 
       {/* Copyright Bar */}
       <div className="text-muted-foreground border-t border-gray-800 py-4 text-center text-sm">
-        © {new Date().getFullYear()} Company Name. All rights reserved.
+        © {new Date().getFullYear()} Instello by JB Portals. All rights
+        reserved.
       </div>
     </footer>
   );
