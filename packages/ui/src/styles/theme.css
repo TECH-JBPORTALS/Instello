@@ -71,6 +71,15 @@
   }
 }
 
+@keyframes scroll-x {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(calc(-60% - 20px));
+  }
+}
+
 @theme inline {
   --default-font-family: var(--font-sans);
   --default-mono-font-family: var(--font-mono);
@@ -111,4 +120,5 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --animate-scroll-x: scroll-x 40s linear infinite;
 }

@@ -44,11 +44,8 @@ const reviews = [
 
 export function ReviewsSection() {
   return (
-    <section className="border-primary/10 bg-linear-to-bl relative w-full rounded-3xl border-4 from-indigo-500/10 via-cyan-500/10 to-fuchsia-500/10 py-24">
-      {/* Background Accent */}
-      <div className="absolute inset-0 -z-10 " />
-
-      <div className="mx-auto max-w-7xl px-6">
+    <section className="border-primary/10 bg-linear-to-bl relative w-full  py-24">
+      <div className="mx-auto">
         {/* Header */}
         <div className="mb-16 text-center">
           <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -61,39 +58,41 @@ export function ReviewsSection() {
         </div>
 
         {/* Reviews Grid */}
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {reviews.map((item) => (
-            <div
-              key={item.name}
-              className="bg-background/80 relative rounded-2xl border p-6 backdrop-blur transition-all hover:-translate-y-1 hover:shadow-xl"
-            >
-              {/* Quote Icon */}
-              <Quote className="text-muted-foreground/30 absolute right-6 top-6 h-6 w-6" />
+        <div className="flex overflow-hidden">
+          <ul className="animate-scroll-x hover:paused flex gap-10">
+            {[...reviews, ...reviews].map((item, i) => (
+              <div
+                key={i}
+                className="bg-background/80 min-w-lg relative rounded-2xl border border-t-0 p-4 shadow-sm backdrop-blur transition-all"
+              >
+                {/* Quote Icon */}
+                <Quote className="text-muted-foreground/30 absolute right-6 top-6 h-6 w-6" />
 
-              <p className="text-muted-foreground mb-6 text-sm leading-relaxed">
-                “{item.review}”
-              </p>
+                <p className="text-muted-foreground mb-6 text-sm leading-relaxed">
+                  “{item.review}”
+                </p>
 
-              <div className="flex items-center gap-4">
-                <Avatar className="h-12 w-12">
-                  <AvatarImage src={item.avatar} alt={item.name} />
-                  <AvatarFallback>
-                    {item.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="flex items-center gap-4">
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage src={item.avatar} alt={item.name} />
+                    <AvatarFallback>
+                      {item.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
+                    </AvatarFallback>
+                  </Avatar>
 
-                <div>
-                  <div className="text-sm font-semibold">{item.name}</div>
-                  <div className="text-muted-foreground text-xs">
-                    {item.designation}
+                  <div>
+                    <div className="text-sm font-semibold">{item.name}</div>
+                    <div className="text-muted-foreground text-xs">
+                      {item.designation}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </ul>
         </div>
       </div>
     </section>
