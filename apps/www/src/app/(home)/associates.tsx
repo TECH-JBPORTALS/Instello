@@ -22,9 +22,9 @@ export function Associates() {
             src={v.image}
             alt={v.name}
             title={v.name}
-            className="transition-all duration-300"
+            className="aspect-square transition-all duration-300"
             height={120}
-            width={120}
+            width={`${120}`}
           />
         ))}
       </div>
