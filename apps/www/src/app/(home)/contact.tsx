@@ -12,10 +12,7 @@ import { Textarea } from "@instello/ui/components/textarea";
 export function ContactSection() {
   return (
     <section id="contact" className=" relative w-full py-24">
-      {/* Background Accent */}
-      <div className="bg-linear-to-br border-primary/15 absolute inset-0 -z-10 rounded-3xl border-4 from-cyan-500/5 via-indigo-500/5 to-fuchsia-500/5" />
-
-      <div className="mx-auto max-w-2xl px-6">
+      <div className="mx-auto max-w-2xl">
         {/* Header */}
         <div className="mb-16 text-center">
           <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -28,7 +25,7 @@ export function ContactSection() {
         </div>
 
         {/* Form Card */}
-        <div className="bg-background/80 rounded-2xl border p-8 shadow-sm backdrop-blur">
+        <div>
           <form className="grid gap-6">
             {/* Name */}
             <div className="grid gap-2">

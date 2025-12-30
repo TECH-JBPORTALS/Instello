@@ -48,7 +48,7 @@ export function ReviewsSection() {
       <div className="mx-auto">
         {/* Header */}
         <div className="mb-16 text-center">
-          <h2 className="bg-linear-to-b from-foreground to-muted-foreground/60 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-5xl">
+          <h2 className="bg-linear-to-b from-foreground/80 to-muted-foreground/60 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-5xl">
             1,500+ Trained Students Till Now
           </h2>
           <p className="text-muted-foreground mx-auto mt-4 max-w-2xl">
@@ -63,7 +63,7 @@ export function ReviewsSection() {
             {[...reviews, ...reviews].map((item, i) => (
               <div
                 key={i}
-                className="bg-background/80 min-w-lg bg-linear-to-b from-background to-background/10 relative rounded-2xl border border-b-0 border-slate-200 from-70% to-0% p-4 backdrop-blur transition-all"
+                className="bg-background/80 min-w-md bg-linear-to-b from-background to-background/10 relative rounded-2xl border border-b-0 border-slate-200 from-70% to-0% p-4 backdrop-blur transition-all"
               >
                 {/* Quote Icon */}
                 <Quote className="text-muted-foreground/30 absolute right-6 top-6 h-6 w-6" />
