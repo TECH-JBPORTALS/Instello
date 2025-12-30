@@ -9,7 +9,7 @@ export function Footer() {
   return (
     <footer className="bg-primary text-primary-foreground">
       {/* Main Footer Content */}
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-6 py-12 sm:grid-cols-2 md:grid-cols-4">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-2.5 py-12 sm:grid-cols-2 md:grid-cols-4">
         {/* Brand / About */}
         <div>
           <Image

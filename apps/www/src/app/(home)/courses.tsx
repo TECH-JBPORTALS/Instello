@@ -29,11 +29,11 @@ const courses = [
 
 export function Courses() {
   return (
-    <section className="border-primary/10 relative mt-24 w-full  py-24">
+    <section className="border-primary/10 relative w-full  py-16">
       {/* Background Accent */}
       <div className="bg-linear-to-br absolute inset-0 -z-10 " />
 
-      <div className="mx-auto max-w-6xl px-6">
+      <div className="mx-auto max-w-6xl">
         {/* Header */}
         <div className="mb-16 text-center">
           <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
