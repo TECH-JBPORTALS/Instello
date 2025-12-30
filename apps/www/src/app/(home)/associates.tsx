@@ -1,12 +1,12 @@
 import Image from "next/image";
 
 const associatesData = [
-  { image: "/ksp.png", name: "KS Polytechnic" },
-  { image: "/ksp.png", name: "KS Polytechnic" },
-  { image: "/ksp.png", name: "KS Polytechnic" },
-  { image: "/ksp.png", name: "KS Polytechnic" },
-  { image: "/ksp.png", name: "KS Polytechnic" },
-  { image: "/ksp.png", name: "KS Polytechnic" },
+  { image: "/institutes/ksp.png", name: "KS Polytechnic" },
+  { image: "/institutes/dsit.png", name: "DSIT" },
+  { image: "/institutes/pvp.png", name: "PVP Polytechnic" },
+  { image: "/institutes/sct.png", name: "SCT Institutions" },
+  { image: "/institutes/sjes.png", name: "SJES" },
+  { image: "/institutes/vasavi.png", name: "Vasavi" },
 ];
 
 export function Associates() {
@@ -21,9 +21,10 @@ export function Associates() {
             key={i}
             src={v.image}
             alt={v.name}
+            title={v.name}
             className="transition-all duration-300"
-            height={140}
-            width={140}
+            height={120}
+            width={120}
           />
         ))}
       </div>
