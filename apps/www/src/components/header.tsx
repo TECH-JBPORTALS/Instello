@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Button } from "@instello/ui/components/button";
 
 import { MoreActionsSheet } from "./more-actions.sheet";
+import { NavLink } from "./nav-link";
 
 export function Header() {
   return (
@@ -18,12 +19,12 @@ export function Header() {
         </Link>
 
         <div className="hidden space-x-6 font-medium sm:block [&>a]:hover:underline">
-          <Link href={"#services"} scroll>
+          <NavLink id="services" scroll href={"#services"}>
             Services
-          </Link>
-          <Link href={"#contact"} scroll>
+          </NavLink>
+          <NavLink id="contact" href={"#contact"} scroll>
             Contact
-          </Link>
+          </NavLink>
         </div>
       </div>
 

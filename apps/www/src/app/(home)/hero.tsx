@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { NavLink } from "@/components/nav-link";
 import { Button } from "@instello/ui/components/button";
 import {
   DownloadIcon,
@@ -110,10 +111,10 @@ export function Hero() {
           className="w-full rounded-full shadow-sm"
           asChild
         >
-          <Link href="#contact">
+          <NavLink id="contact" href="#contact">
             <PaperPlaneTiltIcon weight="duotone" />
             Contact Us
-          </Link>
+          </NavLink>
         </Button>
 
         <Button size="xl" className="w-full rounded-full shadow-sm" asChild>

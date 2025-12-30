@@ -63,7 +63,7 @@ export function ReviewsSection() {
             {[...reviews, ...reviews].map((item, i) => (
               <div
                 key={i}
-                className="bg-background/80 min-w-lg relative rounded-2xl border border-t-0 p-4 shadow-sm backdrop-blur transition-all"
+                className="bg-background/80 min-w-lg bg-linear-to-b from-background to-background/10 relative rounded-2xl border border-b-0 border-slate-200 from-70% to-0% p-4 backdrop-blur transition-all"
               >
                 {/* Quote Icon */}
                 <Quote className="text-muted-foreground/30 absolute right-6 top-6 h-6 w-6" />
