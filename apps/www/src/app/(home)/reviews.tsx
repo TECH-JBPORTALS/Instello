@@ -48,8 +48,8 @@ export function ReviewsSection() {
       <div className="mx-auto">
         {/* Header */}
         <div className="mb-16 text-center">
-          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-            Trusted by Institutions
+          <h2 className="bg-linear-to-b from-foreground to-muted-foreground/60 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-5xl">
+            1,500+ Trained Students Till Now
           </h2>
           <p className="text-muted-foreground mx-auto mt-4 max-w-2xl">
             Hear from academic leaders who are using Instello to modernize
