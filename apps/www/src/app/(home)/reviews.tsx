@@ -8,14 +8,14 @@ import { Quote } from "lucide-react";
 const reviews = [
   {
     name: "Ms. Bhavani T V",
-    designation: "SJES Polytechnic",
+    designation: "HOD, CSE, SJES Polytechnic",
     review:
       "We are very happy to get collobrated with the Instello which is one stop solution for the academic needs of pathway subject like Full Stack Development. Here the learning is facilitated with a comprehensive teaching of both theory and practicals integrated with the real time projects. Instello ensures the skill development of every student and hence get a break through in their career.",
     avatar: "/avatars/bhavani.jpg",
   },
   {
     name: "Mr. Suresh K",
-    designation: "K S Polytechnic",
+    designation: "Principal, K S Polytechnic",
     review:
       "I am truly proud of you, Narayan...... INSTELLO is an excellent platform for learning Full Stack Development (FSD). The concepts are explained clearly through your videos, making them easy for students to understand. The application is highly user-friendly, and I am confident that it will deliver outstanding outcomes.",
     avatar: "/avatars/suresh.jpg",
