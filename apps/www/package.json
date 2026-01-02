@@ -16,11 +16,15 @@
   "dependencies": {
     "@clerk/nextjs": "catalog:",
     "@instello/ui": "workspace:*",
+    "@hookform/resolvers":"catalog:",
     "@phosphor-icons/react": "catalog:",
     "next": "16.1.1",
     "nodemailer": "^7.0.12",
     "react": "catalog:react19",
-    "react-dom": "catalog:react19"
+    "react-dom": "catalog:react19",
+    "react-hook-form":"catalog:",
+    "sonner":"catalog:",
+    "zod":"catalog:"
   },
   "devDependencies": {
     "@clerk/types": "catalog:",

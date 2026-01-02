@@ -7,15 +7,15 @@ export async function POST(req: NextRequest) {
     const body = (await req.json()) as {
       name: string;
       role: string;
-      phone: string;
+      contact: string;
       email: string;
       message: string;
     };
-    const { name, role, phone, email, message } = body;
+    const { name, role, contact, email, message } = body;
 
     if (!name || !email || !message) {
       return Response.json(
-        { error: "Missing required fields" },
+        { message: "Missing required fields" },
         { status: 400 },
       );
     }
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 
     const transporter = nodemailer.createTransport({
       host: env.SMTP_HOST,
-      port: env.SMTP_PORT,
+      port: Number(env.SMTP_PORT),
       secure: true,
       auth: {
         user: env.SMTP_USER,
@@ -34,15 +34,15 @@ export async function POST(req: NextRequest) {
     });
 
     await transporter.sendMail({
-      from: `"Instello Contact" <${env.SMTP_MAIL_FROM}>`,
+      from: `"Instello Contact From ${name}" <${env.SMTP_MAIL_FROM}>`,
       to: env.SMTP_MAIL_TO,
       replyTo: email,
-      subject: `New Contact Form Submission - ${role}`,
+      subject: `New Contact Form Submission - ${role.toUpperCase()}`,
       html: `
         <h3>New Contact Request</h3>
         <p><b>Name:</b> ${name}</p>
-        <p><b>Role:</b> ${role}</p>
-        <p><b>Phone:</b> ${phone}</p>
+        <p><b>Role:</b> ${role.toUpperCase()}</p>
+        <p><b>Phone:</b> ${contact}</p>
         <p><b>Email:</b> ${email}</p>
         <p><b>Message:</b></p>
         <p>${message}</p>
@@ -52,6 +52,6 @@ export async function POST(req: NextRequest) {
     return Response.json({ success: true });
   } catch (error) {
     console.error(error);
-    return Response.json({ error: "Failed to send email" }, { status: 500 });
+    return Response.json({ message: "Failed to send email" }, { status: 500 });
   }
 }
