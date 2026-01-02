@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Montserrat } from "next/font/google";
+import { Domine, Montserrat } from "next/font/google";
 
 import "@instello/ui/globals.css";
 
@@ -8,7 +8,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { buttonVariants } from "@instello/ui/components/button";
 import { cn } from "@instello/ui/lib/utils";
 
-const geistMono = Geist_Mono({
+const domine = Domine({
   variable: "--font-mono",
   subsets: ["latin"],
 });
@@ -128,7 +128,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <body
-          className={`${montserrat.variable} ${geistMono.variable} antialiased`}
+          className={`${montserrat.variable} ${domine.variable} {} antialiased`}
         >
           <Providers>{children}</Providers>
         </body>

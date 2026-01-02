@@ -12,9 +12,9 @@ const associatesData = [
 export function Associates() {
   return (
     <section className="flex flex-col items-center gap-14 py-14">
-      <div className="text-muted-foreground font-mono text-xl font-semibold">
+      <h2 className="font-mono text-3xl font-semibold tracking-tight sm:text-4xl">
         Associated Institutions
-      </div>
+      </h2>
       <div className="flex flex-wrap justify-center gap-10">
         {associatesData.map((v, i) => (
           <Image

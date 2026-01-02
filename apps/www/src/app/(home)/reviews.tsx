@@ -48,7 +48,7 @@ export function ReviewsSection() {
       <div className="mx-auto">
         {/* Header */}
         <div className="mb-16 text-center">
-          <h2 className="bg-linear-to-b from-foreground/80 to-muted-foreground/60 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-5xl">
+          <h2 className="bg-linear-to-b from-foreground/80 to-muted-foreground/60 bg-clip-text font-mono text-3xl font-bold tracking-tight text-transparent sm:text-5xl">
             1,500+ Trained Students Till Now
           </h2>
           <p className="text-muted-foreground mx-auto mt-4 max-w-2xl">

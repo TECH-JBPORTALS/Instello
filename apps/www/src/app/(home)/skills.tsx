@@ -41,7 +41,7 @@ export function SkillsSection() {
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="mb-16 text-center">
-          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+          <h2 className="font-mono text-3xl font-semibold tracking-tight sm:text-4xl">
             Skills & Technologies Covered
           </h2>
           <p className="text-muted-foreground mx-auto mt-4 max-w-2xl">
@@ -58,8 +58,8 @@ export function SkillsSection() {
               className="bg-background/80 relative rounded-2xl border p-6 backdrop-blur transition-all hover:-translate-y-1 hover:shadow-xl"
             >
               <div className="mb-4 flex items-center gap-3">
-                <div className="bg-linear-to-br flex h-10 w-10 items-center justify-center rounded-xl from-indigo-500 to-cyan-500 text-white shadow">
-                  <skill.icon className="h-5 w-5" />
+                <div className="bg-linear-to-br flex h-10 w-10 items-center justify-center rounded-xl from-fuchsia-500 via-indigo-500 to-cyan-500 shadow">
+                  <skill.icon className="h-5 w-5 text-white" />
                 </div>
                 <h3 className="text-lg font-semibold">{skill.title}</h3>
               </div>

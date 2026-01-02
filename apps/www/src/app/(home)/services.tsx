@@ -53,17 +53,11 @@ const services = [
 
 export default function Services() {
   return (
-    <section
-      id="services"
-      className="border-primary/10 relative w-full rounded-2xl border-4 py-24"
-    >
-      {/* Background Gradient */}
-      <div className="bg-linear-to-br absolute inset-0 -z-10 from-fuchsia-500/15 via-indigo-500/15 to-cyan-500/15" />
-
-      <div className="mx-auto max-w-7xl px-6">
+    <section id="services" className=" relative w-full rounded-2xl py-24">
+      <div className="mx-auto max-w-7xl">
         {/* Section Header */}
         <div className="mb-16 text-center">
-          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+          <h2 className="font-mono text-3xl font-semibold tracking-tight sm:text-4xl">
             Our Services
           </h2>
           <p className="text-muted-foreground mx-auto mt-4 max-w-2xl">

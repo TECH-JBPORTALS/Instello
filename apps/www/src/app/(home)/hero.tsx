@@ -48,11 +48,11 @@ export function Hero() {
       <h1
         className="
           bg-linear-to-t
-          max-w-4xl
           from-gray-50 to-gray-300 bg-clip-text
-          text-center text-3xl
-          font-bold leading-tight text-transparent
-          sm:text-5xl lg:text-6xl
+          text-center font-mono
+          text-3xl font-extrabold leading-tight
+          text-transparent sm:text-5xl
+          lg:text-6xl
         "
       >
         One Platform. Every Possibility.

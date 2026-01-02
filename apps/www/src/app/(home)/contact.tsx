@@ -15,7 +15,7 @@ export function ContactSection() {
       <div className="mx-auto max-w-2xl">
         {/* Header */}
         <div className="mb-16 text-center">
-          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+          <h2 className="font-mono text-3xl font-semibold tracking-tight sm:text-4xl">
             Contact Us
           </h2>
           <p className="text-muted-foreground mx-auto mt-4 max-w-2xl">
