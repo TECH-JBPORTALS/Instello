@@ -49,16 +49,16 @@ export function MembersList() {
       <div className="grid w-fit grid-cols-2 items-center gap-8 md:grid-cols-3 lg:grid-cols-4">
         {members.map((mem, i) => (
           <div key={i} className="flex w-full flex-col items-center gap-4">
-            <Avatar className="size-32 border-r-2 shadow-md shadow-black/20">
+            <Avatar className="size-24 border-r-2 shadow-md shadow-black/20 md:size-32">
               <AvatarImage src={mem.img} className="object-cover" />
               <AvatarFallback>
-                <div className="from-foreground bg-linear-to-tl! to-foreground/20 bg-clip-text text-6xl  font-bold text-transparent ">
+                <div className="from-foreground bg-linear-to-tl! to-foreground/20 bg-clip-text text-4xl  font-bold text-transparent ">
                   {mem.name.charAt(0)}
                 </div>
               </AvatarFallback>
             </Avatar>
-            <div className=" text-center">
-              <p className="text-lg font-semibold">{mem.name}</p>
+            <div className="text-center">
+              <p className="font-semibold">{mem.name}</p>
               <span className="text-muted-foreground text-sm">
                 {mem.designation}
               </span>

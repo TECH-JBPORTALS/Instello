@@ -38,7 +38,7 @@ export function MoreActionsSheet() {
           </Link>
         </SheetHeader>
         <div className="flex flex-col items-center gap-8 px-4">
-          <div className="flex flex-col gap-6 text-lg font-medium [&>a]:hover:underline">
+          <div className="flex flex-col items-center gap-6 text-lg font-medium [&>a]:hover:underline">
             <NavLink
               id="services"
               onClick={() => setOpen(false)}
@@ -55,8 +55,12 @@ export function MoreActionsSheet() {
             >
               Contact
             </NavLink>
-            <Link href={"/company"}>company</Link>
-            <Link href={"/achievements"}>Achievements</Link>
+            <Link href={"/company"} onClick={() => setOpen(false)}>
+              Company
+            </Link>
+            <Link href={"/achievements"} onClick={() => setOpen(false)}>
+              Achievements
+            </Link>
           </div>
           <Button asChild className="w-full">
             <Link

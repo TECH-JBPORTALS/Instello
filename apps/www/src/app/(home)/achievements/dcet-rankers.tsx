@@ -38,10 +38,8 @@ export async function DCETRankers() {
     }>[]
   >(ACADEMIC_YEARS_QUERY, {}, options);
 
-  console.log(academicYears);
-
   return (
-    <section className="flex flex-col items-center gap-24 py-20">
+    <section className="flex flex-col items-center gap-24">
       {academicYears.map((year) => (
         <div
           key={year._id}
@@ -52,13 +50,13 @@ export async function DCETRankers() {
             <h3 className="text-muted-foreground text-sm font-medium uppercase tracking-widest">
               Academic Year
             </h3>
-            <h2 className="mt-2 font-mono text-3xl font-semibold tracking-tight">
+            <h2 className="mt-2 font-mono text-2xl font-thin tracking-tight">
               DCET Rankers – {year.title}
             </h2>
           </div>
 
           {/* Rankers Grid */}
-          <div className="grid w-full grid-cols-2 gap-8 lg:grid-cols-5">
+          <div className="grid w-full grid-cols-2 gap-6 lg:grid-cols-5">
             {year.dcetRankers.map((mem, index) => {
               const rank = index + 1;
 
@@ -74,17 +72,10 @@ export async function DCETRankers() {
               return (
                 <div
                   key={mem._id}
-                  className="bg-background group relative flex flex-col items-center gap-4 rounded-2xl border p-1 py-5 text-center shadow-sm transition-all"
+                  className="bg-background group relative flex w-full flex-col items-center gap-2.5 rounded-2xl py-5 text-center transition-all"
                 >
-                  {/* Rank Badge */}
-                  <span
-                    className={`absolute -top-4 rounded-full px-3 py-1 font-mono font-bold ${rankBadgeStyle}`}
-                  >
-                    {mem.rank}
-                  </span>
-
                   {/* Avatar */}
-                  <Avatar className="size-28 border">
+                  <Avatar className="size-24 border md:size-28">
                     <AvatarImage src={mem.avatar} className="object-cover" />
                     <AvatarFallback>
                       <span className="text-muted-foreground text-4xl font-bold">
@@ -92,6 +83,12 @@ export async function DCETRankers() {
                       </span>
                     </AvatarFallback>
                   </Avatar>
+                  {/* Rank Badge */}
+                  <span
+                    className={`rounded-full px-3 py-1 font-mono text-sm font-bold ${rankBadgeStyle}`}
+                  >
+                    {mem.rank}
+                  </span>
 
                   {/* Name & College */}
                   <div className="space-y-1">

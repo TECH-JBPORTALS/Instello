@@ -41,15 +41,15 @@ export function Hero() {
       <h1
         className="
           bg-linear-to-tl
-          to-foreground from-gray-400 bg-clip-text
-          text-center font-mono
-          text-3xl font-extrabold leading-tight
-          text-transparent sm:text-5xl
+          to-foreground max-w-2xl from-gray-400
+          bg-clip-text text-center
+          font-mono text-3xl font-extrabold
+          leading-tight text-transparent
+          sm:text-5xl
           lg:text-6xl
         "
       >
-        Wonderful team behind
-        <br /> the JB Portals Company
+        Wonderful team behind the JB Portals
       </h1>
 
       {/* Subheading */}
