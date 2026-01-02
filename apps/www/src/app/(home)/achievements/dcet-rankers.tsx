@@ -6,7 +6,7 @@ import {
   AvatarImage,
 } from "@instello/ui/components/avatar";
 
-const ACADEMIC_YEARS_QUERY = `*[_type == "academicYear"]{
+const ACADEMIC_YEARS_QUERY = `*[_type == "academicYear"] | order(year desc){
   _id,
   title,
   year,
