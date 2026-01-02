@@ -59,7 +59,9 @@ export function MembersList() {
             </Avatar>
             <div className=" text-center">
               <p className="text-lg font-semibold">{mem.name}</p>
-              <span className="text-muted-foreground">{mem.designation}</span>
+              <span className="text-muted-foreground text-sm">
+                {mem.designation}
+              </span>
             </div>
           </div>
         ))}

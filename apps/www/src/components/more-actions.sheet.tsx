@@ -56,6 +56,7 @@ export function MoreActionsSheet() {
               Contact
             </NavLink>
             <Link href={"/company"}>company</Link>
+            <Link href={"/achievements"}>Achievements</Link>
           </div>
           <Button asChild className="w-full">
             <Link

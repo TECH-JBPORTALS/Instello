@@ -1,4 +1,4 @@
-import { UsersFourIcon } from "@phosphor-icons/react/dist/ssr";
+import { CrownIcon } from "@phosphor-icons/react/dist/ssr";
 
 export function Hero() {
   return (
@@ -25,13 +25,13 @@ export function Hero() {
           justify-center
           rounded-3xl
           border-4
-          from-blue-500 via-orange-500
-          to-yellow-500
+          from-yellow-500 via-blue-500
+          to-orange-500
           shadow-sm backdrop-blur-2xl sm:size-28
           lg:size-32
         "
       >
-        <UsersFourIcon
+        <CrownIcon
           weight="duotone"
           className="size-14 text-white/80 md:size-16 lg:size-20 "
         />
@@ -48,8 +48,9 @@ export function Hero() {
           lg:text-6xl
         "
       >
-        Wonderful team behind
-        <br /> the JB Portals Company
+        Where Learning
+        <br />
+        Turns Into Achievement
       </h1>
 
       {/* Subheading */}
@@ -61,8 +62,8 @@ export function Hero() {
           lg:text-xl
         "
       >
-        We believe in bringing great revolution in
-        <br /> education & software realm through our company.
+        Recognizing students who have excelled academically and set benchmarks
+        through focused learning and expert guidance.
       </p>
     </section>
   );

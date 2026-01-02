@@ -26,6 +26,7 @@ export function Header() {
             Contact
           </NavLink>
           <Link href={"/company"}>Company</Link>
+          <Link href={"/achievements"}>Achievements</Link>
         </div>
       </div>
 
