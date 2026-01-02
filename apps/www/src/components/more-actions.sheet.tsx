@@ -13,6 +13,8 @@ import {
 } from "@instello/ui/components/sheet";
 import { ListIcon } from "@phosphor-icons/react/dist/ssr";
 
+import { NavLink } from "./nav-link";
+
 export function MoreActionsSheet() {
   const [open, setOpen] = useState(false);
 
@@ -37,12 +39,23 @@ export function MoreActionsSheet() {
         </SheetHeader>
         <div className="flex flex-col items-center gap-8 px-4">
           <div className="flex flex-col gap-6 text-lg font-medium [&>a]:hover:underline">
-            <Link onClick={() => setOpen(false)} href={"#services"} scroll>
+            <NavLink
+              id="services"
+              onClick={() => setOpen(false)}
+              href={"/#services"}
+              scroll
+            >
               Services
-            </Link>
-            <Link onClick={() => setOpen(false)} href={"#contact"} scroll>
+            </NavLink>
+            <NavLink
+              id="contact"
+              onClick={() => setOpen(false)}
+              href={"/#contact"}
+              scroll
+            >
               Contact
-            </Link>
+            </NavLink>
+            <Link href={"/company"}>company</Link>
           </div>
           <Button asChild className="w-full">
             <Link

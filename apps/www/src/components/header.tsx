@@ -19,12 +19,13 @@ export function Header() {
         </Link>
 
         <div className="hidden space-x-6 font-medium sm:block [&>a]:hover:underline">
-          <NavLink id="services" scroll href={"#services"}>
+          <NavLink id="services" scroll href={"/#services"}>
             Services
           </NavLink>
-          <NavLink id="contact" href={"#contact"} scroll>
+          <NavLink id="contact" href={"/#contact"} scroll>
             Contact
           </NavLink>
+          <Link href={"/company"}>Company</Link>
         </div>
       </div>
 

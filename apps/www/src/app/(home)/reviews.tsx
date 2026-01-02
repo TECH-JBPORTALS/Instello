@@ -73,8 +73,12 @@ export function ReviewsSection() {
                 </p>
 
                 <div className="flex items-center gap-4">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage src={item.avatar} alt={item.name} />
+                  <Avatar className="border-foreground h-12 w-12 border">
+                    <AvatarImage
+                      src={item.avatar}
+                      className="object-cover"
+                      alt={item.name}
+                    />
                     <AvatarFallback>
                       {item.name
                         .split(" ")

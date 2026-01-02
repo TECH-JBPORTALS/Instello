@@ -30,7 +30,7 @@ export function ContactSection() {
             {/* Name */}
             <div className="grid gap-2">
               <label className="text-sm font-medium">Name</label>
-              <Input placeholder="Enter your full name" />
+              <Input />
             </div>
 
             {/* Role */}
@@ -51,21 +51,18 @@ export function ContactSection() {
 
             <div className="grid gap-2">
               <label className="text-sm font-medium">Email ID</label>
-              <Input type="email" placeholder="Enter email address" />
+              <Input type="email" />
             </div>
 
             <div className="grid gap-2">
               <label className="text-sm font-medium">Contact Number</label>
-              <Input placeholder="+91" />
+              <Input />
             </div>
 
             {/* Message */}
             <div className="grid gap-2">
               <label className="text-sm font-medium">Message</label>
-              <Textarea
-                placeholder="Tell us why you want to contact us"
-                className="min-h-[120px] resize-none"
-              />
+              <Textarea className="min-h-[120px] resize-none" />
             </div>
 
             {/* Submit */}

@@ -18,6 +18,7 @@
     "@instello/ui": "workspace:*",
     "@phosphor-icons/react": "catalog:",
     "next": "16.1.1",
+    "nodemailer": "^7.0.12",
     "react": "catalog:react19",
     "react-dom": "catalog:react19"
   },
@@ -27,6 +28,7 @@
     "@instello/prettier-config": "workspace:*",
     "@instello/tsconfig": "workspace:*",
     "@types/node": "catalog:react19",
+    "@types/nodemailer": "^7.0.4",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
     "typescript": "catalog:"
