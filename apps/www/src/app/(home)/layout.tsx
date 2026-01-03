@@ -1,11 +1,15 @@
+import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <main className="pattern-polka-v2 @container/main h-[calc(100vh-64px)] max-h-[calc(100vh-64px)] px-4 sm:px-8 md:px-10 xl:px-14">
+    <div className="@container/main h-max max-h-fit min-h-[calc(100vh-64px)]">
       <Header />
 
-      <main className="h-full py-6">{children}</main>
-    </main>
+      <main className="h-full px-2.5 py-6 sm:px-8 md:px-10 xl:px-14">
+        {children}
+      </main>
+      <Footer />
+    </div>
   );
 }
