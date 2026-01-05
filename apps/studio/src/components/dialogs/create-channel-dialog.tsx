@@ -66,7 +66,7 @@ export function CreateChannelDialog({
     }),
   );
 
-  const values = React.useMemo(() => form.watch(), [form]);
+  const values = form.watch();
 
   async function onSubmit(values: z.infer<typeof CreateChannelSchema>) {
     await createChannel(values);
@@ -156,23 +156,25 @@ export function CreateChannelDialog({
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="branchId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{"Branch (Optional)"}</FormLabel>
-                    <FormControl className="h-full">
-                      <CollegeBranchCommand
-                        value={field.value}
-                        onChange={field.onChange}
-                        byCollegeId={values.collegeId}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {values.collegeId && (
+                <FormField
+                  control={form.control}
+                  name="branchId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{"Branch (Optional)"}</FormLabel>
+                      <FormControl className="h-full">
+                        <CollegeBranchCommand
+                          value={field.value}
+                          onChange={field.onChange}
+                          byCollegeId={values.collegeId}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
             </DialogBody>
             <DialogFooter>
               <Button loading={form.formState.isSubmitting}>Create</Button>

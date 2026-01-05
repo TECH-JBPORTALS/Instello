@@ -177,7 +177,7 @@ function GeneralSettings({
     }),
   );
 
-  const values = React.useMemo(() => form.watch(), [form]);
+  const values = form.watch();
 
   async function onSubmit(values: z.infer<typeof UpdateChannelSchema>) {
     await updateChannel(values);
