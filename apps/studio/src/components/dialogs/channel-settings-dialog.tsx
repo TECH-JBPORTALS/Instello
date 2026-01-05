@@ -146,11 +146,14 @@ function GeneralSettings({
   const form = useForm({
     resolver: zodResolver(UpdateChannelSchema),
     defaultValues: {
+      subjectCode: data?.subjectCode ?? "",
       thumbneilId: data?.thumbneilId ?? "",
       title: data?.title ?? "",
       id: channelId,
       description: data?.description ?? "",
       isPublished: data?.isPublished ?? false,
+      collegeId: data?.collegeId ?? "",
+      branchId: data?.branchId ?? "",
     },
     reValidateMode: "onChange",
     mode: "onChange",

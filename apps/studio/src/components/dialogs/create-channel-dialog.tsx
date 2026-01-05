@@ -40,6 +40,7 @@ export function CreateChannelDialog({
   const form = useForm({
     resolver: zodResolver(CreateChannelSchema),
     defaultValues: {
+      subjectCode: "",
       title: "",
       description: "",
       collegeId: "",
