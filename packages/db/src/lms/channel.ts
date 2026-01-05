@@ -27,9 +27,11 @@ export const channelRelations = relations(channel, ({ many }) => ({
 
 export const CreateChannelSchema = createInsertSchema(channel, {
   title: z
-    .string()
+    .string({ error: "Required" })
     .min(3, "Title of the channel must be atleast 3 characters long"),
-  subjectCode: z.string().optional(),
+  subjectCode: z
+    .string({ error: "Required" })
+    .min(3, "Subject code is required"),
   description: z.string().optional(),
   collegeId: z.string().optional(),
   branchId: z.string().optional(),
@@ -43,11 +45,16 @@ export const CreateChannelSchema = createInsertSchema(channel, {
 
 export const UpdateChannelSchema = createUpdateSchema(channel, {
   id: z.string().min(1, "Channel ID is required for updation"),
+  subjectCode: z
+    .string({ error: "Required" })
+    .min(3, "Subject code is required"),
   title: z
     .string()
     .min(3, "Title of the channel must be atlease 3 characters long"),
   description: z.string().optional(),
   thumbneilId: z.string().min(1, "Thumbneil required"),
+  collegeId: z.string().optional(),
+  branchId: z.string().optional(),
   isPublished: z.boolean().optional(),
 }).omit({
   createdAt: true,

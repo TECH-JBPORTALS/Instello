@@ -1,8 +1,7 @@
 "use client";
 
-import type React from "react";
 import type { z } from "zod/v4";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useTRPC } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateChannelSchema } from "@instello/db/lms";
@@ -24,10 +23,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@instello/ui/components/form";
+import { Input } from "@instello/ui/components/input";
 import { Textarea } from "@instello/ui/components/textarea";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+
+import CollegeBranchCommand from "../college-branch.command";
 
 export function CreateChannelDialog({
   children,
@@ -63,6 +65,8 @@ export function CreateChannelDialog({
     }),
   );
 
+  const values = React.useMemo(() => form.watch(), [form]);
+
   async function onSubmit(values: z.infer<typeof CreateChannelSchema>) {
     await createChannel(values);
   }
@@ -77,6 +81,23 @@ export function CreateChannelDialog({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogBody className="space-y-3.5">
+              <FormField
+                control={form.control}
+                name="subjectCode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Subject Code</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        className="text-sm font-medium md:text-base"
+                        placeholder="eg. MATH101"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="title"
@@ -113,6 +134,7 @@ export function CreateChannelDialog({
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="collegeId"
@@ -120,17 +142,19 @@ export function CreateChannelDialog({
                   <FormItem>
                     <FormLabel>{"College (Optional)"}</FormLabel>
                     <FormControl className="h-full">
-                      <Textarea
-                        {...field}
-                        maxLength={256}
-                        className="h-28 resize-none"
-                        placeholder="Add description..."
+                      <CollegeBranchCommand
+                        value={field.value}
+                        onChange={(value) => {
+                          field.onChange(value);
+                          form.setValue("collegeId", value);
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="branchId"
@@ -138,11 +162,10 @@ export function CreateChannelDialog({
                   <FormItem>
                     <FormLabel>{"Branch (Optional)"}</FormLabel>
                     <FormControl className="h-full">
-                      <Textarea
-                        {...field}
-                        maxLength={256}
-                        className="h-28 resize-none"
-                        placeholder="Add description..."
+                      <CollegeBranchCommand
+                        value={field.value}
+                        onChange={field.onChange}
+                        byCollegeId={values.collegeId}
                       />
                     </FormControl>
                     <FormMessage />
