@@ -29,6 +29,13 @@
       "when": 1764306524758,
       "tag": "20251128050844_elite_millenium_guard",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1767625935602,
+      "tag": "20260105151215_quiet_zaran",
+      "breakpoints": true
     }
   ]
 }
