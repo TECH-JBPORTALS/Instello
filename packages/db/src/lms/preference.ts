@@ -4,7 +4,7 @@ import { z } from "zod/v4";
 
 import { initialColumns } from "../columns.helpers";
 import { lmsPgTable } from "../table.helpers";
-import { collegeOrBranch } from "./course-or-branch";
+import { collegeOrBranch } from "./college-or-branch";
 
 export const preference = lmsPgTable("preference", (d) => ({
   ...initialColumns,

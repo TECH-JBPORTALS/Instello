@@ -16,7 +16,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "devDependencies": {
-    "@clerk/types": "^4.65.0",
+    "@clerk/types": "catalog:",
     "@instello/db": "workspace:*",
     "@instello/eslint-config": "workspace:*",
     "@instello/prettier-config": "workspace:*",
@@ -27,8 +27,8 @@
   },
   "prettier": "@instello/prettier-config",
   "dependencies": {
-    "@clerk/backend": "^2.4.3",
-    "@clerk/nextjs": "^6.25.1",
+    "@clerk/backend": "^2.29.0",
+    "@clerk/nextjs": "catalog:",
     "@mux/mux-node": "^12.7.0",
     "@paralleldrive/cuid2": "^2.2.2",
     "@trpc/server": "^11.4.3",

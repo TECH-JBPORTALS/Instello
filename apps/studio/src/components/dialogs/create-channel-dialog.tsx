@@ -40,6 +40,8 @@ export function CreateChannelDialog({
     defaultValues: {
       title: "",
       description: "",
+      collegeId: "",
+      branchId: "",
     },
   });
 
@@ -99,6 +101,42 @@ export function CreateChannelDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{"Description (Optional)"}</FormLabel>
+                    <FormControl className="h-full">
+                      <Textarea
+                        {...field}
+                        maxLength={256}
+                        className="h-28 resize-none"
+                        placeholder="Add description..."
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="collegeId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{"College (Optional)"}</FormLabel>
+                    <FormControl className="h-full">
+                      <Textarea
+                        {...field}
+                        maxLength={256}
+                        className="h-28 resize-none"
+                        placeholder="Add description..."
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="branchId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{"Branch (Optional)"}</FormLabel>
                     <FormControl className="h-full">
                       <Textarea
                         {...field}

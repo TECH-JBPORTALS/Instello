@@ -5,6 +5,7 @@ import { z } from "zod/v4";
 import { initialColumns } from "../columns.helpers";
 import { lmsPgTable } from "../table.helpers";
 import { chapter } from "./chapter";
+import { collegeOrBranch } from "./college-or-branch";
 import { subscription } from "./subscription";
 
 export const channel = lmsPgTable("channel", (d) => ({
@@ -14,6 +15,9 @@ export const channel = lmsPgTable("channel", (d) => ({
   description: d.varchar({ length: 256 }),
   isPublished: d.boolean().default(false),
   thumbneilId: d.varchar({ length: 100 }),
+  collegeId: d.text().references(() => collegeOrBranch.id),
+  branchId: d.text().references(() => collegeOrBranch.id),
+  subjectCode: d.text(),
 }));
 
 export const channelRelations = relations(channel, ({ many }) => ({
@@ -25,7 +29,10 @@ export const CreateChannelSchema = createInsertSchema(channel, {
   title: z
     .string()
     .min(3, "Title of the channel must be atleast 3 characters long"),
+  subjectCode: z.string().optional(),
   description: z.string().optional(),
+  collegeId: z.string().optional(),
+  branchId: z.string().optional(),
 }).omit({
   id: true,
   createdAt: true,
