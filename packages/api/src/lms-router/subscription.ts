@@ -1,8 +1,10 @@
-import { couponRedemption, subscription } from "@instello/db/lms";
+import { eq } from "@instello/db";
+import { couponRedemption, preference, subscription } from "@instello/db/lms";
 import { TRPCError } from "@trpc/server";
 import { addDays, endOfDay, isWithinInterval } from "date-fns";
 import { z } from "zod/v4";
 
+import { getClerkUserById } from "../router.helpers";
 import { protectedProcedure } from "../trpc";
 
 export const subscriptionRouter = {
@@ -122,5 +124,31 @@ export const subscriptionRouter = {
         ...userSubscription,
         status,
       };
+    }),
+
+  listByChannelId: protectedProcedure
+    .input(z.object({ channelId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.query.subscription
+        .findMany({
+          where: eq(subscription.channelId, input.channelId),
+        })
+        .then((subscriptions) =>
+          Promise.all(
+            subscriptions.map(async (sub) => {
+              const clerkUser = await getClerkUserById(sub.clerkUserId, ctx);
+              const preferences = await ctx.db.query.preference.findFirst({
+                where: eq(preference.id, sub.clerkUserId),
+                with: { college: true },
+              });
+
+              return {
+                ...sub,
+                clerkUser,
+                preferences,
+              };
+            }),
+          ),
+        );
     }),
 };

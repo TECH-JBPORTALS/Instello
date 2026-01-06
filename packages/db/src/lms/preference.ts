@@ -11,11 +11,11 @@ export const preference = lmsPgTable("preference", (d) => ({
   collegeId: d
     .text()
     .notNull()
-    .references(() => collegeOrBranch.id, { onDelete: "cascade" }),
+    .references(() => collegeOrBranch.id, { onDelete: "set null" }),
   branchId: d
     .text()
     .notNull()
-    .references(() => collegeOrBranch.id, { onDelete: "cascade" }),
+    .references(() => collegeOrBranch.id, { onDelete: "set null" }),
 }));
 
 export const CreatePreferenceSchema = createInsertSchema(preference, {
@@ -37,11 +37,7 @@ export const UpdatePreferenceSchema = createUpdateSchema(preference, {
 });
 
 export const preferenceRealations = relations(preference, ({ one }) => ({
-  course: one(collegeOrBranch, {
-    fields: [preference.collegeId],
-    references: [collegeOrBranch.collegeId],
-  }),
-  branch: one(collegeOrBranch, {
+  college: one(collegeOrBranch, {
     fields: [preference.collegeId],
     references: [collegeOrBranch.id],
   }),
