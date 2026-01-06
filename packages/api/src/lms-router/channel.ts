@@ -19,7 +19,12 @@ export const channelRouter = {
     .mutation(async ({ ctx, input }) => {
       return await ctx.db
         .insert(channel)
-        .values({ ...input, createdByClerkUserId: ctx.auth.userId })
+        .values({
+          ...input,
+          createdByClerkUserId: ctx.auth.userId,
+          collegeId: !input.isPublic ? input.collegeId : null,
+          branchId: !input.isPublic ? input.branchId : null,
+        })
         .returning();
     }),
 
@@ -132,7 +137,11 @@ export const channelRouter = {
     .mutation(async ({ ctx, input }) => {
       return await ctx.db
         .update(channel)
-        .set({ ...input })
+        .set({
+          ...input,
+          collegeId: !input.isPublic ? input.collegeId : null,
+          branchId: !input.isPublic ? input.branchId : null,
+        })
         .where(eq(channel.id, input.id))
         .returning()
         .then((r) => r[0]);
