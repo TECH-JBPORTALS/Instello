@@ -1,5 +1,5 @@
 {
-  "id": "2c1c9803-8477-4434-b114-ab88e3ab3268",
+  "id": "ab3f3a92-bd66-490f-83b4-19d359f050cb",
   "prevId": "ab42a575-8bb0-4478-96f0-50cbf3da4839",
   "version": "7",
   "dialect": "postgresql",
@@ -45,8 +45,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "is_published": {
-          "name": "is_published",
+        "is_public": {
+          "name": "is_public",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,

@@ -1,3 +1,4 @@
+ALTER TABLE "lms_channel" RENAME COLUMN "is_published" TO "is_public";--> statement-breakpoint
 ALTER TABLE "lms_channel" ADD COLUMN "college_id" text;--> statement-breakpoint
 ALTER TABLE "lms_channel" ADD COLUMN "branch_id" text;--> statement-breakpoint
 ALTER TABLE "lms_channel" ADD COLUMN "subject_code" text;--> statement-breakpoint

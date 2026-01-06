@@ -44,7 +44,7 @@ export function ChannelPageBreadcrumb() {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbPage className="flex items-center gap-1.5">
-              {data.isPublished ? (
+              {data.isPublic ? (
                 <GlobeHemisphereEastIcon weight="duotone" />
               ) : (
                 <Tooltip>

@@ -29,6 +29,7 @@
     "@tanstack/react-table": "catalog:",
     "@trpc/client": "catalog:",
     "@trpc/tanstack-react-query": "catalog:",
+    "@uidotdev/usehooks": "^2.4.1",
     "@uploadthing/react": "^7.3.3",
     "date-fns": "^4.1.0",
     "next": "16.1.1",

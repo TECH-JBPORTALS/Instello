@@ -9,16 +9,17 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
-  CommandList,
 } from "@instello/ui/components/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@instello/ui/components/popover";
+import { ScrollArea } from "@instello/ui/components/scroll-area";
 import { Spinner } from "@instello/ui/components/spinner";
 import { CaretDownIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
+import { useDebounce } from "@uidotdev/usehooks";
 
 export default function CollegeBranchCommand({
   value,
@@ -31,10 +32,11 @@ export default function CollegeBranchCommand({
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 300);
   const trpc = useTRPC();
   const { data, isLoading } = useQuery(
     trpc.lms.collegeOrBranch.list.queryOptions({
-      query: search,
+      query: debouncedSearch,
       byCollegeId,
     }),
   );
@@ -54,7 +56,7 @@ export default function CollegeBranchCommand({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[400px] p-0">
-        <Command>
+        <Command shouldFilter={false}>
           <CommandInput
             placeholder="Search..."
             value={search}
@@ -65,25 +67,23 @@ export default function CollegeBranchCommand({
               <Spinner />
             </div>
           ) : (
-            <>
+            <ScrollArea className="h-60">
               <CommandEmpty>No results found.</CommandEmpty>
-              <CommandList className="max-h-60 overflow-y-auto">
-                <CommandGroup>
-                  {collegesOrBranches?.map((collegeOrBranch) => (
-                    <CommandItem
-                      key={collegeOrBranch.id}
-                      value={collegeOrBranch.id}
-                      onSelect={(value) => {
-                        onChange(value);
-                        setOpen(false);
-                      }}
-                    >
-                      {collegeOrBranch.name}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </>
+              <CommandGroup>
+                {collegesOrBranches?.map((collegeOrBranch) => (
+                  <CommandItem
+                    key={collegeOrBranch.id}
+                    value={collegeOrBranch.id}
+                    onSelect={(value) => {
+                      onChange(value);
+                      setOpen(false);
+                    }}
+                  >
+                    {collegeOrBranch.name}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </ScrollArea>
           )}
         </Command>
       </PopoverContent>

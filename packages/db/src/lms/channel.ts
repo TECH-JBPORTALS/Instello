@@ -13,7 +13,7 @@ export const channel = lmsPgTable("channel", (d) => ({
   createdByClerkUserId: d.text().notNull(),
   title: d.varchar({ length: 100 }).notNull(),
   description: d.varchar({ length: 256 }),
-  isPublished: d.boolean().default(false),
+  isPublic: d.boolean().default(false),
   thumbneilId: d.varchar({ length: 100 }),
   collegeId: d.text().references(() => collegeOrBranch.id),
   branchId: d.text().references(() => collegeOrBranch.id),
@@ -39,7 +39,6 @@ export const CreateChannelSchema = createInsertSchema(channel, {
   id: true,
   createdAt: true,
   createdByClerkUserId: true,
-  isPublished: true,
   updatedAt: true,
 });
 
@@ -55,7 +54,7 @@ export const UpdateChannelSchema = createUpdateSchema(channel, {
   thumbneilId: z.string().min(1, "Thumbneil required"),
   collegeId: z.string().optional(),
   branchId: z.string().optional(),
-  isPublished: z.boolean().optional(),
+  isPublic: z.boolean().optional(),
 }).omit({
   createdAt: true,
   createdByClerkUserId: true,

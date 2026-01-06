@@ -151,7 +151,7 @@ function GeneralSettings({
       title: data?.title ?? "",
       id: channelId,
       description: data?.description ?? "",
-      isPublished: data?.isPublished ?? false,
+      isPublic: data?.isPublic ?? false,
       collegeId: data?.collegeId ?? "",
       branchId: data?.branchId ?? "",
     },
@@ -391,7 +391,7 @@ function GeneralSettings({
 
               <FormField
                 control={form.control}
-                name="isPublished"
+                name="isPublic"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{`Visibility`}</FormLabel>

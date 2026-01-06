@@ -34,7 +34,7 @@ export const channelRouter = {
     return await ctx.db.transaction(async (tx) => {
       // 1. List all published channels
       const allPublicChannels = await tx.query.channel.findMany({
-        where: eq(channel.isPublished, true),
+        where: eq(channel.isPublic, true),
         orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
       });
 

@@ -18,13 +18,25 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@instello/ui/components/form";
 import { Input } from "@instello/ui/components/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@instello/ui/components/select";
 import { Textarea } from "@instello/ui/components/textarea";
+import {
+  GlobeHemisphereEastIcon,
+  LockLaminatedIcon,
+} from "@phosphor-icons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -45,6 +57,7 @@ export function CreateChannelDialog({
       description: "",
       collegeId: "",
       branchId: "",
+      isPublic: false,
     },
   });
 
@@ -138,42 +151,82 @@ export function CreateChannelDialog({
 
               <FormField
                 control={form.control}
-                name="collegeId"
+                name="isPublic"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{"College (Optional)"}</FormLabel>
-                    <FormControl className="h-full">
-                      <CollegeBranchCommand
-                        value={field.value}
-                        onChange={(value) => {
-                          field.onChange(value);
-                          form.setValue("collegeId", value);
-                        }}
-                      />
+                    <FormLabel>{`Accessibility`}</FormLabel>
+                    <FormDescription>
+                      You can make the channel public to make it accesible to
+                      everyone
+                    </FormDescription>
+                    <FormControl>
+                      <Select
+                        {...field}
+                        onValueChange={(value) =>
+                          field.onChange(value == "public")
+                        }
+                        value={field.value ? "public" : "private"}
+                      >
+                        <SelectTrigger className="min-w-full">
+                          <SelectValue placeholder={"Select..."} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="private">
+                            <LockLaminatedIcon weight="duotone" /> Private
+                          </SelectItem>
+                          <SelectItem value="public">
+                            <GlobeHemisphereEastIcon weight="duotone" /> Public
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {values.collegeId && (
-                <FormField
-                  control={form.control}
-                  name="branchId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{"Branch (Optional)"}</FormLabel>
-                      <FormControl className="h-full">
-                        <CollegeBranchCommand
-                          value={field.value}
-                          onChange={field.onChange}
-                          byCollegeId={values.collegeId}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+              {!values.isPublic && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="collegeId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{"College (Optional)"}</FormLabel>
+                        <FormControl className="h-full">
+                          <CollegeBranchCommand
+                            value={field.value}
+                            onChange={(value) => {
+                              field.onChange(value);
+                              form.setValue("branchId", undefined);
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {values.collegeId && (
+                    <FormField
+                      control={form.control}
+                      name="branchId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{"Branch (Optional)"}</FormLabel>
+                          <FormControl className="h-full">
+                            <CollegeBranchCommand
+                              value={field.value}
+                              onChange={field.onChange}
+                              byCollegeId={values.collegeId}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   )}
-                />
+                </>
               )}
             </DialogBody>
             <DialogFooter>
