@@ -36,6 +36,13 @@
       "when": 1767678934461,
       "tag": "20260106055534_long_penance",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1767682087335,
+      "tag": "20260106064807_mysterious_proteus",
+      "breakpoints": true
     }
   ]
 }

@@ -1,12 +1,12 @@
-import React from "react";
+import type { RouterOutputs } from "@/utils/api";
+import type { VideoSource } from "expo-video";
 import { ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { VideoSource } from "expo-video";
 import { NativeVideo } from "@/components/native-video";
 import { Text } from "@/components/ui/text";
-import { RouterOutputs, trpc } from "@/utils/api";
+import { trpc } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { CalendarIcon, ClockIcon } from "phosphor-react-native";
@@ -25,7 +25,7 @@ export default function VideoScreen() {
     isFetching,
   } = useQuery(
     trpc.lms.video.getById.queryOptions({
-      videoId: videoId!,
+      videoId: videoId,
     }),
   );
 
@@ -33,7 +33,7 @@ export default function VideoScreen() {
     uri: `https://stream.mux.com/${playbackId}.m3u8`,
     metadata: {
       title: video?.title,
-      artist: video?.chapter?.title,
+      artist: video?.chapter.title,
     },
   };
 
@@ -72,7 +72,7 @@ export default function VideoScreen() {
 interface VideoDetailsProps {
   isLoading: boolean;
   isFetching?: boolean;
-  error: any;
+  error?: unknown;
   video?: RouterOutputs["lms"]["video"]["getById"];
 }
 
