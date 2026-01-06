@@ -1,8 +1,7 @@
 "use client";
 
-import type React from "react";
 import type { z } from "zod/v4";
-import { useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { env } from "@/env";
 import { useTRPC } from "@/trpc/react";

@@ -8,6 +8,7 @@ import { chapter } from "./chapter";
 
 export const video = lmsPgTable("video", (d) => ({
   ...initialColumns,
+  thumbnailId: d.text(),
   createdByClerkUserId: d.text().notNull(),
   chapterId: d
     .text()
