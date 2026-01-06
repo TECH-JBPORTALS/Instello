@@ -13,9 +13,6 @@ export default async function Page({
   return (
     <HydrateClient>
       <div className="col-span-5 space-y-3.5">
-        <div className="flex w-full items-center justify-between">
-          <div className="text-lg font-semibold">Subscriptions</div>
-        </div>
         <DataTableClient />
       </div>
     </HydrateClient>

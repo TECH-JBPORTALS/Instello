@@ -1,8 +1,9 @@
-import { and, countDistinct, eq, sum } from "@instello/db";
+import { and, count, countDistinct, eq, sum } from "@instello/db";
 import {
   channel,
   chapter,
   CreateChannelSchema,
+  subscription,
   UpdateChannelSchema,
   video,
 } from "@instello/db/lms";
@@ -123,11 +124,18 @@ export const channelRouter = {
             ),
           );
 
+        // 5. Get total subscribers
+        const subscribersAggr = await tx
+          .select({ total: count() })
+          .from(subscription)
+          .where(eq(subscription.channelId, singleChannel.id));
+
         return {
           ...singleChannel,
           createdByClerkUser,
           numberOfChapters: chapterAggr[0]?.total ?? 0,
           totalDuration: hoursAggr[0]?.total ?? 0,
+          totalSubscribers: subscribersAggr[0]?.total ?? 0,
         };
       });
     }),

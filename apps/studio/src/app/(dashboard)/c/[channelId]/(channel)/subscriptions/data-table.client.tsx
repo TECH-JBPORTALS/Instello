@@ -14,5 +14,14 @@ export default function DataTableClient() {
     trpc.lms.subscription.listByChannelId.queryOptions({ channelId }),
   );
 
-  return <DataTable columns={columns} data={data} />;
+  return (
+    <>
+      <div className="flex w-full items-center justify-between">
+        <div className="text-lg font-semibold">
+          Subscriptions {`(${data.totalSubscribers})`}
+        </div>
+      </div>
+      <DataTable columns={columns} data={data.subscribers} />;
+    </>
+  );
 }

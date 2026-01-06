@@ -17,7 +17,7 @@ export type Subscription =
 export const columns: ColumnDef<Subscription>[] = [
   {
     accessorKey: "clerkUser",
-    header: "Member",
+    header: "Subscriber",
     cell(props) {
       const original = props.row.original;
       return (

@@ -1,4 +1,4 @@
-import { eq } from "@instello/db";
+import { count, eq } from "@instello/db";
 import { couponRedemption, preference, subscription } from "@instello/db/lms";
 import { TRPCError } from "@trpc/server";
 import { addDays, endOfDay, isWithinInterval } from "date-fns";
@@ -129,7 +129,12 @@ export const subscriptionRouter = {
   listByChannelId: protectedProcedure
     .input(z.object({ channelId: z.string() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.db.query.subscription
+      const subscribersAggr = await ctx.db
+        .select({ total: count() })
+        .from(subscription)
+        .where(eq(subscription.channelId, input.channelId));
+
+      const subscribers = await ctx.db.query.subscription
         .findMany({
           where: eq(subscription.channelId, input.channelId),
         })
@@ -150,5 +155,10 @@ export const subscriptionRouter = {
             }),
           ),
         );
+
+      return {
+        totalSubscribers: subscribersAggr[0]?.total ?? 0,
+        subscribers,
+      };
     }),
 };
