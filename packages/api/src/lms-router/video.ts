@@ -180,7 +180,7 @@ export const videoRouter = {
         timeseries: metrics.data.map((m) => ({
           date: m[0],
           metricValue: m[1],
-          view_count: m[2],
+          views: m[2],
         })),
       };
     }),

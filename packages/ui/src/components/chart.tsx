@@ -129,7 +129,7 @@ function ChartTooltipContent({
   const { config } = useChart();
 
   const tooltipLabel = React.useMemo(() => {
-    if (hideLabel ?? !payload?.length) {
+    if (hideLabel || !payload?.length) {
       return null;
     }
 
@@ -315,7 +315,7 @@ function getPayloadConfigFromPayload(
   payload: unknown,
   key: string,
 ) {
-  if (typeof payload !== "object" ?? payload === null) {
+  if (typeof payload !== "object" || payload === null) {
     return undefined;
   }
 

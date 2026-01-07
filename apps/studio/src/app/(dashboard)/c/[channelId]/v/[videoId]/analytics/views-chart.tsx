@@ -17,11 +17,12 @@ import {
 } from "@instello/ui/components/chart";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
+import { CartesianGrid, LabelList, Line, LineChart, XAxis } from "recharts";
 
 const chartConfig = {
-  view_count: {
+  views: {
     label: "View",
+    color: "var(--chart-1)",
   },
 } satisfies ChartConfig;
 
@@ -67,7 +68,15 @@ export function ViewsChart() {
       </CardHeader>
       <CardContent className="px-2 sm:p-6">
         <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-          <LineChart accessibilityLayer data={data.timeseries}>
+          <LineChart
+            accessibilityLayer
+            data={data.timeseries}
+            margin={{
+              top: 20,
+              left: 12,
+              right: 12,
+            }}
+          >
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="date"
@@ -77,29 +86,27 @@ export function ViewsChart() {
               minTickGap={32}
               tickFormatter={(value: Date) => format(new Date(value), "MMM d")}
             />
-            <ChartTooltip
-              content={
-                <ChartTooltipContent
-                  className="w-[150px]"
-                  nameKey="date"
-                  labelFormatter={(value: Date) => {
-                    return new Date(value).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    });
-                  }}
-                  hideLabel
-                />
-              }
-            />
+
+            <ChartTooltip content={<ChartTooltipContent />} />
             <Line
-              dataKey="view_count"
-              type="monotone"
-              fill="var(--chart-1)"
-              radius={4}
+              dataKey="views"
+              type="natural"
+              stroke="var(--color-views)"
               strokeWidth={2}
-            />
+              dot={{
+                fill: "var(--color-views)",
+              }}
+              activeDot={{
+                r: 6,
+              }}
+            >
+              <LabelList
+                position="top"
+                offset={12}
+                className="fill-foreground"
+                fontSize={12}
+              />
+            </Line>
           </LineChart>
         </ChartContainer>
       </CardContent>
