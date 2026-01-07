@@ -41,6 +41,7 @@
     "react-day-picker": "^9.11.0",
     "react-dom": "catalog:react19",
     "react-hook-form": "catalog:",
+    "recharts": "2.15.4",
     "sonner": "^2.0.6",
     "tailwind-merge": "^3.0.1",
     "tw-animate-css": "^1.2.4",

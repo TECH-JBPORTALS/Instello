@@ -37,6 +37,7 @@
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
     "react-hook-form": "catalog:",
+    "recharts": "^3.6.0",
     "sonner": "catalog:",
     "uploadthing": "^7.7.4",
     "zod": "catalog:",

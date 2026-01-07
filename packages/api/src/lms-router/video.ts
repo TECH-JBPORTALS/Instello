@@ -158,6 +158,32 @@ export const videoRouter = {
   delete: protectedProcedure
     .input(z.object({ videoId: z.string() }))
     .mutation(async ({ ctx, input }) => await deleteVideo(input, ctx)),
+
+  getMetrics: protectedProcedure
+    .input(z.object({ videoId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const metrics = await ctx.mux.data.metrics.getTimeseries("views", {
+        filters: [`video_id:${input.videoId}`],
+        timeframe: ["3:months"],
+      });
+
+      const overallValues = await ctx.mux.data.metrics.getOverallValues(
+        "views",
+        {
+          filters: [`video_id:${input.videoId}`],
+          timeframe: ["3:months"],
+        },
+      );
+
+      return {
+        overallValues,
+        timeseries: metrics.data.map((m) => ({
+          date: m[0],
+          metricValue: m[1],
+          view_count: m[2],
+        })),
+      };
+    }),
 };
 
 export function deleteVideo(
