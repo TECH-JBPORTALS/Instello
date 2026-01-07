@@ -4,6 +4,7 @@ import type * as React from "react";
 import { useUploadLeaveGuard } from "@/hooks/useUploadLeaveGuard";
 import { TRPCReactProvider } from "@/trpc/react";
 import { Toaster } from "@instello/ui/components/sonner";
+import { TooltipProvider } from "@instello/ui/components/tooltip";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -11,7 +12,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <NextThemesProvider attribute="class" defaultTheme="system" enableSystem>
       <TRPCReactProvider>
-        {children}
+        <TooltipProvider>{children}</TooltipProvider>
         <Toaster richColors />
       </TRPCReactProvider>
     </NextThemesProvider>

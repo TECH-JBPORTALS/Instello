@@ -34,6 +34,9 @@ export function ViewsChart() {
 
   const totalWatchTime = data.overallValues.data.total_watch_time ?? 0;
   const inHoursWatchTime = Math.floor(totalWatchTime / 3600);
+  const remainingMinutes = Math.floor(
+    (totalWatchTime - inHoursWatchTime * 60 * 60) / 60,
+  );
 
   return (
     <Card className="py-4 shadow-none sm:py-0">
@@ -56,7 +59,8 @@ export function ViewsChart() {
               Total Watchtime
             </span>
             <span className="text-nowrap text-lg font-bold leading-none sm:text-3xl">
-              {inHoursWatchTime} Hrs
+              {inHoursWatchTime}Hr{" "}
+              {remainingMinutes !== 0 && <>{remainingMinutes}Min</>}
             </span>
           </div>
         </div>
@@ -69,13 +73,33 @@ export function ViewsChart() {
               dataKey="date"
               tickLine={false}
               axisLine={false}
-              tickMargin={10}
-              tickCount={5}
-              minTickGap={10}
+              tickMargin={8}
+              minTickGap={32}
               tickFormatter={(value: Date) => format(new Date(value), "MMM d")}
             />
-            <ChartTooltip content={<ChartTooltipContent />} />
-            <Line dataKey="view_count" fill="var(--chart-1)" radius={4} />
+            <ChartTooltip
+              content={
+                <ChartTooltipContent
+                  className="w-[150px]"
+                  nameKey="date"
+                  labelFormatter={(value: Date) => {
+                    return new Date(value).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    });
+                  }}
+                  hideLabel
+                />
+              }
+            />
+            <Line
+              dataKey="view_count"
+              type="monotone"
+              fill="var(--chart-1)"
+              radius={4}
+              strokeWidth={2}
+            />
           </LineChart>
         </ChartContainer>
       </CardContent>
