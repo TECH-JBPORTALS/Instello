@@ -1,94 +1,61 @@
-import { eq } from "@instello/db";
-import { author, couponRedemption, subscription } from "@instello/db/lms";
-import { TRPCError } from "@trpc/server";
-import { addDays, endOfDay } from "date-fns";
+import { and, eq } from "@instello/db";
+import {
+  author,
+  CreateAuthorSchema,
+  UpdateAuthorSchema,
+} from "@instello/db/lms";
 import { z } from "zod/v4";
 
 import { protectedProcedure } from "../trpc";
 
 export const authorRouter = {
-  create: protectedProcedure
-    .input(z.object({ couponId: z.string() }))
-    .mutation(async ({ ctx, input }) =>
-      ctx.db.transaction(async (tx) => {
-        try {
-          // 1. Check the redemption before proceeding further
-          const userCouponRedemption =
-            await tx.query.couponRedemption.findFirst({
-              where: (t, { eq, and }) =>
-                and(
-                  eq(t.clerkUserId, ctx.auth.userId),
-                  eq(t.couponId, input.couponId),
-                ),
-            });
+  create: protectedProcedure.input(CreateAuthorSchema).mutation(
+    async ({ ctx, input }) =>
+      await ctx.db
+        .insert(author)
+        .values({ ...input, createdByClerkUserId: ctx.auth.userId })
+        .returning()
+        .then((r) => r[0]),
+  ),
 
-          if (userCouponRedemption)
-            throw new TRPCError({
-              message: "Coupon already been claimed",
-              code: "BAD_REQUEST",
-            });
+  update: protectedProcedure.input(UpdateAuthorSchema).mutation(
+    async ({ ctx, input }) =>
+      await ctx.db
+        .update(author)
+        .set({ ...input, createdByClerkUserId: ctx.auth.userId })
+        .where(
+          and(
+            eq(author.id, input.id),
+            eq(author.createdByClerkUserId, ctx.auth.userId),
+          ),
+        )
+        .returning()
+        .then((r) => r[0]),
+  ),
 
-          // 2. Get the coupon details
-          const channelCoupon = await tx.query.coupon.findFirst({
-            where: (t, { eq }) => eq(t.id, input.couponId),
-          });
-
-          if (!channelCoupon)
-            throw new TRPCError({
-              message: "Coupon doesn't exists",
-              code: "BAD_REQUEST",
-            });
-
-          // 3. Create subscription for user
-          const userSubscription = await tx
-            .insert(subscription)
-            .values({
-              clerkUserId: ctx.auth.userId,
-              channelId: channelCoupon.channelId,
-              startDate: new Date(),
-              endDate: endOfDay(
-                addDays(new Date(), channelCoupon.subscriptionDurationDays),
-              ),
-            })
-            .returning()
-            .then((r) => r[0]);
-
-          if (!userSubscription)
-            throw new TRPCError({
-              message: "Couldn't able to process now",
-              code: "BAD_REQUEST",
-            });
-
-          // 4. Store coupon redemption by user
-          await tx.insert(couponRedemption).values({
-            clerkUserId: ctx.auth.userId,
-            couponId: channelCoupon.id,
-          });
-
-          return userSubscription;
-        } catch (e) {
-          throw new TRPCError({
-            message: "Unable to process now, try again later",
-            code: "INTERNAL_SERVER_ERROR",
-            cause: e,
-          });
-        }
-      }),
-    ),
+  delete: protectedProcedure.input(z.object({ authorId: z.string() })).mutation(
+    async ({ ctx, input }) =>
+      await ctx.db
+        .delete(author)
+        .where(
+          and(
+            eq(author.id, input.authorId),
+            eq(author.createdByClerkUserId, ctx.auth.userId),
+          ),
+        )
+        .returning()
+        .then((r) => r[0]),
+  ),
 
   getById: protectedProcedure
-    .input(z.object({ subscriptionId: z.string() }))
+    .input(z.object({ authorId: z.string() }))
     .query(({ ctx, input }) =>
-      ctx.db.query.subscription.findFirst({
+      ctx.db.query.author.findFirst({
         where: (t, { eq, and }) =>
           and(
-            eq(t.id, input.subscriptionId),
-            eq(t.clerkUserId, ctx.auth.userId),
+            eq(t.id, input.authorId),
+            eq(t.createdByClerkUserId, ctx.auth.userId),
           ),
-
-        with: {
-          channel: true,
-        },
       }),
     ),
 
