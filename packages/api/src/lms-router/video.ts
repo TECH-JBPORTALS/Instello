@@ -184,6 +184,51 @@ export const videoRouter = {
         })),
       };
     }),
+
+  getMatricsByChannel: protectedProcedure
+    .input(z.object({ channelId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const channelVideos = await ctx.db.query.channel
+        .findFirst({
+          where: eq(channel.id, input.channelId),
+          columns: {},
+          with: {
+            chapters: {
+              columns: {},
+              with: {
+                videos: true,
+              },
+            },
+          },
+        })
+        .then((channel) =>
+          channel?.chapters.flatMap((c) => c.videos.map((v) => v)),
+        );
+
+      const filters = channelVideos?.flatMap((v) => `video_id:${v.id}`);
+
+      const metrics = await ctx.mux.data.metrics.getTimeseries("views", {
+        filters,
+        timeframe: ["3:months"],
+      });
+
+      const overallValues = await ctx.mux.data.metrics.getOverallValues(
+        "views",
+        {
+          filters,
+          timeframe: ["3:months"],
+        },
+      );
+
+      return {
+        overallValues,
+        timeseries: metrics.data.map((m) => ({
+          date: m[0],
+          metricValue: m[1],
+          views: m[2],
+        })),
+      };
+    }),
 };
 
 export function deleteVideo(
