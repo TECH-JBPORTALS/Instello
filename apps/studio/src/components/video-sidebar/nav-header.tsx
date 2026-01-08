@@ -12,6 +12,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
 } from "@instello/ui/components/sidebar";
+import { Spinner } from "@instello/ui/components/spinner";
 import { cn } from "@instello/ui/lib/utils";
 import { ArrowLeftIcon } from "@phosphor-icons/react";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
@@ -56,13 +57,23 @@ export function NavHeader() {
             config={{ cn }}
             appearance={{
               button: buttonVariants({
-                className: "rounded-full",
-                size: "xs",
+                size: "sm",
                 variant: "outline",
+                className: "hover:text-accent",
               }),
               allowedContent: "text-accent text-center",
             }}
-            content={{ button: () => "Change Thumbnail" }}
+            content={{
+              button: (props) =>
+                props.isUploading ? (
+                  <>
+                    <Spinner /> Uploading...
+                  </>
+                ) : (
+                  "Change Thumbnail"
+                ),
+              allowedContent: () => "jpegs, png, avif and webp",
+            }}
             input={{ videoId }}
             endpoint={"videoThumbneilUploader"}
             onClientUploadComplete={async (res) => {
