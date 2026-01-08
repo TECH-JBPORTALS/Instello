@@ -67,7 +67,7 @@ export function ViewsChart() {
         </div>
       </CardHeader>
       <CardContent className="px-2 sm:p-6">
-        <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+        <ChartContainer config={chartConfig} className="w-full">
           <LineChart
             accessibilityLayer
             data={data.timeseries}
@@ -87,7 +87,6 @@ export function ViewsChart() {
               tickFormatter={(value: Date) => format(new Date(value), "MMM d")}
             />
 
-            <ChartTooltip content={<ChartTooltipContent />} />
             <Line
               dataKey="views"
               type="natural"
@@ -107,6 +106,7 @@ export function ViewsChart() {
                 fontSize={12}
               />
             </Line>
+            <ChartTooltip content={<ChartTooltipContent active />} />
           </LineChart>
         </ChartContainer>
       </CardContent>

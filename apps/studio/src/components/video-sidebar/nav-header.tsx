@@ -80,7 +80,7 @@ export function NavHeader() {
           />
         </div>
       </div>
-      <span className="px-2 text-sm font-semibold">Chapter video</span>
+      <span className="px-2 text-sm font-semibold">Your Video</span>
       <p className="text-muted-foreground max-w-full truncate px-2 text-xs">
         {video.title}
       </p>
