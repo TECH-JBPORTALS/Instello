@@ -59,7 +59,7 @@ export const authorRouter = {
       }),
     ),
 
-  listByChannelId: protectedProcedure.query(async ({ ctx }) => {
+  list: protectedProcedure.query(async ({ ctx }) => {
     const authors = await ctx.db.query.author.findMany({
       where: eq(author.createdByClerkUserId, ctx.auth.userId),
     });

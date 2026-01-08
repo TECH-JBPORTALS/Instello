@@ -14,8 +14,7 @@ import { formatDistanceToNowStrict } from "date-fns";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type Subscription =
-  RouterOutputs["lms"]["author"]["listByChannelId"][number];
+export type Subscription = RouterOutputs["lms"]["author"]["list"][number];
 
 export const columns: ColumnDef<Subscription>[] = [
   {
@@ -38,13 +37,26 @@ export const columns: ColumnDef<Subscription>[] = [
       );
     },
   },
+  {
+    accessorKey: "email",
+    header: () => <div className="w-20">Email address</div>,
+    cell(props) {
+      return (
+        <div className="w-full min-w-full max-w-max">
+          <time className="text-muted-foreground text-xs">
+            {props.getValue() as string}
+          </time>
+        </div>
+      );
+    },
+  },
 
   {
     accessorKey: "createdAt",
-    header: () => <div className="ml-auto w-20 px-3 text-right">Created</div>,
+    header: () => <div className="ml-auto px-3 text-right">Created</div>,
     cell(props) {
       return (
-        <div className="ml-auto min-w-20 max-w-max px-3">
+        <div className="ml-auto max-w-max px-3">
           <time className="text-muted-foreground text-xs">
             {formatDistanceToNowStrict(props.getValue() as Date, {
               addSuffix: true,
@@ -58,12 +70,8 @@ export const columns: ColumnDef<Subscription>[] = [
     id: "more-action",
     cell() {
       return (
-        <div className="text-right">
-          <Button
-            variant={"ghost"}
-            className="opacity-0 group-hover:opacity-100"
-            size={"icon"}
-          >
+        <div className=" ml-auto w-10 text-right">
+          <Button variant={"ghost"} size={"icon"}>
             <DotsThreeIcon weight="bold" />
           </Button>
         </div>

@@ -1,4 +1,5 @@
 import Container from "@/components/container";
+import { CreateAuthorDialog } from "@/components/dialogs/create-author-dialog";
 import { SearchInput } from "@/components/search-input";
 import { SiteHeader } from "@/components/site-header";
 import { HydrateClient, prefetch, trpc } from "@/trpc/server";
@@ -8,7 +9,7 @@ import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
 import { DataTableClient } from "./data-table.client";
 
 export default function Page() {
-  prefetch(trpc.lms.author.listByChannelId.queryOptions());
+  prefetch(trpc.lms.author.list.queryOptions());
 
   return (
     <HydrateClient>
@@ -16,9 +17,11 @@ export default function Page() {
       <Container className="px-6">
         <div className="flex justify-between">
           <SearchInput placeholder="Search..." />{" "}
-          <Button>
-            Add <PlusIcon />
-          </Button>
+          <CreateAuthorDialog>
+            <Button>
+              Add <PlusIcon />
+            </Button>
+          </CreateAuthorDialog>
         </div>
         <DataTableClient />
       </Container>

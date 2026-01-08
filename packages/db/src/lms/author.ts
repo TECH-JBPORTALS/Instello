@@ -12,13 +12,13 @@ export const author = lmsPgTable("author", (d) => ({
   createdByClerkUserId: d.text().notNull(),
   firstName: d.varchar({ length: 100 }).notNull(),
   lastName: d.varchar({ length: 100 }),
-  email: d.varchar({ length: 256 }),
-  phone: d.varchar({ length: 256 }),
+  email: d.varchar({ length: 256 }).notNull(),
+  phone: d.varchar({ length: 256 }).notNull(),
   //Uploadthing file hash / id
-  imageUTFileId: d.varchar({ length: 100 }),
+  imageUTFileId: d.text(),
   designation: d.text(),
+  experienceYears: d.integer(),
   organization: d.text(),
-  experienceYears: d.integer().notNull(),
   bio: d.text(),
 }));
 
@@ -30,13 +30,13 @@ export const authorRelations = relations(author, ({ many }) => ({
 export const CreateAuthorSchema = createInsertSchema(author, {
   firstName: z
     .string({ error: "Required" })
-    .min(3, "Name must be atleast 3 characters long"),
-  lastName: z.string().min(1, "Required").nullable().optional(),
+    .min(3, "Atleast 3 letters required"),
+  lastName: z.string().optional(),
   email: z.email({ error: "Required" }).min(1, "Required"),
-  phone: z.string().min(10).max(10),
-  designation: z.string().optional(),
-  experienceYears: z.number().min(0),
+  phone: z.string().min(10, "Minimum 10 digits").max(10, "Maximum 10 digits"),
   organization: z.string().optional(),
+  designation: z.string().optional(),
+  experienceYears: z.number().min(0).optional(),
   bio: z.string().optional(),
 }).omit({
   id: true,

@@ -9,7 +9,7 @@ import { columns } from "./columns";
 export function DataTableClient() {
   const trpc = useTRPC();
   const { data: authors } = useSuspenseQuery(
-    trpc.lms.author.listByChannelId.queryOptions(),
+    trpc.lms.author.list.queryOptions(),
   );
 
   return (
