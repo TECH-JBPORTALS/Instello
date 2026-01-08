@@ -29,10 +29,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@instello/ui/components/dropdown-menu";
-import { DotsThreeIcon } from "@phosphor-icons/react";
+import {
+  DotsThreeIcon,
+  PenNibIcon,
+  TrashSimpleIcon,
+} from "@phosphor-icons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNowStrict } from "date-fns";
 import { toast } from "sonner";
+
+import { AuthorEditSheet } from "./author-edit.sheet";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -101,6 +107,15 @@ export const columns: ColumnDef<Subscription>[] = [
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuGroup>
+                <AuthorEditSheet authorId={props.row.original.id}>
+                  <DropdownMenuItem
+                    onSelect={(e) => {
+                      e.preventDefault();
+                    }}
+                  >
+                    <PenNibIcon weight="duotone" /> Edit
+                  </DropdownMenuItem>
+                </AuthorEditSheet>
                 <DeleteAuthorAlertDialog authorId={props.row.original.id}>
                   <DropdownMenuItem
                     onSelect={(e) => {
@@ -108,7 +123,7 @@ export const columns: ColumnDef<Subscription>[] = [
                     }}
                     variant="destructive"
                   >
-                    Remove
+                    <TrashSimpleIcon weight="duotone" /> Remove
                   </DropdownMenuItem>
                 </DeleteAuthorAlertDialog>
               </DropdownMenuGroup>

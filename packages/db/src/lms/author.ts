@@ -16,6 +16,7 @@ export const author = lmsPgTable("author", (d) => ({
   phone: d.varchar({ length: 256 }).notNull(),
   //Uploadthing file hash / id
   imageUTFileId: d.text(),
+  instagramLink: d.text(),
   designation: d.text(),
   experienceYears: d.integer(),
   organization: d.text(),
@@ -38,6 +39,7 @@ export const CreateAuthorSchema = createInsertSchema(author, {
   designation: z.string().optional(),
   experienceYears: z.number().min(0).optional(),
   bio: z.string().optional(),
+  instagramLink: z.string().optional(),
 }).omit({
   id: true,
   createdAt: true,
@@ -48,9 +50,10 @@ export const CreateAuthorSchema = createInsertSchema(author, {
 
 export const UpdateAuthorSchema = createUpdateSchema(author, {
   id: z.string().min(1, "Author ID is required for updation"),
-  name: z
+  firstName: z
     .string({ error: "Required" })
-    .min(3, "Name must be atleast 3 characters long"),
+    .min(3, "Atleast 3 letters required"),
+  lastName: z.string().optional(),
   email: z.email({ error: "Required" }).min(1, "Required"),
   phone: z.string().min(10).max(10),
   designation: z.string().optional(),
@@ -58,6 +61,7 @@ export const UpdateAuthorSchema = createUpdateSchema(author, {
   organization: z.string().optional(),
   bio: z.string().optional(),
   imageUTFileId: z.string().nullable().optional(),
+  instagramLink: z.string().optional(),
 }).omit({
   createdAt: true,
   createdByClerkUserId: true,
