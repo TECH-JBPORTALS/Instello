@@ -92,7 +92,7 @@ export const studioFileRouter = {
         }) as Error;
 
       const fileOverrides = files.map((file) => {
-        const newName = `channel-${singleChannel.id}}`;
+        const newName = `channel-${singleChannel.id}`;
         return { ...file, name: newName };
       });
 
@@ -207,7 +207,7 @@ export const studioFileRouter = {
         }) as Error;
 
       const fileOverrides = files.map((file) => {
-        const newName = `video-${singleVideo.id}}`;
+        const newName = `video-${singleVideo.id}`;
         return { ...file, name: newName };
       });
 
@@ -322,7 +322,7 @@ export const studioFileRouter = {
         }) as Error;
 
       const fileOverrides = files.map((file) => {
-        const newName = `video-${singleAuthor.id}}`;
+        const newName = `author-${singleAuthor.id}`;
         return { ...file, name: newName };
       });
 

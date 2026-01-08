@@ -185,7 +185,14 @@ export function AuthorEditSheet({
                               }),
                             }}
                             content={{
-                              button: () => "Upload Picture",
+                              button: (props) =>
+                                props.isUploading ? (
+                                  <>
+                                    <Spinner /> Uploading...
+                                  </>
+                                ) : (
+                                  "Upload Picture"
+                                ),
                               allowedContent: () => "",
                             }}
                             input={{ authorId }}

@@ -1,4 +1,4 @@
-import { and, eq, ilike, or } from "@instello/db";
+import { and, desc, eq, ilike, or } from "@instello/db";
 import {
   author,
   CreateAuthorSchema,
@@ -75,6 +75,7 @@ export const authorRouter = {
           eq(author.createdByClerkUserId, ctx.auth.userId),
           queryClause,
         ),
+        orderBy: desc(author.createdAt),
       });
 
       return authors;
