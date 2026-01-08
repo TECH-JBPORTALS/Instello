@@ -12,7 +12,7 @@ import { formatDistanceToNowStrict } from "date-fns";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Subscription =
-  RouterOutputs["lms"]["subscription"]["listByChannelId"][number];
+  RouterOutputs["lms"]["subscription"]["listByChannelId"]["subscribers"][number];
 
 export const columns: ColumnDef<Subscription>[] = [
   {

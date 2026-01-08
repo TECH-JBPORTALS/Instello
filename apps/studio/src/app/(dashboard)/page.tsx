@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <>
       <SiteHeader title="Home" />
-      <Container className="flex min-h-[calc(100svh-var(--header-height))] flex-col items-center justify-center px-16">
+      <Container className="flex min-h-[calc(100svh-var(--header-height))] flex-col items-center justify-center">
         <h1 className="text-muted-foreground text-3xl font-bold">
           Instello Studio Dashboard
         </h1>
