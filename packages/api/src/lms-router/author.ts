@@ -1,4 +1,4 @@
-import { and, eq } from "@instello/db";
+import { and, eq, ilike, or } from "@instello/db";
 import {
   author,
   CreateAuthorSchema,
@@ -59,11 +59,24 @@ export const authorRouter = {
       }),
     ),
 
-  list: protectedProcedure.query(async ({ ctx }) => {
-    const authors = await ctx.db.query.author.findMany({
-      where: eq(author.createdByClerkUserId, ctx.auth.userId),
-    });
+  list: protectedProcedure
+    .input(z.object({ q: z.string().nullable().optional() }).optional())
+    .query(async ({ ctx, input }) => {
+      const queryClause = input?.q
+        ? or(
+            ilike(author.firstName, `%${input.q}%`),
+            ilike(author.lastName, `%${input.q}%`),
+            ilike(author.email, `%${input.q}%`),
+          )
+        : undefined;
 
-    return authors;
-  }),
+      const authors = await ctx.db.query.author.findMany({
+        where: and(
+          eq(author.createdByClerkUserId, ctx.auth.userId),
+          queryClause,
+        ),
+      });
+
+      return authors;
+    }),
 };
