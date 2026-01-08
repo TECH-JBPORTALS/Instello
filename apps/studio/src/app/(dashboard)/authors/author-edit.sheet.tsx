@@ -2,10 +2,17 @@
 
 import type { z } from "zod/v4";
 import React, { useState } from "react";
+import { env } from "@/env";
 import { useTRPC } from "@/trpc/react";
+import { UploadButton } from "@/utils/uploadthing";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UpdateAuthorSchema } from "@instello/db/lms";
-import { Button } from "@instello/ui/components/button";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@instello/ui/components/avatar";
+import { Button, buttonVariants } from "@instello/ui/components/button";
 import {
   Form,
   FormControl,
@@ -32,6 +39,7 @@ import {
 } from "@instello/ui/components/sheet";
 import { Spinner } from "@instello/ui/components/spinner";
 import { Textarea } from "@instello/ui/components/textarea";
+import { cn } from "@instello/ui/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -149,6 +157,65 @@ export function AuthorEditSheet({
                     )}
                   />
                 </div>
+
+                <FormField
+                  control={form.control}
+                  name="imageUTFileId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Profile Picture</FormLabel>
+                      <FormControl>
+                        <div className="flex gap-4">
+                          <Avatar className="size-14 border-2 ">
+                            <AvatarImage
+                              src={`https://${env.NEXT_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${field.value}`}
+                              alt={"Video thumneil"}
+                              className="object-cover"
+                            />
+                            <AvatarFallback>
+                              {author?.firstName.charAt(0)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <UploadButton
+                            config={{ cn }}
+                            appearance={{
+                              button: buttonVariants({
+                                size: "sm",
+                                variant: "secondary",
+                              }),
+                            }}
+                            content={{
+                              button: () => "Upload Picture",
+                              allowedContent: () => "",
+                            }}
+                            input={{ authorId }}
+                            endpoint={"authorProfileUploader"}
+                            onClientUploadComplete={async (res) => {
+                              field.onChange(
+                                res.at(0)?.serverData.newimageUTFileId ?? "",
+                              );
+                              await queryClient.invalidateQueries(
+                                trpc.lms.author.getById.queryOptions({
+                                  authorId,
+                                }),
+                              );
+                              await queryClient.invalidateQueries(
+                                trpc.lms.author.list.queryFilter(),
+                              );
+                              toast.info(`Author profile image updated.`);
+                            }}
+                            onUploadError={(e) => {
+                              toast.error(e.message);
+                            }}
+                          />
+                        </div>
+                      </FormControl>
+                      <div className="min-h-3.5">
+                        <FormMessage />
+                      </div>
+                    </FormItem>
+                  )}
+                />
 
                 <FormField
                   control={form.control}

@@ -52,8 +52,9 @@ export const columns: ColumnDef<Subscription>[] = [
       const original = props.row.original;
       return (
         <div className="inline-flex items-center gap-2.5">
-          <Avatar className="size-8">
+          <Avatar className="size-8 border">
             <AvatarImage
+              className="object-cover"
               src={`https://${env.NEXT_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${original.imageUTFileId}`}
             />
             <AvatarFallback>{original.firstName.charAt(0)}</AvatarFallback>

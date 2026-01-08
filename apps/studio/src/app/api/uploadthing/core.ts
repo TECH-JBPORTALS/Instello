@@ -2,7 +2,7 @@ import type { FileRouter } from "uploadthing/next";
 import { getAuth } from "@clerk/nextjs/server";
 import { eq } from "@instello/db";
 import { db } from "@instello/db/client";
-import { channel, video } from "@instello/db/lms";
+import { author, channel, video } from "@instello/db/lms";
 import { createUploadthing } from "uploadthing/next";
 import { UploadThingError, UTApi, UTFiles } from "uploadthing/server";
 import { z } from "zod/v4";
@@ -241,6 +241,121 @@ export const studioFileRouter = {
         uploadedBy: metadata.userId,
         channelId: updatedChannel.id,
         newThumbnailId: updatedChannel.thumbnailId,
+      };
+    }),
+
+  authorProfileUploader: f({
+    "image/jpeg": {
+      /**
+       * For full list of options and defaults, see the File Route API reference
+       * @see https://docs.uploadthing.com/file-routes#route-config
+       */
+      maxFileSize: "4MB",
+      maxFileCount: 1,
+      minFileCount: 1,
+      additionalProperties: {
+        height: 720,
+        width: 1280,
+      },
+    },
+    "image/png": {
+      /**
+       * For full list of options and defaults, see the File Route API reference
+       * @see https://docs.uploadthing.com/file-routes#route-config
+       */
+      maxFileSize: "4MB",
+      maxFileCount: 1,
+      minFileCount: 1,
+      additionalProperties: {
+        height: 720,
+        width: 1280,
+      },
+    },
+    "image/avif": {
+      /**
+       * For full list of options and defaults, see the File Route API reference
+       * @see https://docs.uploadthing.com/file-routes#route-config
+       */
+      maxFileSize: "4MB",
+      maxFileCount: 1,
+      minFileCount: 1,
+      additionalProperties: {
+        height: 720,
+        width: 1280,
+      },
+    },
+    "image/webp": {
+      /**
+       * For full list of options and defaults, see the File Route API reference
+       * @see https://docs.uploadthing.com/file-routes#route-config
+       */
+      maxFileSize: "4MB",
+      maxFileCount: 1,
+      minFileCount: 1,
+      additionalProperties: {
+        height: 720,
+        width: 1280,
+      },
+    },
+  })
+    .input(z.object({ authorId: z.string().min(1, "Author Id is required") }))
+    // Set permissions and file types for this FileRoute
+    .middleware(async ({ req, input, files }) => {
+      // This code runs on your server before upload
+      const { userId } = getAuth(req);
+
+      // If you throw, the user will not be able to upload
+      if (!userId)
+        throw new UploadThingError({
+          message: "Unauthorized",
+          code: "BAD_REQUEST",
+        }) as Error;
+
+      const singleAuthor = await db.query.author.findFirst({
+        where: eq(author.id, input.authorId),
+      });
+
+      if (!singleAuthor)
+        throw new UploadThingError({
+          message: "No author found",
+          code: "INTERNAL_SERVER_ERROR",
+        }) as Error;
+
+      const fileOverrides = files.map((file) => {
+        const newName = `video-${singleAuthor.id}}`;
+        return { ...file, name: newName };
+      });
+
+      // Whatever is returned here is accessible in onUploadComplete as `metadata`
+      return { userId, author: singleAuthor, [UTFiles]: fileOverrides };
+    })
+    .onUploadComplete(async ({ metadata, file }) => {
+      // 1. If already there is uploaded file delete that
+      if (metadata.author.imageUTFileId) {
+        await ut.deleteFiles(metadata.author.imageUTFileId);
+      }
+
+      // 2. Updae new file key to the author row
+      const updatedChannel = await db
+        .update(author)
+        .set({ imageUTFileId: file.key })
+        .where(eq(author.id, metadata.author.id))
+        .returning()
+        .then((r) => r[0]);
+
+      if (!updatedChannel) {
+        await ut.deleteFiles(file.key);
+        throw new UploadThingError({
+          message: "DB not updated",
+          code: "INTERNAL_SERVER_ERROR",
+        }) as Error;
+      }
+
+      // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
+      return {
+        uploadedBy: metadata.userId,
+        channelId: updatedChannel.id,
+        newimageUTFileId: updatedChannel.imageUTFileId,
       };
     }),
 } satisfies FileRouter;
