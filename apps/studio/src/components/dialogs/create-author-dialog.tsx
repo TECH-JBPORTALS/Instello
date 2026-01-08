@@ -74,7 +74,7 @@ export function CreateAuthorDialog({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>New Channel</DialogTitle>
+          <DialogTitle>New Author</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
