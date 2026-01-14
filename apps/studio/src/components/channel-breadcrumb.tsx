@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { useTRPC } from "@/trpc/react";
 import {
   Breadcrumb,
@@ -23,6 +23,7 @@ import {
   TicketIcon,
 } from "@phosphor-icons/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { useRouter } from "nextjs-toploader/app";
 
 const items = [
   { title: "Chapters", url: "", icon: ListBulletsIcon },
