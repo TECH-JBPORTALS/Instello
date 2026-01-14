@@ -34,6 +34,7 @@ import {
   PopoverTrigger,
 } from "@instello/ui/components/popover";
 import { Tabs, TabsList, TabsTrigger } from "@instello/ui/components/tabs";
+import { Textarea } from "@instello/ui/components/textarea";
 import { cn } from "@instello/ui/lib/utils";
 import { ArrowRightIcon, CalendarIcon } from "@phosphor-icons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -77,6 +78,8 @@ export function CreateCouponDialog({
     }),
   );
 
+  const values = form.watch();
+
   async function onSubmit(values: z.infer<typeof CreateCouponSchema>) {
     await createCoupon(values);
   }
@@ -91,6 +94,7 @@ export function CreateCouponDialog({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogBody className="space-y-6">
+              {/* <pre>{JSON.stringify(form.formState.errors, undefined, 2)}</pre> */}
               <FormField
                 control={form.control}
                 name="type"
@@ -148,12 +152,12 @@ export function CreateCouponDialog({
                             className={cn("w-full pl-3 text-left font-normal")}
                           >
                             <span className="inline-flex items-center gap-1.5">
-                              {format(field.value.from, "PP")}
+                              {field.value && format(field.value.from, "PP")}
                               <ArrowRightIcon
                                 weight="duotone"
                                 className="text-muted-foreground"
                               />
-                              {format(field.value.to, "PP")}
+                              {field.value && format(field.value.to, "PP")}
                             </span>
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
@@ -177,34 +181,36 @@ export function CreateCouponDialog({
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="maxRedemptions"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Set max redemptions</FormLabel>
-                    <FormControl>
-                      <div className="relative inline-flex w-40 rounded-md">
-                        <Input
-                          {...field}
-                          type="number"
-                          onChange={(e) =>
-                            field.onChange(parseInt(e.target.value))
-                          }
-                          className="pr-10"
-                        />
-                        <div className="bg-muted text-muted-foreground absolute right-0 flex h-full items-center justify-center rounded-e-md border px-2.5 text-sm">
-                          Students
+              {values.type == "general" && (
+                <FormField
+                  control={form.control}
+                  name="maxRedemptions"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Set max redemptions</FormLabel>
+                      <FormControl>
+                        <div className="relative inline-flex w-40 rounded-md">
+                          <Input
+                            {...field}
+                            type="number"
+                            onChange={(e) =>
+                              field.onChange(parseInt(e.target.value))
+                            }
+                            className="pr-10"
+                          />
+                          <div className="bg-muted text-muted-foreground absolute right-0 flex h-full items-center justify-center rounded-e-md border px-2.5 text-sm">
+                            Students
+                          </div>
                         </div>
-                      </div>
-                    </FormControl>
-                    <FormDescription>
-                      Only sepeficied number of students can use this coupon
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      </FormControl>
+                      <FormDescription>
+                        Only sepeficied number of students can use this coupon
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <FormField
                 control={form.control}
@@ -234,6 +240,29 @@ export function CreateCouponDialog({
                   </FormItem>
                 )}
               />
+
+              {values.type == "targeted" && (
+                <FormField
+                  control={form.control}
+                  name="targetedEmails"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Set targeted emails</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          placeholder="ethanhunt@company.com, ilsa@gmail.com, jhon.walker@yahoo.com ..."
+                          className="h-20 resize-none pr-10"
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Sepeficied emails that can use this coupon
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
             </DialogBody>
             <DialogFooter>
               <Button loading={form.formState.isSubmitting}>Create</Button>

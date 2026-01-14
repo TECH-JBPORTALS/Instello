@@ -17,7 +17,7 @@ export const coupon = lmsPgTable("coupon", (d) => ({
   code: d.varchar({ length: 100 }).notNull(),
   validFrom: d.timestamp().notNull(),
   validTo: d.timestamp().notNull(),
-  maxRedemptions: d.integer().notNull(),
+  maxRedemptions: d.integer(),
   subscriptionDurationDays: d.integer().notNull(),
 }));
 
@@ -51,6 +51,7 @@ export const CreateCouponSchema = createInsertSchema(coupon, {
     .string()
     .min(1, "Coupon code required")
     .transform((val) => val.toUpperCase()),
+  maxRedemptions: z.number().optional(),
 })
   .omit({
     id: true,
@@ -59,7 +60,44 @@ export const CreateCouponSchema = createInsertSchema(coupon, {
     createdAt: true,
     updatedAt: true,
   })
-  .and(z.object({ valid: z.object({ from: z.date(), to: z.date() }) }));
+  .and(
+    z.object({
+      valid: z.object({ from: z.date(), to: z.date() }),
+      targetedEmails: z
+        .string()
+        .min(1, "Required")
+        .check((ctx) => {
+          const invalidEmails: string[] = [];
+
+          ctx.value.split(",").forEach((email) => {
+            if (!z.email().parse(email.trim()))
+              invalidEmails.push(email.trim());
+          });
+
+          if (invalidEmails.length > 0)
+            ctx.issues.push({
+              code: "custom",
+              input: ctx.value,
+              values: [],
+              message: `${invalidEmails.join(", ")} invalid email address`,
+              path: ["targetedEmails"],
+            });
+        })
+        .optional(),
+    }),
+  )
+  .check((ctx) => {
+    if (ctx.value.type == "general" && !ctx.value.maxRedemptions) {
+      ctx.issues.push({
+        code: "too_small",
+        minimum: 1,
+        message: "Atleast 1 redemption count to be set",
+        origin: "number",
+        input: ctx.value.maxRedemptions,
+        path: ["maxRedemptions"],
+      });
+    }
+  });
 
 export const UpdateCouponSchema = createUpdateSchema(coupon, {
   id: z.string().min(2, "Coupon ID required"),

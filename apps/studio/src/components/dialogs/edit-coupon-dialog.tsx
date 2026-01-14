@@ -156,12 +156,12 @@ export function EditCouponDialog({
                             className={cn("w-full pl-3 text-left font-normal")}
                           >
                             <span className="inline-flex items-center gap-1.5">
-                              {format(field.value.from, "PP")}
+                              {field.value && format(field.value.from, "PP")}
                               <ArrowRightIcon
                                 weight="duotone"
                                 className="text-muted-foreground"
                               />
-                              {format(field.value.to, "PP")}
+                              {field.value && format(field.value.to, "PP")}
                             </span>
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
