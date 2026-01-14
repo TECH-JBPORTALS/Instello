@@ -1,8 +1,4 @@
-import { TouchableOpacity, View } from "react-native";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
 import { Link, Tabs } from "expo-router";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -14,7 +10,6 @@ import { HouseIcon, ListBulletsIcon } from "phosphor-react-native";
 
 export default function HomeLayout() {
   const { user } = useUser();
-  const { top, bottom } = useSafeAreaInsets();
 
   return (
     <Tabs
@@ -30,6 +25,7 @@ export default function HomeLayout() {
 
           headerTitle: () => (
             <Image
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-require-imports
               source={require("assets/images/instello.png")}
               style={{ width: 110, height: 24 }}
             />

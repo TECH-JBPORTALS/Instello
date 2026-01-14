@@ -210,10 +210,10 @@ function VideoDetails({
               variant={showAuthorDetails ? "outline" : "secondary"}
               className="ml-auto rounded-full"
             >
-              <Text>{showAuthorDetails ? "Hide details" : "More details"}</Text>
+              <Text>{showAuthorDetails ? "Hide" : "More"}</Text>
               <Animated.View
                 style={{
-                  transform: [{ rotate: `${showAuthorDetails ? 0 : -180}deg` }],
+                  transform: [{ rotate: `${showAuthorDetails ? -180 : 0}deg` }],
                   transition: "0.25s linear",
                 }}
               >
@@ -238,24 +238,27 @@ function VideoDetails({
                   <Text variant={"small"}>{video.author.email}</Text>
                 </View>
 
-                <View className="flex-row items-center justify-between">
-                  <Text variant={"muted"}>Organization</Text>
-                  <Text variant={"small"}>
-                    {video.author.organization ?? "No organizatoin"}
-                  </Text>
-                </View>
+                {video.author.organization && (
+                  <View className="flex-row items-center justify-between">
+                    <Text variant={"muted"}>Organization</Text>
+                    <Text variant={"small"}>{video.author.organization}</Text>
+                  </View>
+                )}
 
-                <View className="flex-row items-center justify-between">
-                  <Text variant={"muted"}>Designation</Text>
-                  <Text variant={"small"}>{video.author.designation}</Text>
-                </View>
-
-                <View className="flex-row items-center justify-between">
-                  <Text variant={"muted"}>Experience</Text>
-                  <Text variant={"small"}>
-                    {video.author.experienceYears} Years
-                  </Text>
-                </View>
+                {video.author.designation && (
+                  <>
+                    <View className="flex-row items-center justify-between">
+                      <Text variant={"muted"}>Designation</Text>
+                      <Text variant={"small"}>{video.author.designation}</Text>
+                    </View>
+                    <View className="flex-row items-center justify-between">
+                      <Text variant={"muted"}>Experience</Text>
+                      <Text variant={"small"}>
+                        {video.author.experienceYears} Years
+                      </Text>
+                    </View>
+                  </>
+                )}
 
                 {video.author.instagramLink && (
                   <Button

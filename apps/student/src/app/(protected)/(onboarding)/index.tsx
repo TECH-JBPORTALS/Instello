@@ -1,4 +1,3 @@
-import React from "react";
 import { ScrollView } from "react-native";
 import { Stack } from "expo-router";
 import { OnboardingProfileForm } from "@/components/onbaording-profile-form";

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useAuth, useUser } from "@clerk/clerk-expo";
 
-import appPackage from "../../package.json";
+import appPackage from "../../../package.json";
 
 export default function ProfileScreen() {
   const { user, isLoaded } = useUser();
