@@ -2,9 +2,15 @@
 
 import type { z } from "zod/v4";
 import { useParams } from "next/navigation";
+import { env } from "@/env";
 import { useTRPC } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UpdateVideoSchema } from "@instello/db/lms";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@instello/ui/components/avatar";
 import { Button } from "@instello/ui/components/button";
 import {
   Form,
@@ -43,6 +49,9 @@ export function VideoForm() {
   const { data, isError } = useSuspenseQuery(
     trpc.lms.video.getById.queryOptions({ videoId }),
   );
+  const { data: authors } = useSuspenseQuery(
+    trpc.lms.author.list.queryOptions(),
+  );
 
   const form = useForm({
     resolver: zodResolver(UpdateVideoSchema),
@@ -50,6 +59,7 @@ export function VideoForm() {
       title: data.title,
       description: data.description ?? "",
       isPublished: data.isPublished ?? false,
+      authorId: data.authorId ?? "",
     },
   });
 
@@ -67,6 +77,7 @@ export function VideoForm() {
             title: data.title,
             description: data.description ?? "",
             isPublished: data.isPublished ?? false,
+            authorId: data.authorId ?? "",
           });
         toast.info("Details updated");
       },
@@ -146,6 +157,43 @@ export function VideoForm() {
                       maxLength={5000}
                       className="h-80 resize-none"
                     />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="authorId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{`Author`}</FormLabel>
+                  <FormDescription>
+                    Specify the author to access more info on the side of
+                    audiences
+                  </FormDescription>
+                  <FormControl>
+                    <Select {...field} onValueChange={field.onChange}>
+                      <SelectTrigger className="min-w-sm">
+                        <SelectValue placeholder={"Select..."} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {authors.map((author, i) => (
+                          <SelectItem key={i} value={author.id}>
+                            <Avatar className="size-6 border">
+                              <AvatarImage
+                                className="object-cover"
+                                src={`https://${env.NEXT_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${author.imageUTFileId}`}
+                              />
+                              <AvatarFallback>
+                                {author.firstName.charAt(0)}
+                              </AvatarFallback>
+                            </Avatar>
+                            {author.firstName} {author.lastName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

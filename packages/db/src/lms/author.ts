@@ -1,11 +1,8 @@
-import { relations } from "drizzle-orm";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
 import { initialColumns } from "../columns.helpers";
 import { lmsPgTable } from "../table.helpers";
-import { chapter } from "./chapter";
-import { subscription } from "./subscription";
 
 export const author = lmsPgTable("author", (d) => ({
   ...initialColumns,
@@ -21,11 +18,6 @@ export const author = lmsPgTable("author", (d) => ({
   experienceYears: d.integer(),
   organization: d.text(),
   bio: d.text(),
-}));
-
-export const authorRelations = relations(author, ({ many }) => ({
-  chapters: many(chapter),
-  subscriptions: many(subscription),
 }));
 
 export const CreateAuthorSchema = createInsertSchema(author, {

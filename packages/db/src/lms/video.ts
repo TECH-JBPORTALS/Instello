@@ -4,6 +4,7 @@ import { z } from "zod/v4";
 
 import { initialColumns } from "../columns.helpers";
 import { lmsPgTable } from "../table.helpers";
+import { author } from "./author";
 import { chapter } from "./chapter";
 
 export const video = lmsPgTable("video", (d) => ({
@@ -32,6 +33,7 @@ export const video = lmsPgTable("video", (d) => ({
       ],
     })
     .notNull(),
+  authorId: d.text().references(() => author.id),
   isPublished: d.boolean().default(false),
 }));
 
@@ -57,6 +59,7 @@ export const UpdateVideoSchema = createUpdateSchema(video, {
     .optional(),
   description: z.string().max(5000, "Description is too long").optional(),
   isPublished: z.boolean().optional(),
+  authorId: z.string().optional(),
 }).omit({
   id: true,
   chapterId: true,
@@ -73,5 +76,9 @@ export const videoRealations = relations(video, ({ one }) => ({
   chapter: one(chapter, {
     fields: [video.chapterId],
     references: [chapter.id],
+  }),
+  author: one(author, {
+    fields: [video.authorId],
+    references: [author.id],
   }),
 }));

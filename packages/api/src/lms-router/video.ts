@@ -146,6 +146,7 @@ export const videoRouter = {
           chapter: {
             with: { channel: { columns: { title: true } } },
           },
+          author: true,
         },
       });
 
