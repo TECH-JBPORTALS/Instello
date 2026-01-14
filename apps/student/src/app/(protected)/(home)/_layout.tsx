@@ -6,7 +6,7 @@ import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/clerk-expo";
-import { HouseIcon, ListBulletsIcon } from "phosphor-react-native";
+import { HouseIcon } from "phosphor-react-native";
 
 export default function HomeLayout() {
   const { user } = useUser();
@@ -53,21 +53,6 @@ export default function HomeLayout() {
                 </Avatar>
               </TouchableOpacity>
             </Link>
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="subscriptions"
-        options={{
-          title: "Subscriptions",
-          tabBarIcon: ({ size, focused }) => (
-            <Icon
-              as={ListBulletsIcon}
-              size={size}
-              className={cn(focused ? "text-primary" : "text-muted-foreground")}
-              weight={focused ? "bold" : "duotone"}
-            />
           ),
         }}
       />

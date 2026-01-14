@@ -45,10 +45,11 @@ export function useDeviceLimit(): UseDeviceLimitResult {
   const refresh = useCallback(async () => {
     if (!isLoaded || !user || !session) return;
 
-    setLoading(true);
     setError(null);
 
     try {
+      await user.reload();
+
       const sessions = await user.getSessions();
 
       const activeOtherSessions = sessions.filter(
@@ -59,8 +60,6 @@ export function useDeviceLimit(): UseDeviceLimitResult {
       setBlocked(activeOtherSessions.length > 0);
     } catch (e) {
       trackError(e);
-    } finally {
-      setLoading(false);
     }
   }, [isLoaded, session, trackError, user]);
 
