@@ -40,16 +40,27 @@ export default function ProfileScreen() {
     <View className="flex-1 p-4">
       <View className="flex-1">
         <View className="items-center gap-3 py-6">
-          <Avatar className="size-24" alt={`${fullName}'s avatar`}>
+          <Avatar
+            className="border-border size-32 border"
+            alt={`${fullName}'s avatar`}
+          >
             <AvatarImage source={imageSource} />
             <AvatarFallback>
               <Text className="text-2xl font-semibold">{initials}</Text>
             </AvatarFallback>
           </Avatar>
-          <View className="items-center">
-            <Text className="text-lg font-semibold">{fullName}</Text>
+          <View className="items-center gap-1.5">
+            <Text
+              variant={"large"}
+              className="text-center text-lg font-semibold"
+            >
+              {fullName}
+            </Text>
             {email ? (
-              <Text variant="muted" className="text-muted-foreground text-sm">
+              <Text
+                variant="muted"
+                className="text-muted-foreground text-center text-sm"
+              >
                 {email}
               </Text>
             ) : null}
@@ -69,20 +80,25 @@ export default function ProfileScreen() {
         </View>
       </View>
 
-      <Text variant="muted" className="py-6 text-center">
-        App Version {appPackage.version}{" "}
-        <Text variant={"muted"} className="text-2xl">
-          {" · "}
+      <View>
+        <Text variant={"muted"} className="text-center">
+          Developed by ❤️ JB Portals
         </Text>
-        <Link href={"https://instello.in/privacy-policy"}>
-          <Text variant={"muted"} className="underline">
-            Privacy Policy{" "}
-            <Text variant={"muted"} className="text-lg">
-              ↗
-            </Text>
+        <Text variant="muted" className="py-6 text-center">
+          App Version {appPackage.version}{" "}
+          <Text variant={"muted"} className="text-2xl">
+            {" · "}
           </Text>
-        </Link>
-      </Text>
+          <Link href={"https://instello.in/privacy-policy"}>
+            <Text variant={"muted"} className="underline">
+              Privacy Policy{" "}
+              <Text variant={"muted"} className="text-lg">
+                ↗
+              </Text>
+            </Text>
+          </Link>
+        </Text>
+      </View>
     </View>
   );
 }

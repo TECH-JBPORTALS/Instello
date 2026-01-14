@@ -1,6 +1,6 @@
-import { View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { Image } from "expo-image";
-import { Stack } from "expo-router";
+import { Link, Stack } from "expo-router";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,6 +18,7 @@ import {
   BrowserIcon,
   DeviceMobileIcon,
   DevicesIcon,
+  QuestionIcon,
 } from "phosphor-react-native";
 
 export default function ProtectedLayout() {
@@ -121,7 +122,23 @@ export default function ProtectedLayout() {
             <Stack.Screen name="(home)" options={{ headerShown: false }} />
             <Stack.Screen
               name="profile"
-              options={{ title: "My Profile", headerTitleAlign: "center" }}
+              options={{
+                title: "My Profile",
+                headerTitleAlign: "center",
+                headerShadowVisible: false,
+                headerRight(props) {
+                  return (
+                    <Link {...props} href={"/help"} asChild>
+                      <TouchableOpacity>
+                        <View className="flex-row items-center  gap-1">
+                          <Icon as={QuestionIcon} />
+                          <Text className="text-sm">Help</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </Link>
+                  );
+                },
+              }}
             />
             <Stack.Screen name="channel" options={{ headerShown: false }} />
             <Stack.Screen

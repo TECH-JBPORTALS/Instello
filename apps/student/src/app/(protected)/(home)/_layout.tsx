@@ -43,7 +43,10 @@ export default function HomeLayout() {
           headerRight: () => (
             <Link asChild href={"/profile"}>
               <TouchableOpacity>
-                <Avatar alt="User Image" className="mr-4">
+                <Avatar
+                  alt="User Image"
+                  className="border-border mr-4 size-8 border"
+                >
                   <AvatarImage source={{ uri: user?.imageUrl }} />
                   <AvatarFallback>
                     <Text className="font-semibold">
