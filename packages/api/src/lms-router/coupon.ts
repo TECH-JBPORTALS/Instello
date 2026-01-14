@@ -81,7 +81,10 @@ export const couponRouter = {
           .where(eq(couponRedemption.couponId, channelCoupon.id))
           .then((r) => r[0]?.count ?? 0);
 
-        if (redemptionCount >= channelCoupon.maxRedemptions)
+        if (
+          channelCoupon.maxRedemptions &&
+          redemptionCount >= channelCoupon.maxRedemptions
+        )
           throw new TRPCError({
             message: "Coupon has been reached it's maximum claims",
             code: "BAD_REQUEST",
