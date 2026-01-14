@@ -16,8 +16,7 @@ import {
   ChartTooltipContent,
 } from "@instello/ui/components/chart";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { CartesianGrid, LabelList, Line, LineChart, XAxis } from "recharts";
+import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 
 const chartConfig = {
   views: {
@@ -34,10 +33,8 @@ export function ViewsChart() {
   );
 
   const totalWatchTime = data.overallValues.data.total_watch_time ?? 0;
-  const inHoursWatchTime = Math.floor(totalWatchTime / 3600);
-  const remainingMinutes = Math.floor(
-    (totalWatchTime - inHoursWatchTime * 60 * 60) / 60,
-  );
+  const inHoursWatchTime = new Date(totalWatchTime).getHours();
+  const remainingMinutes = new Date(totalWatchTime).getMinutes();
 
   return (
     <Card className="py-4 shadow-none sm:py-0">
@@ -67,12 +64,14 @@ export function ViewsChart() {
         </div>
       </CardHeader>
       <CardContent className="px-2 sm:p-6">
-        <ChartContainer config={chartConfig} className="w-full">
+        <ChartContainer
+          config={chartConfig}
+          className="aspect-auto h-[280px] w-full"
+        >
           <LineChart
             accessibilityLayer
             data={data.timeseries}
             margin={{
-              top: 20,
               left: 12,
               right: 12,
             }}
@@ -84,29 +83,36 @@ export function ViewsChart() {
               axisLine={false}
               tickMargin={8}
               minTickGap={32}
-              tickFormatter={(value: Date) => format(new Date(value), "MMM d")}
+              tickFormatter={(value: Date) => {
+                const date = new Date(value);
+                return date.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                });
+              }}
             />
-
+            <ChartTooltip
+              content={
+                <ChartTooltipContent
+                  className="w-[150px]"
+                  nameKey="views"
+                  labelFormatter={(value: Date) => {
+                    return new Date(value).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    });
+                  }}
+                />
+              }
+            />
             <Line
-              dataKey="views"
-              type="natural"
-              stroke="var(--color-views)"
+              dataKey={"views"}
+              type="monotone"
+              stroke={`var(--color-views)`}
               strokeWidth={2}
-              dot={{
-                fill: "var(--color-views)",
-              }}
-              activeDot={{
-                r: 6,
-              }}
-            >
-              <LabelList
-                position="top"
-                offset={12}
-                className="fill-foreground"
-                fontSize={12}
-              />
-            </Line>
-            <ChartTooltip content={<ChartTooltipContent active />} />
+              connectNulls
+            />
           </LineChart>
         </ChartContainer>
       </CardContent>

@@ -166,6 +166,7 @@ export const videoRouter = {
       const metrics = await ctx.mux.data.metrics.getTimeseries("views", {
         filters: [`video_id:${input.videoId}`],
         timeframe: ["3:months"],
+        group_by: "day",
       });
 
       const overallValues = await ctx.mux.data.metrics.getOverallValues(
@@ -211,6 +212,8 @@ export const videoRouter = {
       const metrics = await ctx.mux.data.metrics.getTimeseries("views", {
         filters,
         timeframe: ["3:months"],
+        measurement: "count",
+        metric_filters: [],
       });
 
       const overallValues = await ctx.mux.data.metrics.getOverallValues(
