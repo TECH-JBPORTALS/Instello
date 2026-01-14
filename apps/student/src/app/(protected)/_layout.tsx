@@ -1,12 +1,15 @@
+import { View } from "react-native";
 import { Stack } from "expo-router";
 import { DeviceGaurd } from "@/components/device-gaurd";
 import { useAuth } from "@clerk/clerk-expo";
+import { PortalHost } from "@rn-primitives/portal";
 
 export default function ProtectedLayout() {
   const { sessionClaims } = useAuth();
 
   return (
-    <>
+    <View className="flex-1">
+      <PortalHost name="protected-layout" />
       <DeviceGaurd />
       <Stack>
         {/** Screens only shown when the user is NOT completed the onboarding process */}
@@ -53,6 +56,6 @@ export default function ProtectedLayout() {
           />
         </Stack.Protected>
       </Stack>
-    </>
+    </View>
   );
 }

@@ -55,7 +55,6 @@ export default function RootLayout() {
               <ThemeProvider value={NAV_THEME[colorScheme ?? "light"]}>
                 <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
                 <Routes />
-
                 <PortalHost />
               </ThemeProvider>
             </QueryClientProvider>
