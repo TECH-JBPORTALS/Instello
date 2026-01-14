@@ -6,6 +6,7 @@ import Animated, { FadeInUp, FadeOutUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Linking from "expo-linking";
 import { useLocalSearchParams } from "expo-router";
+import { usePreventScreenCapture } from "expo-screen-capture";
 import { StatusBar } from "expo-status-bar";
 import { NativeVideo } from "@/components/native-video";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -24,6 +25,7 @@ import {
 } from "phosphor-react-native";
 
 export default function VideoScreen() {
+  usePreventScreenCapture();
   const { videoId, playbackId, assetId } = useLocalSearchParams<{
     videoId: string;
     playbackId: string;
