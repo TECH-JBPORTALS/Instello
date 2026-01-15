@@ -11,20 +11,44 @@ import { TRPCError } from "@trpc/server";
 import { endOfDay, isWithinInterval, startOfDay } from "date-fns";
 import z from "zod/v4";
 
+import { getClerkUserByEmail } from "../router.helpers";
 import { protectedProcedure } from "../trpc";
 
 export const couponRouter = {
   create: protectedProcedure
     .input(CreateCouponSchema)
     .mutation(({ ctx, input }) =>
-      ctx.db
-        .insert(coupon)
-        .values({
-          ...input,
-          validFrom: input.valid.from,
-          validTo: input.valid.to,
-        })
-        .returning(),
+      ctx.db.transaction(async (tx) => {
+        const newCoupon = await tx
+          .insert(coupon)
+          .values({
+            ...input,
+            validFrom: input.valid.from,
+            validTo: input.valid.to,
+            maxRedemptions:
+              input.type == "general" ? input.maxRedemptions : null,
+          })
+          .returning()
+          .then((r) => r[0]);
+
+        if (!newCoupon)
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Can't able to create coupon",
+          });
+
+        if (input.targetEmails) {
+          await Promise.all(
+            input.targetEmails
+              .split(",")
+              .map((email) =>
+                tx
+                  .insert(couponTarget)
+                  .values({ couponId: newCoupon.id, email: email.trim() }),
+              ),
+          );
+        }
+      }),
     ),
 
   list: protectedProcedure
@@ -42,6 +66,43 @@ export const couponRouter = {
           })),
         ),
     ),
+
+  getById: protectedProcedure
+    .input(z.object({ couponId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const singleCoupon = await ctx.db.query.coupon
+        .findFirst({
+          where: (t, { eq }) => eq(t.id, input.couponId),
+          with: {
+            couponTargets: true,
+          },
+        })
+        .then(async (r) => {
+          if (!r) return;
+
+          const couponTargets = await Promise.all(
+            r.couponTargets.map(async (target) => {
+              const user = await getClerkUserByEmail(target.email, ctx);
+
+              return {
+                ...user,
+                ...target,
+              };
+            }),
+          );
+
+          return {
+            ...r,
+            valid: { to: r.validTo, from: r.validFrom },
+            couponTargets,
+          };
+        });
+
+      if (!singleCoupon)
+        throw new TRPCError({ code: "NOT_FOUND", message: "Coupon not found" });
+
+      return singleCoupon;
+    }),
 
   check: protectedProcedure
     .input(z.object({ code: z.string().trim(), channelId: z.string() }))
@@ -145,6 +206,7 @@ export const couponRouter = {
           ...input,
           validFrom: input.valid.from,
           validTo: input.valid.to,
+          maxRedemptions: input.type == "general" ? input.maxRedemptions : null,
         })
         .where(eq(coupon.id, input.id))
         .returning()
@@ -168,6 +230,10 @@ export const couponRouter = {
   deleteTarget: protectedProcedure
     .input(z.object({ couponTargetId: z.string() }))
     .mutation(({ ctx, input }) =>
-      ctx.db.delete(couponTarget).where(eq(coupon, input.couponTargetId)),
+      ctx.db
+        .delete(couponTarget)
+        .where(eq(couponTarget.id, input.couponTargetId))
+        .returning()
+        .then((r) => r[0]),
     ),
 };

@@ -45,6 +45,29 @@ export const couponRedemption = lmsPgTable("coupon_redemption", (d) => ({
   clerkUserId: d.text().notNull(),
 }));
 
+export const CouponTargetEmailSchema = z.object({
+  targetEmails: z
+    .string()
+    .min(1, "Required")
+    .check((ctx) => {
+      const invalidEmails: string[] = [];
+
+      ctx.value.split(",").forEach((email) => {
+        if (!z.email().parse(email.trim())) invalidEmails.push(email.trim());
+      });
+
+      if (invalidEmails.length > 0)
+        ctx.issues.push({
+          code: "custom",
+          input: ctx.value,
+          values: [],
+          message: `${invalidEmails.join(", ")} invalid email address`,
+          path: ["targetedEmails"],
+        });
+    })
+    .optional(),
+});
+
 export const CreateCouponSchema = createInsertSchema(coupon, {
   channelId: z.string().min(2, "Channel ID required"),
   code: z
@@ -63,29 +86,9 @@ export const CreateCouponSchema = createInsertSchema(coupon, {
   .and(
     z.object({
       valid: z.object({ from: z.date(), to: z.date() }),
-      targetedEmails: z
-        .string()
-        .min(1, "Required")
-        .check((ctx) => {
-          const invalidEmails: string[] = [];
-
-          ctx.value.split(",").forEach((email) => {
-            if (!z.email().parse(email.trim()))
-              invalidEmails.push(email.trim());
-          });
-
-          if (invalidEmails.length > 0)
-            ctx.issues.push({
-              code: "custom",
-              input: ctx.value,
-              values: [],
-              message: `${invalidEmails.join(", ")} invalid email address`,
-              path: ["targetedEmails"],
-            });
-        })
-        .optional(),
     }),
   )
+  .and(CouponTargetEmailSchema)
   .check((ctx) => {
     if (ctx.value.type == "general" && !ctx.value.maxRedemptions) {
       ctx.issues.push({
@@ -105,15 +108,17 @@ export const UpdateCouponSchema = createUpdateSchema(coupon, {
     .string()
     .min(1, "Coupon code required")
     .transform((val) => val.toUpperCase()),
+  maxRedemptions: z.number().optional(),
 })
   .omit({
-    id: true,
-    validFrom: true,
-    validTo: true,
     createdAt: true,
     updatedAt: true,
   })
-  .and(z.object({ valid: z.object({ from: z.date(), to: z.date() }) }));
+  .and(
+    z.object({
+      valid: z.object({ from: z.date(), to: z.date() }),
+    }),
+  );
 
 export const CreateCouponTargetSchema = createInsertSchema(couponTarget, {
   couponId: z.string().min(2, "CouponId ID required"),

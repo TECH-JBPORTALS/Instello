@@ -18,10 +18,25 @@ export function withTx(ctx: Context, tx: DbTransaction) {
 export async function getClerkUserById(userId: string, ctx: Context) {
   return ctx.clerk.users
     .getUser(userId)
-    .then(({ firstName, lastName, imageUrl, hasImage }) => ({
+    .then(({ firstName, fullName, lastName, imageUrl, hasImage }) => ({
       firstName,
       lastName,
+      fullName,
       imageUrl,
       hasImage,
     }));
+}
+
+export async function getClerkUserByEmail(email: string, ctx: Context) {
+  return ctx.clerk.users.getUserList({ emailAddress: [email] }).then((r) => {
+    const user = r.data[0];
+
+    return {
+      firstName: user?.firstName,
+      lastName: user?.lastName,
+      fullName: user?.fullName,
+      imageUrl: user?.imageUrl,
+      hasImage: user?.hasImage,
+    };
+  });
 }

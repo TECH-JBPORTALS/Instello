@@ -152,12 +152,12 @@ export function CreateCouponDialog({
                             className={cn("w-full pl-3 text-left font-normal")}
                           >
                             <span className="inline-flex items-center gap-1.5">
-                              {field.value && format(field.value.from, "PP")}
+                              {format(field.value.from, "PP")}
                               <ArrowRightIcon
                                 weight="duotone"
                                 className="text-muted-foreground"
                               />
-                              {field.value && format(field.value.to, "PP")}
+                              {format(field.value.to, "PP")}
                             </span>
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
@@ -244,7 +244,7 @@ export function CreateCouponDialog({
               {values.type == "targeted" && (
                 <FormField
                   control={form.control}
-                  name="targetedEmails"
+                  name="targetEmails"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Set targeted emails</FormLabel>
