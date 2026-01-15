@@ -37,6 +37,9 @@ export function ChannelDetailsSection() {
           {data.title}
         </h4>
         <p className="text-muted-foreground text-xs">{data.description}</p>
+        <p className="text-muted-foreground mt-1 text-xs font-bold">
+          {data.totalSubscribers} Subscribers
+        </p>
       </div>
     </div>
   );

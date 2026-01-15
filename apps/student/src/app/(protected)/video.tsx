@@ -1,17 +1,31 @@
-import React from "react";
+import type { RouterOutputs } from "@/utils/api";
+import type { VideoSource } from "expo-video";
+import { useState } from "react";
 import { ScrollView, View } from "react-native";
+import Animated, { FadeInUp, FadeOutUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import * as Linking from "expo-linking";
 import { useLocalSearchParams } from "expo-router";
+import { usePreventScreenCapture } from "expo-screen-capture";
 import { StatusBar } from "expo-status-bar";
-import { VideoSource } from "expo-video";
 import { NativeVideo } from "@/components/native-video";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
+import { Separator } from "@/components/ui/separator";
 import { Text } from "@/components/ui/text";
-import { RouterOutputs, trpc } from "@/utils/api";
+import { trpc } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { CalendarIcon, ClockIcon } from "phosphor-react-native";
+import {
+  CalendarIcon,
+  CaretDownIcon,
+  ClockIcon,
+  InstagramLogoIcon,
+} from "phosphor-react-native";
 
 export default function VideoScreen() {
+  usePreventScreenCapture();
   const { videoId, playbackId, assetId } = useLocalSearchParams<{
     videoId: string;
     playbackId: string;
@@ -25,7 +39,7 @@ export default function VideoScreen() {
     isFetching,
   } = useQuery(
     trpc.lms.video.getById.queryOptions({
-      videoId: videoId!,
+      videoId: videoId,
     }),
   );
 
@@ -33,7 +47,7 @@ export default function VideoScreen() {
     uri: `https://stream.mux.com/${playbackId}.m3u8`,
     metadata: {
       title: video?.title,
-      artist: video?.chapter?.title,
+      artist: video?.chapter.title,
     },
   };
 
@@ -72,7 +86,7 @@ export default function VideoScreen() {
 interface VideoDetailsProps {
   isLoading: boolean;
   isFetching?: boolean;
-  error: any;
+  error?: unknown;
   video?: RouterOutputs["lms"]["video"]["getById"];
 }
 
@@ -82,6 +96,7 @@ function VideoDetails({
   error,
   video,
 }: VideoDetailsProps) {
+  const [showAuthorDetails, setAuthorDetails] = useState(false);
   const formatDuration = (seconds: number | null | undefined) => {
     if (!seconds) return "0:00";
     const minutes = Math.floor(seconds / 60);
@@ -165,6 +180,105 @@ function VideoDetails({
             {video.description}
           </Text>
         </View>
+      )}
+
+      {video.author && (
+        <>
+          <View className="flex-row items-center gap-2">
+            <Avatar
+              alt="Author Profile"
+              className="border-border h-10 w-10 border"
+            >
+              <AvatarImage
+                source={{
+                  uri: `https://${process.env.EXPO_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${video.author.imageUTFileId}`,
+                }}
+              />
+              <AvatarFallback>
+                <Text>{video.author.firstName.charAt(0)}</Text>
+              </AvatarFallback>
+            </Avatar>
+            <View>
+              <Text variant={"small"}>
+                {video.author.firstName} {video.author.lastName}
+              </Text>
+              <Text variant={"muted"}>Author</Text>
+            </View>
+
+            <Button
+              onPress={() => setAuthorDetails(!showAuthorDetails)}
+              variant={showAuthorDetails ? "outline" : "secondary"}
+              className="ml-auto rounded-full"
+            >
+              <Text>{showAuthorDetails ? "Hide" : "More"}</Text>
+              <Animated.View
+                style={{
+                  transform: [{ rotate: `${showAuthorDetails ? -180 : 0}deg` }],
+                  transition: "0.25s linear",
+                }}
+              >
+                <Icon as={CaretDownIcon} />
+              </Animated.View>
+            </Button>
+          </View>
+          {showAuthorDetails && (
+            <Animated.View
+              entering={FadeInUp.duration(200)}
+              exiting={FadeOutUp.duration(200)}
+            >
+              <View className="gap-2">
+                {video.author.bio && (
+                  <>
+                    <Text variant={"small"}>{video.author.bio}</Text>
+                    <Separator />
+                  </>
+                )}
+                <View className="flex-row items-center justify-between">
+                  <Text variant={"muted"}>Email address</Text>
+                  <Text variant={"small"}>{video.author.email}</Text>
+                </View>
+
+                {video.author.organization && (
+                  <View className="flex-row items-center justify-between">
+                    <Text variant={"muted"}>Organization</Text>
+                    <Text variant={"small"}>{video.author.organization}</Text>
+                  </View>
+                )}
+
+                {video.author.designation && (
+                  <>
+                    <View className="flex-row items-center justify-between">
+                      <Text variant={"muted"}>Designation</Text>
+                      <Text variant={"small"}>{video.author.designation}</Text>
+                    </View>
+                    <View className="flex-row items-center justify-between">
+                      <Text variant={"muted"}>Experience</Text>
+                      <Text variant={"small"}>
+                        {video.author.experienceYears} Years
+                      </Text>
+                    </View>
+                  </>
+                )}
+
+                {video.author.instagramLink && (
+                  <Button
+                    onPress={() =>
+                      video.author?.instagramLink &&
+                      Linking.openURL(video.author.instagramLink)
+                    }
+                    variant={"link"}
+                  >
+                    <Icon as={InstagramLogoIcon} />
+                    <Text className="underline">Follow on Instagram</Text>
+                    <Text variant={"muted"} className="text-lg">
+                      ↗
+                    </Text>
+                  </Button>
+                )}
+              </View>
+            </Animated.View>
+          )}
+        </>
       )}
     </View>
   );

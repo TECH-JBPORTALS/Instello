@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React from "react";
 import { View } from "react-native";
 import { Image } from "expo-image";
@@ -5,6 +6,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { Text } from "@/components/ui/text";
 import { trpc } from "@/utils/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import CouponLoading from "assets/animations/coupon-loading.json";
 import LottieView from "lottie-react-native";
 
 export default function ApplyCouponScreen() {
@@ -37,7 +39,7 @@ export default function ApplyCouponScreen() {
 
   React.useEffect(() => {
     createSubscription({ couponId });
-  }, []);
+  }, [couponId, createSubscription]);
 
   return (
     <View className="flex-1 items-center justify-between py-20">
@@ -47,7 +49,7 @@ export default function ApplyCouponScreen() {
       />
       <View className="items-center gap-3.5">
         <LottieView
-          source={require("assets/animations/coupon-loading.json")}
+          source={CouponLoading}
           style={{ height: 80, width: 80 }}
           autoPlay
         />

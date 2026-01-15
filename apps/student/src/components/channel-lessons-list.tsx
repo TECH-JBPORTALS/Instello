@@ -132,7 +132,9 @@ export function ChannelLessonsList({ channelId }: { channelId: string }) {
                   <CardContent className="p-0">
                     <Image
                       source={{
-                        uri: `https://image.mux.com/${item.playbackId}/thumbnail.png?width=214&height=121&time=15`,
+                        uri: item.thumbnailId
+                          ? `https://${process.env.EXPO_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${item.thumbnailId}`
+                          : `https://image.mux.com/${item.playbackId}/thumbnail.png?width=214&height=121&time=15`,
                       }}
                       className="bg-accent h-14 w-auto rounded-sm p-0"
                       style={{

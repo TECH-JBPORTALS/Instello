@@ -61,7 +61,7 @@ export function NavChannels() {
                   <FolderOpenIcon weight="duotone" />
                 ) : (
                   <>
-                    {item.isPublished ? (
+                    {item.isPublic ? (
                       <FolderIcon weight={"duotone"} />
                     ) : (
                       <FolderLockIcon weight="duotone" />

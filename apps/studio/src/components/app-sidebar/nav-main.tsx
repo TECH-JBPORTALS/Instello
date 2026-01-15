@@ -6,9 +6,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@instello/ui/components/sidebar";
-import { HouseIcon } from "@phosphor-icons/react";
+import { HouseIcon, UsersThreeIcon } from "@phosphor-icons/react";
 
-const items = [{ title: "Home", url: "/", icon: HouseIcon }];
+const items = [
+  { title: "Home", url: "/", icon: HouseIcon },
+  { title: "Authors", url: "/authors", icon: UsersThreeIcon },
+];
 
 export function NavMain() {
   const pathname = usePathname();

@@ -1,8 +1,9 @@
-import { and, countDistinct, eq, sum } from "@instello/db";
+import { and, count, countDistinct, eq, sum } from "@instello/db";
 import {
   channel,
   chapter,
   CreateChannelSchema,
+  subscription,
   UpdateChannelSchema,
   video,
 } from "@instello/db/lms";
@@ -19,7 +20,12 @@ export const channelRouter = {
     .mutation(async ({ ctx, input }) => {
       return await ctx.db
         .insert(channel)
-        .values({ ...input, createdByClerkUserId: ctx.auth.userId })
+        .values({
+          ...input,
+          createdByClerkUserId: ctx.auth.userId,
+          collegeId: !input.isPublic ? input.collegeId : null,
+          branchId: !input.isPublic ? input.branchId : null,
+        })
         .returning();
     }),
 
@@ -34,7 +40,7 @@ export const channelRouter = {
     return await ctx.db.transaction(async (tx) => {
       // 1. List all published channels
       const allPublicChannels = await tx.query.channel.findMany({
-        where: eq(channel.isPublished, true),
+        where: eq(channel.isPublic, true),
         orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
       });
 
@@ -118,11 +124,18 @@ export const channelRouter = {
             ),
           );
 
+        // 5. Get total subscribers
+        const subscribersAggr = await tx
+          .select({ total: count() })
+          .from(subscription)
+          .where(eq(subscription.channelId, singleChannel.id));
+
         return {
           ...singleChannel,
           createdByClerkUser,
           numberOfChapters: chapterAggr[0]?.total ?? 0,
           totalDuration: hoursAggr[0]?.total ?? 0,
+          totalSubscribers: subscribersAggr[0]?.total ?? 0,
         };
       });
     }),
@@ -132,7 +145,11 @@ export const channelRouter = {
     .mutation(async ({ ctx, input }) => {
       return await ctx.db
         .update(channel)
-        .set({ ...input })
+        .set({
+          ...input,
+          collegeId: !input.isPublic ? input.collegeId : null,
+          branchId: !input.isPublic ? input.branchId : null,
+        })
         .where(eq(channel.id, input.id))
         .returning()
         .then((r) => r[0]);

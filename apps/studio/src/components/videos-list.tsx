@@ -5,6 +5,7 @@ import type { ChangeEvent } from "react";
 import { useRef } from "react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
+import { env } from "@/env";
 import {
   formatFileSize,
   formatTimeRemaining,
@@ -123,7 +124,11 @@ function VideoItem({ video }: { video: UnifiedVideo }) {
         <div className="bg-accent relative aspect-video h-full w-20 overflow-hidden rounded-sm">
           {video.status === "ready" && (
             <Image
-              src={`https://image.mux.com/${video.playbackId}/thumbnail.png?width=214&height=121&time=15`}
+              src={
+                video.thumbnailId
+                  ? `https://${env.NEXT_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${video.thumbnailId}`
+                  : `https://image.mux.com/${video.playbackId}/thumbnail.png?width=214&height=121&time=15`
+              }
               fill
               alt={`${video.title}'s thumbneil`}
               className="aspect-video h-full w-full"

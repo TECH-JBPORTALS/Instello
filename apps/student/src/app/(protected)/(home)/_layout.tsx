@@ -1,8 +1,4 @@
-import { TouchableOpacity, View } from "react-native";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
 import { Link, Tabs } from "expo-router";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -10,11 +6,10 @@ import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/clerk-expo";
-import { HouseIcon, ListBulletsIcon } from "phosphor-react-native";
+import { HouseIcon } from "phosphor-react-native";
 
 export default function HomeLayout() {
   const { user } = useUser();
-  const { top, bottom } = useSafeAreaInsets();
 
   return (
     <Tabs
@@ -30,6 +25,7 @@ export default function HomeLayout() {
 
           headerTitle: () => (
             <Image
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-require-imports
               source={require("assets/images/instello.png")}
               style={{ width: 110, height: 24 }}
             />
@@ -47,7 +43,10 @@ export default function HomeLayout() {
           headerRight: () => (
             <Link asChild href={"/profile"}>
               <TouchableOpacity>
-                <Avatar alt="User Image" className="mr-4">
+                <Avatar
+                  alt="User Image"
+                  className="border-border mr-4 size-8 border"
+                >
                   <AvatarImage source={{ uri: user?.imageUrl }} />
                   <AvatarFallback>
                     <Text className="font-semibold">
@@ -57,21 +56,6 @@ export default function HomeLayout() {
                 </Avatar>
               </TouchableOpacity>
             </Link>
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="subscriptions"
-        options={{
-          title: "Subscriptions",
-          tabBarIcon: ({ size, focused }) => (
-            <Icon
-              as={ListBulletsIcon}
-              size={size}
-              className={cn(focused ? "text-primary" : "text-muted-foreground")}
-              weight={focused ? "bold" : "duotone"}
-            />
           ),
         }}
       />

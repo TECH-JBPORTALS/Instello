@@ -68,13 +68,19 @@ export default function RootLayout() {
 void SplashScreen.preventAutoHideAsync();
 
 function Routes() {
-  const { isSignedIn, isLoaded, sessionClaims } = useAuth();
+  const { isSignedIn, isLoaded } = useAuth();
   const [fontLoaded, error] = useFonts({
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-require-imports
     MontserratRegular: require("assets/fonts/Montserrat-Regular.ttf"),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-require-imports
     MontserratMedium: require("assets/fonts/Montserrat-Medium.ttf"),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-require-imports
     MontserratSemiBold: require("assets/fonts/Montserrat-SemiBold.ttf"),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-require-imports
     MontserratBold: require("assets/fonts/Montserrat-Bold.ttf"),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-require-imports
     MontserratExtraBold: require("assets/fonts/Montserrat-ExtraBold.ttf"),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-require-imports
     MontserratBlack: require("assets/fonts/Montserrat-Black.ttf"),
   });
 
@@ -128,49 +134,7 @@ function Routes() {
 
       {/* Screens only shown when the user IS signed in */}
       <Stack.Protected guard={isSignedIn}>
-        {/** Screens only shown when the user is NOT completed the onboarding process */}
-        <Stack.Protected guard={!sessionClaims?.metadata?.onBoardingCompleted}>
-          <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
-        </Stack.Protected>
-
-        {/** Screens only shown when the user Is completed the onboarding process */}
-        <Stack.Protected guard={!!sessionClaims?.metadata?.onBoardingCompleted}>
-          <Stack.Screen name="(home)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="profile"
-            options={{ title: "My Profile", headerTitleAlign: "center" }}
-          />
-          <Stack.Screen name="channel" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="(subscribe)/index"
-            options={{
-              presentation: "modal",
-              title: "Subscribe Now",
-              headerTitleAlign: "center",
-            }}
-          />
-          <Stack.Screen
-            name="(subscribe)/apply-coupon"
-            options={{
-              headerShown: false,
-              animation: "fade",
-            }}
-          />
-          <Stack.Screen
-            name="(subscribe)/coupon-success"
-            options={{
-              title: "",
-            }}
-          />
-          <Stack.Screen
-            name="video"
-            options={{
-              headerShown: false,
-              animation: "slide_from_bottom",
-              gestureDirection: "vertical",
-            }}
-          />
-        </Stack.Protected>
+        <Stack.Screen name="(protected)" options={{ headerShown: false }} />
       </Stack.Protected>
 
       {/* Screens outside the guards are accessible to everyone (e.g. not found) */}

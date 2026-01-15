@@ -1,8 +1,10 @@
-import { couponRedemption, subscription } from "@instello/db/lms";
+import { count, eq } from "@instello/db";
+import { couponRedemption, preference, subscription } from "@instello/db/lms";
 import { TRPCError } from "@trpc/server";
 import { addDays, endOfDay, isWithinInterval } from "date-fns";
 import { z } from "zod/v4";
 
+import { getClerkUserById } from "../router.helpers";
 import { protectedProcedure } from "../trpc";
 
 export const subscriptionRouter = {
@@ -121,6 +123,42 @@ export const subscriptionRouter = {
       return {
         ...userSubscription,
         status,
+      };
+    }),
+
+  listByChannelId: protectedProcedure
+    .input(z.object({ channelId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const subscribersAggr = await ctx.db
+        .select({ total: count() })
+        .from(subscription)
+        .where(eq(subscription.channelId, input.channelId));
+
+      const subscribers = await ctx.db.query.subscription
+        .findMany({
+          where: eq(subscription.channelId, input.channelId),
+        })
+        .then((subscriptions) =>
+          Promise.all(
+            subscriptions.map(async (sub) => {
+              const clerkUser = await getClerkUserById(sub.clerkUserId, ctx);
+              const preferences = await ctx.db.query.preference.findFirst({
+                where: eq(preference.id, sub.clerkUserId),
+                with: { college: true },
+              });
+
+              return {
+                ...sub,
+                clerkUser,
+                preferences,
+              };
+            }),
+          ),
+        );
+
+      return {
+        totalSubscribers: subscribersAggr[0]?.total ?? 0,
+        subscribers,
       };
     }),
 };

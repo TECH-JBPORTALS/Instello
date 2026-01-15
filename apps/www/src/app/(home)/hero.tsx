@@ -106,9 +106,9 @@ export function Hero() {
         "
       >
         <Button
-          size="xl"
+          size="lg"
           variant="secondary"
-          className="w-full rounded-full shadow-sm"
+          className="h-11 w-full rounded-full shadow-sm"
           asChild
         >
           <NavLink id="contact" href="#contact">
@@ -117,7 +117,11 @@ export function Hero() {
           </NavLink>
         </Button>
 
-        <Button size="xl" className="w-full rounded-full shadow-sm" asChild>
+        <Button
+          size="lg"
+          className="h-11 w-full rounded-full shadow-sm"
+          asChild
+        >
           <Link
             href="https://play.google.com/store/apps/details?id=in.instello.app"
             target="_blank"

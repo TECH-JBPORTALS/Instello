@@ -1,8 +1,7 @@
 "use client";
 
-import type React from "react";
 import type { z } from "zod/v4";
-import { useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { env } from "@/env";
 import { useTRPC } from "@/trpc/react";
@@ -27,6 +26,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@instello/ui/components/form";
+import { Input } from "@instello/ui/components/input";
 import {
   Select,
   SelectContent,
@@ -56,6 +56,8 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+
+import CollegeBranchCommand from "../college-branch.command";
 
 const navigationItems: {
   id: "general" | null;
@@ -90,7 +92,7 @@ export function ChannelSettingsDialog({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent
         onInteractOutside={(e) => e.preventDefault()}
-        className="to-[50%] sm:max-w-6xl"
+        className="to-50% sm:max-w-6xl"
       >
         <SidebarProvider
           className="min-h-full"
@@ -144,11 +146,14 @@ function GeneralSettings({
   const form = useForm({
     resolver: zodResolver(UpdateChannelSchema),
     defaultValues: {
+      subjectCode: data?.subjectCode ?? "",
       thumbneilId: data?.thumbneilId ?? "",
       title: data?.title ?? "",
       id: channelId,
       description: data?.description ?? "",
-      isPublished: data?.isPublished ?? false,
+      isPublic: data?.isPublic ?? false,
+      collegeId: data?.collegeId ?? "",
+      branchId: data?.branchId ?? "",
     },
     reValidateMode: "onChange",
     mode: "onChange",
@@ -171,6 +176,8 @@ function GeneralSettings({
       },
     }),
   );
+
+  const values = form.watch();
 
   async function onSubmit(values: z.infer<typeof UpdateChannelSchema>) {
     await updateChannel(values);
@@ -208,6 +215,19 @@ function GeneralSettings({
             </div>
           ) : (
             <>
+              <FormField
+                control={form.control}
+                name="subjectCode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Subject Code</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Subject Code" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="title"
@@ -333,7 +353,7 @@ function GeneralSettings({
 
               <FormField
                 control={form.control}
-                name="isPublished"
+                name="isPublic"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{`Visibility`}</FormLabel>
@@ -366,6 +386,48 @@ function GeneralSettings({
                   </FormItem>
                 )}
               />
+
+              {!values.isPublic && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="collegeId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{"College (Optional)"}</FormLabel>
+                        <FormControl className="h-full">
+                          <CollegeBranchCommand
+                            value={field.value}
+                            onChange={(value) => {
+                              field.onChange(value);
+                              form.setValue("collegeId", value);
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="branchId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{"Branch (Optional)"}</FormLabel>
+                        <FormControl className="h-full">
+                          <CollegeBranchCommand
+                            value={field.value}
+                            onChange={field.onChange}
+                            byCollegeId={values.collegeId}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
             </>
           )}
         </DialogBody>

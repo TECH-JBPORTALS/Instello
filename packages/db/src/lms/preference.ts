@@ -4,18 +4,18 @@ import { z } from "zod/v4";
 
 import { initialColumns } from "../columns.helpers";
 import { lmsPgTable } from "../table.helpers";
-import { collegeOrBranch } from "./course-or-branch";
+import { collegeOrBranch } from "./college-or-branch";
 
 export const preference = lmsPgTable("preference", (d) => ({
   ...initialColumns,
   collegeId: d
     .text()
     .notNull()
-    .references(() => collegeOrBranch.id, { onDelete: "cascade" }),
+    .references(() => collegeOrBranch.id, { onDelete: "set null" }),
   branchId: d
     .text()
     .notNull()
-    .references(() => collegeOrBranch.id, { onDelete: "cascade" }),
+    .references(() => collegeOrBranch.id, { onDelete: "set null" }),
 }));
 
 export const CreatePreferenceSchema = createInsertSchema(preference, {
@@ -37,11 +37,7 @@ export const UpdatePreferenceSchema = createUpdateSchema(preference, {
 });
 
 export const preferenceRealations = relations(preference, ({ one }) => ({
-  course: one(collegeOrBranch, {
-    fields: [preference.collegeId],
-    references: [collegeOrBranch.collegeId],
-  }),
-  branch: one(collegeOrBranch, {
+  college: one(collegeOrBranch, {
     fields: [preference.collegeId],
     references: [collegeOrBranch.id],
   }),

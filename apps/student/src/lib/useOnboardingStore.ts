@@ -1,4 +1,4 @@
-import { RouterOutputs } from "@instello/api";
+import type { RouterOutputs } from "@instello/api";
 import { create } from "zustand";
 
 export type College = Omit<
@@ -9,7 +9,7 @@ export type College = Omit<
 export type Branch =
   RouterOutputs["lms"]["collegeOrBranch"]["list"]["items"][number];
 
-type OnboardingState = {
+interface OnboardingState {
   firstName: string;
   lastName: string;
   dob: Date;
@@ -22,7 +22,7 @@ type OnboardingState = {
     value: OnboardingState[K],
   ) => void;
   reset: () => void;
-};
+}
 
 export const useOnboardingStore = create<OnboardingState>((set) => ({
   firstName: "",

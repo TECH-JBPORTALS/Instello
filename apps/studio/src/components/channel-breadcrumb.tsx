@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { useTRPC } from "@/trpc/react";
 import {
   Breadcrumb,
@@ -15,16 +15,20 @@ import {
   TooltipTrigger,
 } from "@instello/ui/components/tooltip";
 import {
+  ChartLineIcon,
+  CrownIcon,
   GlobeHemisphereEastIcon,
   ListBulletsIcon,
   LockLaminatedIcon,
   TicketIcon,
 } from "@phosphor-icons/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { useRouter } from "nextjs-toploader/app";
 
 const items = [
   { title: "Chapters", url: "", icon: ListBulletsIcon },
-  // { title: "Subscriptions", url: "/subscriptions", icon: CrownIcon },
+  { title: "Analytics", url: "/analytics", icon: ChartLineIcon },
+  { title: "Subscriptions", url: "/subscriptions", icon: CrownIcon },
   { title: "Coupons", url: "/coupons", icon: TicketIcon },
 ];
 
@@ -44,7 +48,7 @@ export function ChannelPageBreadcrumb() {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbPage className="flex items-center gap-1.5">
-              {data.isPublished ? (
+              {data.isPublic ? (
                 <GlobeHemisphereEastIcon weight="duotone" />
               ) : (
                 <Tooltip>
