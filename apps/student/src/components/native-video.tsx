@@ -1,4 +1,10 @@
-import type { VideoContentFit, VideoMetadata, VideoPlayer } from "expo-video";
+import type {
+  VideoContentFit,
+  VideoMetadata,
+  VideoPlayer,
+  VideoSource,
+} from "expo-video";
+import type { ViewProps } from "react-native";
 import React from "react";
 import {
   ActivityIndicator,
@@ -6,7 +12,6 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   View,
-  ViewProps,
 } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { useEvent } from "expo";
@@ -14,13 +19,12 @@ import * as NavigationBar from "expo-navigation-bar";
 import { router } from "expo-router";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { setStatusBarHidden } from "expo-status-bar";
-import { useVideoPlayer, VideoSource, VideoView } from "expo-video";
+import { useVideoPlayer, VideoView } from "expo-video";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/clerk-expo";
-//@ts-ignore
 import muxReactNativeVideo from "@mux/mux-data-react-native-video";
 import Slider from "@react-native-community/slider";
 import {
@@ -36,6 +40,7 @@ import {
 
 import app from "../../package.json";
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
 const MuxVideo = muxReactNativeVideo(VideoView);
 
 const NativeVideoPlayerContext = React.createContext({
@@ -214,7 +219,7 @@ function NativeVideoControlsOverlay({
   React.useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
       if (fullscreen) {
-        exitFullscreen();
+        exitFullscreen().catch((e) => console.log(e));
         return true;
       }
     });
@@ -237,7 +242,7 @@ function NativeVideoControlsOverlay({
     .onEnd((e) => {
       try {
         // Add safety checks for the gesture event
-        if (!e || typeof e.scale !== "number" || isNaN(e.scale)) {
+        if (typeof e.scale !== "number" || isNaN(e.scale)) {
           console.warn("Pinch gesture event is invalid:", e);
           return;
         }

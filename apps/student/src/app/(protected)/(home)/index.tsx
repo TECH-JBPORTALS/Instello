@@ -2,11 +2,12 @@ import type { RouterOutputs } from "@/utils/api";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Icon } from "@/components/ui/icon";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
-import { cn } from "@/lib/utils";
+import { cn, formatNumber } from "@/lib/utils";
 import { trpc } from "@/utils/api";
 import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
@@ -20,6 +21,9 @@ function ChannelCard({
   channel: RouterOutputs["lms"]["channel"]["listPublic"][number];
   className?: string;
 }) {
+  const views = channel.overallValues.data.total_views;
+  const totalSubscribers = channel.totalSubscribers;
+
   return (
     <Link href={`/channel?channelId=${channel.id}`} asChild>
       <TouchableOpacity>
@@ -43,20 +47,36 @@ function ChannelCard({
             contentFit="cover"
           />
           <CardContent className="w-full flex-1 gap-0.5 px-0">
-            <CardTitle numberOfLines={1} className="text-sm">
-              {channel.title}
-            </CardTitle>
-            <Text
-              variant="muted"
-              className="text-muted-foreground text-xs font-semibold"
-            >
-              {channel.numberOfChapters} Chapters
-            </Text>
-            <Text className="text-muted-foreground text-xs">
-              by {channel.createdByClerkUser.firstName}{" "}
-              {channel.createdByClerkUser.lastName} ·{" "}
+            <CardTitle numberOfLines={1}>{channel.title}</CardTitle>
+            <Text variant="muted" className="text-muted-foreground text-xs">
+              {channel.numberOfChapters} Chapters{" · "}
+              {}
+              {views == 0 ? "No" : formatNumber(views)} Views
+              {" · "}
+              {totalSubscribers == 0
+                ? "No"
+                : formatNumber(totalSubscribers)}{" "}
+              Subscribers
+              {" · "}
               {formatDate(channel.createdAt, "MMM yyyy")}
             </Text>
+            <View className=" flex-row flex-wrap items-center gap-2">
+              <Avatar alt="Channel Creator" className="size-4">
+                <AvatarImage
+                  source={{ uri: channel.createdByClerkUser.imageUrl }}
+                />
+                <AvatarFallback>
+                  <Text>{channel.createdByClerkUser.firstName?.charAt(0)}</Text>
+                </AvatarFallback>
+              </Avatar>
+              <Text
+                variant={"muted"}
+                className="text-muted-foreground mt-3 text-xs"
+              >
+                {channel.createdByClerkUser.firstName}{" "}
+                {channel.createdByClerkUser.lastName}
+              </Text>
+            </View>
           </CardContent>
         </Card>
       </TouchableOpacity>
@@ -69,9 +89,12 @@ function ChannelCardSkeleton({ className }: { className?: string }) {
     <Card className={cn("w-40 gap-3 border-0 p-2", className)}>
       <Skeleton className="aspect-[16/10] h-auto w-auto" />
       <CardContent className="w-full flex-1 gap-1 px-0">
-        <Skeleton className="h-2.5 max-w-full" />
-        <Skeleton className="h-1.5 w-32" />
-        <Skeleton className="h-1.5 w-20" />
+        <Skeleton className="h-4 max-w-full" />
+        <Skeleton className="h-3 w-32" />
+        <View className="mt-3 flex-row  items-center gap-2">
+          <Skeleton className="size-4 rounded-full" />
+          <Skeleton className="h-3 w-20" />
+        </View>
       </CardContent>
     </Card>
   );
@@ -92,7 +115,6 @@ export default function Home() {
       showsVerticalScrollIndicator={false}
     >
       <FlashList
-        numColumns={2}
         data={channelList}
         ListHeaderComponent={
           <Text
@@ -106,7 +128,7 @@ export default function Home() {
           isLoading ? (
             <View className="w-full flex-1 flex-row flex-wrap">
               {Array.from({ length: 8 }).map((_, i) => (
-                <ChannelCardSkeleton className="w-1/2" key={i} />
+                <ChannelCardSkeleton className="w-full" key={i} />
               ))}
             </View>
           ) : (

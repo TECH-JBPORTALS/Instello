@@ -369,7 +369,9 @@ function SubscribeButton() {
         return (
           <Button
             size={"sm"}
-            onPress={() => router.push(`/(subscribe)?channelId=${channelId}`)}
+            onPress={() =>
+              router.push(`/(protected)/(subscribe)?channelId=${channelId}`)
+            }
             variant={"outline"}
             className="rounded-full"
           >
@@ -388,7 +390,9 @@ function SubscribeButton() {
         return (
           <Button
             size={"sm"}
-            onPress={() => router.push(`/(subscribe)?channelId=${channelId}`)}
+            onPress={() =>
+              router.push(`/(protected)/(subscribe)?channelId=${channelId}`)
+            }
             className="rounded-full"
           >
             <Icon
