@@ -17,5 +17,28 @@ export function formatDuration(seconds: number): string {
   if (mins > 0) {
     return `${mins}m`;
   }
-  return `${secs}s`;
+  return `${secs.toFixed(0)}s`;
+}
+
+export function formatNumber(number: number): string {
+  const num = Number(number);
+
+  if(num == 0) return "No"
+
+  if (num < 1000) {
+    return num.toString();
+  }
+
+  if (num < 1_000_000) {
+    const value = num / 1000;
+    return value % 1 === 0 ? `${Math.floor(value)}K` : `${value.toFixed(1)}K`;
+  }
+
+  if (num < 1_000_000_000) {
+    const value = num / 1_000_000;
+    return value % 1 === 0 ? `${Math.floor(value)}M` : `${value.toFixed(1)}M`;
+  }
+
+  const value = num / 1_000_000_000;
+  return value % 1 === 0 ? `${Math.floor(value)}B` : `${value.toFixed(1)}B`;
 }

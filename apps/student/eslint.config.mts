@@ -7,5 +7,4 @@ export default defineConfig(
     ignores: [".expo/**", "expo-plugins/**"],
   },
   baseConfig,
-  reactConfig,
 );

@@ -42,6 +42,12 @@ export const channelRouter = {
       const allPublicChannels = await tx.query.channel.findMany({
         where: eq(channel.isPublic, true),
         orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
+        with: {
+          chapters: {
+            columns: {},
+            with: { videos: { columns: { id: true } } },
+          },
+        },
       });
 
       // 2. Append the user details & chapters count to the each channel
@@ -62,10 +68,31 @@ export const channelRouter = {
             channel.createdByClerkUserId,
           );
 
+          // Get total subscribers
+          const subscribersAggr = await tx
+            .select({ total: count() })
+            .from(subscription)
+            .where(eq(subscription.channelId, channel.id));
+
+          // Get total views
+          const filters = channel.chapters.flatMap((c) =>
+            c.videos.map((v) => `video_id:${v.id}`),
+          );
+
+          const overallValues = await ctx.mux.data.metrics.getOverallValues(
+            "views",
+            {
+              filters,
+              timeframe: ["3:months"],
+            },
+          );
+
           return {
             ...channel,
             numberOfChapters: chapterAggr[0]?.total ?? 0,
             createdByClerkUser: user,
+            totalSubscribers: subscribersAggr[0]?.total ?? 0,
+            overallValues,
           };
         }),
       );

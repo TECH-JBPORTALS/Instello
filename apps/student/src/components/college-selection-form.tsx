@@ -91,7 +91,8 @@ export function CollegeSelectionForm() {
             renderItem={({ item: c }) => (
               <TouchableOpacity
                 onPress={() => {
-                  (setField("college", c), setField("branch", undefined));
+                  setField("college", c);
+                  setField("branch", undefined);
                 }}
                 key={c.id}
                 activeOpacity={0.8}
@@ -134,7 +135,7 @@ export function CollegeSelectionFormFooter() {
   return (
     <Button
       disabled={!college || isCoursesLoading}
-      onPress={() => router.push(`/(onboarding)/step-three`)}
+      onPress={() => router.push(`/(protected)/(onboarding)/step-three`)}
       size={"lg"}
     >
       <Text>Continue</Text>
