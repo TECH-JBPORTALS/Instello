@@ -59,7 +59,6 @@ export const UpdateVideoSchema = createUpdateSchema(video, {
     .optional(),
   description: z.string().max(5000, "Description is too long").optional(),
   isPublished: z.boolean().optional(),
-  authorId: z.string().optional(),
 }).omit({
   id: true,
   chapterId: true,

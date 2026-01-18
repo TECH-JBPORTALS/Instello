@@ -59,7 +59,7 @@ export function VideoForm() {
       title: data.title,
       description: data.description ?? "",
       isPublished: data.isPublished ?? false,
-      authorId: data.authorId ?? "",
+      authorId: data.authorId,
     },
   });
 
@@ -85,7 +85,10 @@ export function VideoForm() {
   );
 
   async function onSubmit(values: z.infer<typeof UpdateVideoSchema>) {
-    await updateVideo({ ...values, videoId });
+    await updateVideo({
+      ...values,
+      videoId,
+    });
   }
 
   if (isError)
@@ -173,7 +176,11 @@ export function VideoForm() {
                     audiences
                   </FormDescription>
                   <FormControl>
-                    <Select {...field} onValueChange={field.onChange}>
+                    <Select
+                      {...field}
+                      value={field.value ?? undefined}
+                      onValueChange={field.onChange}
+                    >
                       <SelectTrigger className="min-w-sm">
                         <SelectValue placeholder={"Select..."} />
                       </SelectTrigger>
