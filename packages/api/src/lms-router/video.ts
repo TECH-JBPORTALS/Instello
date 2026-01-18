@@ -69,6 +69,88 @@ export const videoRouter = {
     .input(
       z.object({
         channelId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { channelId } = input;
+
+      return await ctx.db.transaction(async (tx) => {
+        const videos = await tx
+          .select({
+            videoDescription: video.description,
+            chapterTitle: chapter.title,
+            channelId: channel.id,
+            ...getTableColumns(video),
+          })
+          .from(video)
+          .leftJoin(
+            chapter,
+            and(eq(video.chapterId, chapter.id), eq(chapter.isPublished, true)),
+          )
+          .innerJoin(channel, eq(chapter.channelId, channel.id))
+          .where(
+            and(
+              eq(channel.id, channelId),
+              eq(video.isPublished, true),
+            ),
+          )
+          .orderBy(
+            asc(sql`CAST(SUBSTRING(${chapter.title} FROM '^[0-9]+') AS INTEGER)`),
+            asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+') AS INTEGER), 0)`),
+            asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+(\.[0-9]+)?') AS NUMERIC), 0)`),
+            asc(video.id), // ensures stable pagination
+          )
+
+        const videosWithAuthorization = await Promise.all(
+          videos.map(async (video) => {
+            const userSubscription = await tx.query.subscription.findFirst({
+              where: and(
+                eq(subscription.clerkUserId, ctx.auth.userId),
+                eq(subscription.channelId, video.channelId),
+                gte(subscription.endDate, endOfDay(new Date())),
+              ),
+            });
+
+            const overallValues =
+              await ctx.mux.data.metrics.getOverallValues("views", {
+                filters: [`video_id:${video.id}`],
+                timeframe: ["3:months"],
+              });
+
+            return {
+              ...video,
+              canWatch: !!userSubscription,
+              overallValues,
+            };
+          }),
+        );
+
+        // Group videos under chapters
+        const grouped: (string | (typeof videosWithAuthorization)[number])[] =
+          [];
+        let lastChapterId: string | null = null;
+
+        for (const row of videosWithAuthorization) {
+          if (row.chapterId !== lastChapterId) {
+            grouped.push(row.chapterTitle ?? "Untitled Chapter");
+            lastChapterId = row.chapterId;
+          }
+          grouped.push(row);
+        }
+
+        return {
+          items: grouped,
+          nextCursor: hasNextPage
+            ? items[items.length - 1]?.id
+            : null,
+        };
+      });
+    }),
+
+  listPublicByChannelIdWithPagination: protectedProcedure
+    .input(
+      z.object({
+        channelId: z.string(),
         cursor: z.string().optional().nullish(), // video.id cursor
         limit: z.number().min(1).max(50).optional().default(10),
       }),
