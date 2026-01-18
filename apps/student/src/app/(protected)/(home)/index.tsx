@@ -83,7 +83,7 @@ function ChannelCard({
 
 function ChannelCardSkeleton({ className }: { className?: string }) {
   return (
-    <Card className={cn("w-40 gap-3 border-0 p-2", className)}>
+    <Card className={cn("w-40 gap-3 border-0 bg-transparent p-2", className)}>
       <Skeleton className="aspect-[16/10] h-auto w-auto" />
       <CardContent className="w-full flex-1 gap-1 px-0">
         <Skeleton className="h-4 max-w-full" />
