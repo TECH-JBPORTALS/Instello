@@ -11,7 +11,7 @@ import { Icon } from "@/components/ui/icon";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
 import { useVideoPrefetch } from "@/hooks/useVideoPrefetch";
-import { formatDuration } from "@/lib/utils";
+import { formatDuration, formatNumber } from "@/lib/utils";
 import { trpc } from "@/utils/api";
 import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
@@ -36,6 +36,7 @@ export function ChannelLessonsList({ channelId }: { channelId: string }) {
   const { data: videos, isLoading } = useQuery(
     trpc.lms.video.listPublicByChannelId.queryOptions({ channelId }),
   );
+  
   const { prefetchVideo, prefetchVideos } = useVideoPrefetch();
 
   // Prefetch all video details when the channel videos are loaded
@@ -165,6 +166,13 @@ export function ChannelLessonsList({ channelId }: { channelId: string }) {
                       >
                         {formatDuration(item.duration ?? 0)}
                       </Text>
+                      <Text variant={"muted"}>·</Text>
+                      <Text
+                        variant={"muted"}
+                        className="text-muted-foreground text-xs"
+                      >
+                        {formatNumber(item.overallValues.data.total_views)} Views
+                      </Text>
                     </View>
                   </CardHeader>
                   {!item.canWatch && (
@@ -274,6 +282,13 @@ function ChannelDetailsSection() {
               className="text-muted-foreground"
             />
 
+            <Skeleton className={"h-2 w-8"} /><Text variant={"muted"}>·</Text>
+            <Icon
+              as={CrownIcon}
+              weight="duotone"
+              className="text-muted-foreground"
+            />
+
             <Skeleton className={"h-2 w-8"} />
             <Text variant={"muted"}>·</Text>
             <Skeleton className={"h-2 w-8"} />
@@ -312,7 +327,13 @@ function ChannelDetailsSection() {
             />
 
             <Text variant={"muted"} className="text-xs">
-              {channel?.numberOfChapters} Chapters
+              {channel && formatNumber(channel.numberOfChapters)} Chapters
+            </Text>
+            <Text variant={"muted"}>·</Text>
+            <Icon as={CrownIcon} weight="duotone"
+              className="text-muted-foreground"/>
+            <Text variant={"muted"} className="text-xs">
+              {channel && formatNumber(channel.totalSubscribers)} Subscribers
             </Text>
             <Text variant={"muted"}>·</Text>
             <Text variant={"muted"} className="text-xs">

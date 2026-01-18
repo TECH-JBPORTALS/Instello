@@ -17,11 +17,13 @@ export function formatDuration(seconds: number): string {
   if (mins > 0) {
     return `${mins}m`;
   }
-  return `${secs}s`;
+  return `${secs.toFixed(0)}s`;
 }
 
 export function formatNumber(number: number): string {
   const num = Number(number);
+
+  if(num == 0) return "No"
 
   if (num < 1000) {
     return num.toString();

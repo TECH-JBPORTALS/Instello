@@ -102,11 +102,14 @@ export const videoRouter = {
               ),
             });
 
+            const overallValues = await ctx.mux.data.metrics.getOverallValues("views", { filters: [`video_id:${video.id}`], timeframe: ["3:months"], });
+
             return {
               ...video,
               canWatch: !!userSubscription,
+              overallValues
             };
-          }),
+          })
         );
 
         // Group videos under chapters
