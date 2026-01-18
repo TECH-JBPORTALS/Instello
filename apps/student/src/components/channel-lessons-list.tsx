@@ -34,7 +34,7 @@ import {
 
 export function ChannelLessonsList({ channelId }: { channelId: string }) {
   const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery(
-    trpc.lms.video.listPublicByChannelId.infiniteQueryOptions({ channelId },{getNextPageParam:(p)=>p.nextCursor}),
+    trpc.lms.video.listPublicByChannelIdWithPagination.infiniteQueryOptions({ channelId },{getNextPageParam:(p)=>p.nextCursor}),
   );
 
   const videos = data?.pages.flatMap(p=>p.items);
