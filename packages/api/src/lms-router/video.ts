@@ -138,12 +138,7 @@ export const videoRouter = {
           grouped.push(row);
         }
 
-        return {
-          items: grouped,
-          nextCursor: hasNextPage
-            ? items[items.length - 1]?.id
-            : null,
-        };
+        return grouped;
       });
     }),
 
