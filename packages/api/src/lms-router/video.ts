@@ -1,4 +1,4 @@
-import { and, asc, eq, getTableColumns, gte, sql } from "@instello/db";
+import { and, asc, eq, getTableColumns, gt, gte, sql } from "@instello/db";
 import {
   channel,
   chapter,
@@ -66,8 +66,16 @@ export const videoRouter = {
   ),
 
   listPublicByChannelId: protectedProcedure
-    .input(z.object({ channelId: z.string() }))
+    .input(
+      z.object({
+        channelId: z.string(),
+        cursor: z.string().optional().nullish(), // video.id cursor
+        limit: z.number().min(1).max(50).optional().default(10),
+      }),
+    )
     .query(async ({ ctx, input }) => {
+      const { channelId, cursor, limit } = input;
+
       return await ctx.db.transaction(async (tx) => {
         const videos = await tx
           .select({
@@ -83,33 +91,45 @@ export const videoRouter = {
           )
           .innerJoin(channel, eq(chapter.channelId, channel.id))
           .where(
-            and(eq(channel.id, input.channelId), eq(video.isPublished, true)),
+            and(
+              eq(channel.id, channelId),
+              eq(video.isPublished, true),
+              cursor ? gt(video.id, cursor) : undefined,
+            ),
           )
-          .orderBy(() => [
-            asc(sql`(substring(${chapter.title}, '^[0-9]+'))::integer`),
-            asc(sql`(substring(${video.title}, '^[0-9]+'))::integer`),
-          ]);
+          .orderBy(
+            asc(sql`CAST(SUBSTRING(${chapter.title} FROM '^[0-9]+') AS INTEGER)`),
+            asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+') AS INTEGER), 0)`),
+            asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+(\.[0-9]+)?') AS NUMERIC), 0)`),
+            asc(video.id), // ensures stable pagination
+          )
+          .limit(limit + 1); // fetch one extra to detect next page
+
+        const hasNextPage = videos.length > limit;
+        const items = hasNextPage ? videos.slice(0, -1) : videos;
 
         const videosWithAuthorization = await Promise.all(
-          videos.map(async (video) => {
-            // 1. Find weather user has subscription for current channel;
+          items.map(async (video) => {
             const userSubscription = await tx.query.subscription.findFirst({
               where: and(
                 eq(subscription.clerkUserId, ctx.auth.userId),
                 eq(subscription.channelId, video.channelId),
-                // Check if the subscription end date is still greater than today, means still valid
                 gte(subscription.endDate, endOfDay(new Date())),
               ),
             });
 
-            const overallValues = await ctx.mux.data.metrics.getOverallValues("views", { filters: [`video_id:${video.id}`], timeframe: ["3:months"], });
+            const overallValues =
+              await ctx.mux.data.metrics.getOverallValues("views", {
+                filters: [`video_id:${video.id}`],
+                timeframe: ["3:months"],
+              });
 
             return {
               ...video,
               canWatch: !!userSubscription,
-              overallValues
+              overallValues,
             };
-          })
+          }),
         );
 
         // Group videos under chapters
@@ -125,7 +145,12 @@ export const videoRouter = {
           grouped.push(row);
         }
 
-        return grouped;
+        return {
+          items: grouped,
+          nextCursor: hasNextPage
+            ? items[items.length - 1]?.id
+            : null,
+        };
       });
     }),
 

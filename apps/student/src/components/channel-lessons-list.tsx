@@ -1,5 +1,5 @@
 import React from "react";
-import { TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Image, ImageBackground } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -14,7 +14,7 @@ import { useVideoPrefetch } from "@/hooks/useVideoPrefetch";
 import { formatDuration, formatNumber } from "@/lib/utils";
 import { trpc } from "@/utils/api";
 import { FlashList } from "@shopify/flash-list";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import {
   ArrowLeftIcon,
@@ -33,9 +33,11 @@ import {
 } from "./ui/card";
 
 export function ChannelLessonsList({ channelId }: { channelId: string }) {
-  const { data: videos, isLoading } = useQuery(
-    trpc.lms.video.listPublicByChannelId.queryOptions({ channelId }),
+  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery(
+    trpc.lms.video.listPublicByChannelId.infiniteQueryOptions({ channelId },{getNextPageParam:(p)=>p.nextCursor}),
   );
+
+  const videos = data?.pages.flatMap(p=>p.items);
   
   const { prefetchVideo, prefetchVideos } = useVideoPrefetch();
 
@@ -97,8 +99,12 @@ export function ChannelLessonsList({ channelId }: { channelId: string }) {
           </View>
         )
       }
+      onEndReached={()=>hasNextPage && fetchNextPage()}
       ListFooterComponent={
         <View className="items-center justify-center py-8">
+          {
+            isFetchingNextPage && <ActivityIndicator style={{marginBottom:16}} size={"small"}/>
+          }
           <Text variant={"muted"} className="text-xs">
             © All rights reserved to this channel
           </Text>
@@ -109,7 +115,7 @@ export function ChannelLessonsList({ channelId }: { channelId: string }) {
         if (typeof item === "string") {
           // Rendering header
           return (
-            <Text variant={"large"} className="px-4 text-base font-medium">
+            <Text variant={"large"} className="px-4 text-base mt-4 first:mt-0 font-medium">
               {item}
             </Text>
           );
