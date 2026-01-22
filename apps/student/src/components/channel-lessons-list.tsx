@@ -349,10 +349,7 @@ function ChannelDetailsSection() {
 
           {channel?.description && channel.description.length !== 0 && (
             <ExapandableText variant={"muted"}>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum
-              laudantium possimus tenetur nesciunt ut facere optio atque
-              recusandae dolorum hic, vero corporis, accusantium deleniti.
-              Praesentium, molestias? Sequi nesciunt temporibus veniam.
+              {channel.description}
             </ExapandableText>
           )}
 
