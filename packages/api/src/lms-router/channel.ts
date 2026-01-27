@@ -13,6 +13,7 @@ import { z } from "zod/v4";
 import { getClerkUserById, withTx } from "../router.helpers";
 import { protectedProcedure } from "../trpc";
 import { deleteChapter } from "./chapter";
+import { generateBlurHash } from "../utils";
 
 export const channelRouter = {
   create: protectedProcedure
@@ -87,12 +88,15 @@ export const channelRouter = {
             },
           );
 
+          const thumbneilBlurHash = channel.thumbneilId ? await generateBlurHash(`https://${process.env.NEXT_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${channel.thumbneilId}`) : undefined
+
           return {
             ...channel,
             numberOfChapters: chapterAggr[0]?.total ?? 0,
             createdByClerkUser: user,
             totalSubscribers: subscribersAggr[0]?.total ?? 0,
             overallValues,
+            thumbneilBlurHash
           };
         }),
       );
@@ -157,9 +161,12 @@ export const channelRouter = {
           .from(subscription)
           .where(eq(subscription.channelId, singleChannel.id));
 
+        const thumbneilBlurHash = singleChannel.thumbneilId ? await generateBlurHash(`https://${process.env.NEXT_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${singleChannel.thumbneilId}`) : undefined
+
         return {
           ...singleChannel,
           createdByClerkUser,
+          thumbneilBlurHash,
           numberOfChapters: chapterAggr[0]?.total ?? 0,
           totalDuration: hoursAggr[0]?.total ?? 0,
           totalSubscribers: subscribersAggr[0]?.total ?? 0,
