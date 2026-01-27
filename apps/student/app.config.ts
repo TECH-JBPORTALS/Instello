@@ -39,6 +39,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       },
       package: scheme,
       runtimeVersion: "appVersion",
+      blockedPermissions: ["android.permission.READ_MEDIA_IMAGES", "android.permission.READ_MEDIA_VIDEO",]
     },
     web: {
       bundler: "metro",
