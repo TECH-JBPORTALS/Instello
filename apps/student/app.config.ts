@@ -1,6 +1,8 @@
 import type { ConfigContext, ExpoConfig } from "expo/config";
 
 import { version } from "./package.json";
+import type { ConfigPlugin } from "expo/config-plugins";
+import { withAndroidManifest } from "expo/config-plugins";
 
 export default ({ config }: ConfigContext): ExpoConfig => {
   const { name, scheme, slug } = getConfig();
@@ -73,6 +75,10 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           imageWidth: 200,
         },
       ],
+      // Remove READ_MEDIA_IMAGES from expo-screen-capture; we only use
+      // usePreventScreenCapture (FLAG_SECURE), not the screenshot listener.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ExpoConfig.plugins type omits ConfigPlugin
+      withRemoveScreenCaptureMediaPermission as any,
     ],
     experiments: {
       tsconfigPaths: true,
@@ -109,3 +115,25 @@ export function getConfig() {
       };
   }
 }
+
+
+/**
+ * Removes READ_MEDIA_IMAGES from the merged Android manifest.
+ *
+ * expo-screen-capture declares READ_MEDIA_IMAGES (and READ_EXTERNAL_STORAGE) for
+ * addScreenshotListener / useScreenshotListener. We only use usePreventScreenCapture,
+ * which only needs FLAG_SECURE and does not need any storage/media permissions.
+ * Removing this avoids the "Photos and videos" / "Media" permission prompt on Android 13.
+ */
+const withRemoveScreenCaptureMediaPermission: ConfigPlugin = (config) => {
+  return withAndroidManifest(config, (cfg) => {
+    const manifest = cfg.modResults.manifest;
+    const perms = manifest["uses-permission"];
+    if (!Array.isArray(perms)) return cfg;
+
+    manifest["uses-permission"] = perms.filter(
+      (p) => !["android.permission.READ_MEDIA_IMAGES", "android.permission.READ_MEDIA_VIDEO"].includes(p.$["android:name"]),
+    );
+    return cfg;
+  });
+};
