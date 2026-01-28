@@ -1,6 +1,8 @@
 import type { ConfigContext, ExpoConfig } from "expo/config";
 
 import { version } from "./package.json";
+import type { ConfigPlugin } from "expo/config-plugins";
+import { withAndroidManifest } from "expo/config-plugins";
 
 export default ({ config }: ConfigContext): ExpoConfig => {
   const { name, scheme, slug } = getConfig();
@@ -37,6 +39,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       },
       package: scheme,
       runtimeVersion: "appVersion",
+      blockedPermissions: ["android.permission.READ_MEDIA_IMAGES", "android.permission.READ_MEDIA_VIDEO"],
     },
     web: {
       bundler: "metro",
@@ -72,7 +75,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           },
           imageWidth: 200,
         },
-      ],
+      ]
     ],
     experiments: {
       tsconfigPaths: true,
@@ -109,3 +112,4 @@ export function getConfig() {
       };
   }
 }
+

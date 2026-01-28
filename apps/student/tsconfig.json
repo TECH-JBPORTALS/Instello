@@ -1,9 +1,10 @@
 {
-  "extends": "@instello/tsconfig/base.json",
+  "extends": ["@instello/tsconfig/base.json", "expo/tsconfig.base"],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/assets/*": ["./assets/*"]
     },
     "jsx": "react-native",
     "checkJs": false,
@@ -18,8 +19,7 @@
     "metro.config.js",
     "babel.config.js",
     "global.d.ts",
-    "../../node_modules/mux-embed/dist/types/**/*.ts",
-    "assets"
+    "../../node_modules/mux-embed/dist/types/**/*.ts"
   ],
   "exclude": ["node_modules", "global.css"]
 }

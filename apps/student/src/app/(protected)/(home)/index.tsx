@@ -1,5 +1,10 @@
 import type { RouterOutputs } from "@/utils/api";
-import { ScrollView, TouchableOpacity, View } from "react-native";
+import {
+  ScrollView,
+  TouchableOpacity,
+  useColorScheme,
+  View,
+} from "react-native";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -7,12 +12,17 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Icon } from "@/components/ui/icon";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
+import { THEME } from "@/lib/theme";
 import { cn, formatNumber } from "@/lib/utils";
 import { trpc } from "@/utils/api";
 import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
 import { formatDate } from "date-fns";
 import { BookOpenTextIcon } from "phosphor-react-native";
+
+
+
+
 
 function ChannelCard({
   channel,
@@ -21,8 +31,10 @@ function ChannelCard({
   channel: RouterOutputs["lms"]["channel"]["listPublic"][number];
   className?: string;
 }) {
+  const theme = useColorScheme();
   const views = channel.overallValues.data.total_views;
   const totalSubscribers = channel.totalSubscribers;
+  const thumbnailUri = `https://${process.env.EXPO_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${channel.thumbneilId}`;
 
   return (
     <Link href={`/channel?channelId=${channel.id}`} asChild>
@@ -36,15 +48,18 @@ function ChannelCard({
         >
           <Image
             source={{
-              uri: `https://${process.env.EXPO_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${channel.thumbneilId}`,
+              uri: thumbnailUri,
             }}
             style={{
               width: "auto",
               height: "auto",
               borderRadius: 8,
               aspectRatio: 16 / 10,
+              backgroundColor: THEME[theme ?? "light"].muted,
             }}
             contentFit="cover"
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-require-imports
+            placeholder={require("assets/images/thumbnail-placeholder.png")}
           />
           <CardContent className="w-full flex-1 gap-0.5 px-0">
             <CardTitle numberOfLines={1}>{channel.title}</CardTitle>
@@ -52,8 +67,7 @@ function ChannelCard({
               {formatNumber(channel.numberOfChapters)} Chapters{" · "}
               {formatNumber(views)} Views
               {" · "}
-              {formatNumber(totalSubscribers)}{" "}
-              Subscribers
+              {formatNumber(totalSubscribers)} Subscribers
               {" · "}
               {formatDate(channel.createdAt, "MMM yyyy")}
             </Text>

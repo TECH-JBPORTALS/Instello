@@ -1,5 +1,5 @@
 import React from "react";
-import { ActivityIndicator, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, TouchableOpacity, useColorScheme, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Image, ImageBackground } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -11,34 +11,30 @@ import { Icon } from "@/components/ui/icon";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
 import { useVideoPrefetch } from "@/hooks/useVideoPrefetch";
+import { THEME } from "@/lib/theme";
 import { formatDuration, formatNumber } from "@/lib/utils";
 import { trpc } from "@/utils/api";
 import { FlashList } from "@shopify/flash-list";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import {
-  ArrowLeftIcon,
-  CardsThreeIcon,
-  ClockIcon,
-  CrownIcon,
-  LockLaminatedIcon,
-} from "phosphor-react-native";
+import { ArrowLeftIcon, CardsThreeIcon, ClockIcon, CrownIcon, LockLaminatedIcon } from "phosphor-react-native";
 
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
+
+
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card";
+
 
 export function ChannelLessonsList({ channelId }: { channelId: string }) {
-  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery(
-    trpc.lms.video.listPublicByChannelIdWithPagination.infiniteQueryOptions({ channelId },{getNextPageParam:(p)=>p.nextCursor}),
-  );
+  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
+    useInfiniteQuery(
+      trpc.lms.video.listPublicByChannelIdWithPagination.infiniteQueryOptions(
+        { channelId },
+        { getNextPageParam: (p) => p.nextCursor },
+      ),
+    );
 
-  const videos = data?.pages.flatMap(p=>p.items);
-  
+  const videos = data?.pages.flatMap((p) => p.items);
+
   const { prefetchVideo, prefetchVideos } = useVideoPrefetch();
 
   // Prefetch all video details when the channel videos are loaded
@@ -99,12 +95,12 @@ export function ChannelLessonsList({ channelId }: { channelId: string }) {
           </View>
         )
       }
-      onEndReached={()=>hasNextPage && fetchNextPage()}
+      onEndReached={() => hasNextPage && fetchNextPage()}
       ListFooterComponent={
         <View className="items-center justify-center py-8">
-          {
-            isFetchingNextPage && <ActivityIndicator style={{marginBottom:16}} size={"small"}/>
-          }
+          {isFetchingNextPage && (
+            <ActivityIndicator style={{ marginBottom: 16 }} size={"small"} />
+          )}
           <Text variant={"muted"} className="text-xs">
             © All rights reserved to this channel
           </Text>
@@ -115,7 +111,10 @@ export function ChannelLessonsList({ channelId }: { channelId: string }) {
         if (typeof item === "string") {
           // Rendering header
           return (
-            <Text variant={"large"} className="px-4 text-base mt-4 first:mt-0 font-medium">
+            <Text
+              variant={"large"}
+              className="mt-4 px-4 text-base font-medium first:mt-0"
+            >
               {item}
             </Text>
           );
@@ -177,7 +176,8 @@ export function ChannelLessonsList({ channelId }: { channelId: string }) {
                         variant={"muted"}
                         className="text-muted-foreground text-xs"
                       >
-                        {formatNumber(item.overallValues.data.total_views)} Views
+                        {formatNumber(item.overallValues.data.total_views)}{" "}
+                        Views
                       </Text>
                     </View>
                   </CardHeader>
@@ -204,9 +204,6 @@ export function ChannelLessonsList({ channelId }: { channelId: string }) {
   );
 }
 
-const blurhash =
-  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
-
 function ChannelDetailsSection() {
   const router = useRouter();
   const { top } = useSafeAreaInsets();
@@ -226,15 +223,25 @@ function ChannelDetailsSection() {
       </View>
     );
 
+  const thumbnailUri = `https://${process.env.EXPO_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${channel?.thumbneilId}`;
+  const theme = useColorScheme();
+
+
   return (
     <>
       <ImageBackground
         source={{
-          uri: `https://${process.env.EXPO_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${channel?.thumbneilId}`,
+          uri: thumbnailUri,
         }}
-        style={{ height: "auto", width: "auto", aspectRatio: 16 / 10 }}
+        style={{
+          height: "auto",
+          width: "auto",
+          aspectRatio: 16 / 10,
+          backgroundColor: THEME[theme ?? "light"].muted,
+        }}
         contentFit="cover"
-        placeholder={{ blurhash }}
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-require-imports
+        placeholder={require("assets/images/thumbnail-placeholder.png")}
       >
         <LinearGradient
           colors={[
@@ -288,7 +295,8 @@ function ChannelDetailsSection() {
               className="text-muted-foreground"
             />
 
-            <Skeleton className={"h-2 w-8"} /><Text variant={"muted"}>·</Text>
+            <Skeleton className={"h-2 w-8"} />
+            <Text variant={"muted"}>·</Text>
             <Icon
               as={CrownIcon}
               weight="duotone"
@@ -336,8 +344,11 @@ function ChannelDetailsSection() {
               {channel && formatNumber(channel.numberOfChapters)} Chapters
             </Text>
             <Text variant={"muted"}>·</Text>
-            <Icon as={CrownIcon} weight="duotone"
-              className="text-muted-foreground"/>
+            <Icon
+              as={CrownIcon}
+              weight="duotone"
+              className="text-muted-foreground"
+            />
             <Text variant={"muted"} className="text-xs">
               {channel && formatNumber(channel.totalSubscribers)} Subscribers
             </Text>
