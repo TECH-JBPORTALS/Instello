@@ -142,6 +142,7 @@ export const videoRouter = {
       });
     }),
 
+  // Used in Student App v1.2.1
   listPublicByChannelIdWithPagination: protectedProcedure
     .input(
       z.object({
@@ -175,10 +176,10 @@ export const videoRouter = {
             ),
           )
           .orderBy(
-            asc(video.id), // ensures stable pagination
             asc(sql`CAST(SUBSTRING(${chapter.title} FROM '^[0-9]+') AS INTEGER)`),
             asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+') AS INTEGER), 0)`),
             asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+(\.[0-9]+)?') AS NUMERIC), 0)`),
+            asc(video.id), // ensures stable pagination
         )
           .limit(limit + 1); // fetch one extra to detect next page
 
@@ -232,6 +233,7 @@ export const videoRouter = {
     }),
 
 
+  // Used in Student App v1.3.0
   listPublicByChapterId: protectedProcedure
     .input(
       z.object({
@@ -245,21 +247,40 @@ export const videoRouter = {
 
       return await ctx.db.transaction(async (tx) => {
 
-
-        const videos = await tx.query.video.findMany({
-          where: and(
-            eq(video.chapterId, chapterId),
-            eq(video.isPublished, true),
-            cursor ? gt(video.id, cursor) : undefined,
-          ),
-          with: { chapter: true },
-          limit: limit + 1,
-          orderBy: [
-            asc(video.id),
+        const videos = await tx
+          .select({
+            chapter: getTableColumns(chapter),
+            ...getTableColumns(video),
+          })
+          .from(video)
+          .innerJoin(
+            chapter,
+            eq(chapter.isPublished, true)
+          )
+          .where(
+            and(eq(video.chapterId, chapterId), cursor ? gt(video.id, cursor) : undefined,)
+          )
+          .orderBy(
             asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+') AS INTEGER), 0)`),
             asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+(\.[0-9]+)?') AS NUMERIC), 0)`),
-          ]
-        })
+            asc(video.id), // ensures stable pagination
+          )
+          .limit(limit + 1); // fetch one extra to detect next page
+
+        // const videos = await tx.query.video.findMany({
+        //   where: and(
+        //     eq(video.chapterId, chapterId),
+        //     eq(video.isPublished, true),
+        //     cursor ? gt(video.id, cursor) : undefined,
+        //   ),
+        //   with: { chapter: true },
+        //   limit: limit + 1,
+        //   orderBy: [
+        //     asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+') AS NUMERIC), 0)`),
+        //     asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+(\.[0-9]+)?') AS NUMERIC), 0)`),
+        //     asc(video.id),
+        //   ]
+        // })
 
         const hasNextPage = videos.length > limit;
         const items = hasNextPage ? videos.slice(0, -1) : videos;
@@ -296,8 +317,6 @@ export const videoRouter = {
         };
       });
     }),
-
-
 
   update: protectedProcedure
     .input(UpdateVideoSchema.and(z.object({ videoId: z.string().min(1) })))

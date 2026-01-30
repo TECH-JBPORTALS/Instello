@@ -1,6 +1,8 @@
+import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
 import React, { useCallback, useRef } from "react";
 import {
   ActivityIndicator,
+  RefreshControl,
   StyleSheet,
   TouchableOpacity,
   useColorScheme,
@@ -20,7 +22,11 @@ import { useVideoPrefetch } from "@/hooks/useVideoPrefetch";
 import { THEME } from "@/lib/theme";
 import { formatDuration, formatNumber } from "@/lib/utils";
 import { trpc } from "@/utils/api";
-import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
+import {
+  BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetView,
+} from "@gorhom/bottom-sheet";
 import { FlashList } from "@shopify/flash-list";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -43,13 +49,20 @@ import {
 
 export function ChannelLessonsList() {
   const chapterId = useLocalSearchParams().chapterId as string;
-  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
-    useInfiniteQuery(
-      trpc.lms.video.listPublicByChapterId.infiniteQueryOptions(
-        { chapterId },
-        { getNextPageParam: (p) => p.nextCursor },
-      ),
-    );
+  const {
+    data,
+    isLoading,
+    refetch,
+    isRefetching,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery(
+    trpc.lms.video.listPublicByChapterId.infiniteQueryOptions(
+      { chapterId },
+      { getNextPageParam: (p) => p.nextCursor },
+    ),
+  );
 
   const videos = data?.pages.flatMap((p) => p.items);
 
@@ -76,6 +89,9 @@ export function ChannelLessonsList() {
       data={videos ?? []}
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={<ChannelDetailsSection />}
+      refreshControl={
+        <RefreshControl onRefresh={() => refetch()} refreshing={isRefetching} />
+      }
       ListEmptyComponent={
         isLoading ? (
           <View className="px-4">
@@ -460,9 +476,18 @@ function ChapterButton() {
     bottomSheetModalRef.current?.present();
   }, []);
 
+  const renderBackdrop = useCallback(
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop {...props} appearsOnIndex={1} />
+    ),
+    [],
+  );
+
   if (isLoading) return <Skeleton className={"h-10 w-40"} />;
 
   const selectedChapter = data?.find((chapter) => chapter.id == chapterId);
+
+  if (!selectedChapter) return null;
 
   return (
     <>
@@ -471,39 +496,63 @@ function ChapterButton() {
         onPress={handlePresentModalPress}
         className="w-40 justify-between"
       >
-        <Text>{selectedChapter?.title}</Text>
+        <Text>{selectedChapter.title}</Text>
         <Icon as={CaretDownIcon} className="text-muted-foreground" />
       </Button>
       <BottomSheetModal
-        enableHandlePanningGesture
         ref={bottomSheetModalRef}
-        backgroundStyle={{ backgroundColor: THEME[theme ?? "light"].secondary }}
-        handleStyle={{ backgroundColor: THEME[theme ?? "light"].muted }}
+        backgroundStyle={{
+          backgroundColor: THEME[theme ?? "light"].popover,
+          borderWidth: 1,
+          borderColor: THEME[theme ?? "light"].border,
+        }}
+        backdropComponent={renderBackdrop}
+        enableDynamicSizing={false}
+        handleStyle={{
+          borderTopEndRadius: 8,
+          borderTopStartRadius: 8,
+          paddingVertical: 10,
+        }}
+        handleIndicatorStyle={{
+          backgroundColor: THEME[theme ?? "light"].mutedForeground,
+        }}
+        snapPoints={["60%", "60%"]}
+        $modal={false}
+        style={{
+          minHeight: 320,
+        }}
       >
         <BottomSheetView
           style={{
             ...styles.contentContainer,
-            backgroundColor: THEME[theme ?? "light"].popover,
           }}
         >
-          {data?.map((chapter) => (
-            <Button
-              size={"lg"}
-              variant={chapter.id == chapterId ? "secondary" : "ghost"}
-              key={chapter.id}
-              className="w-full"
-              onPress={() => {
-                if (chapter.id !== chapterId) {
-                  router.setParams({
-                    chapterId: chapter.id,
-                  });
-                  bottomSheetModalRef.current?.close();
-                }
-              }}
-            >
-              <Text>{chapter.title}</Text>
-            </Button>
-          ))}
+          <View className="pb-4">
+            <Text variant={"muted"} className="text-xs">
+              CHAPTERS
+            </Text>
+          </View>
+          <FlashList
+            data={data}
+            renderItem={({ item: chapter }) => (
+              <Button
+                size={"lg"}
+                variant={chapter.id == chapterId ? "secondary" : "ghost"}
+                key={chapter.id}
+                className="w-full justify-start"
+                onPress={() => {
+                  if (chapter.id !== chapterId) {
+                    router.setParams({
+                      chapterId: chapter.id,
+                    });
+                    bottomSheetModalRef.current?.close();
+                  }
+                }}
+              >
+                <Text>{chapter.title}</Text>
+              </Button>
+            )}
+          />
         </BottomSheetView>
       </BottomSheetModal>
     </>
@@ -513,7 +562,6 @@ function ChapterButton() {
 const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
-    alignItems: "center",
     paddingVertical: 24,
     paddingHorizontal: 16,
   },
