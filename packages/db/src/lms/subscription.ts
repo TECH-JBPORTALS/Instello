@@ -5,6 +5,7 @@ import { z } from "zod/v4";
 import { initialColumns } from "../columns.helpers";
 import { lmsPgTable } from "../table.helpers";
 import { channel } from "./channel";
+import { index } from "drizzle-orm/pg-core";
 
 export const subscription = lmsPgTable("subscription", (d) => ({
   ...initialColumns,
@@ -12,7 +13,7 @@ export const subscription = lmsPgTable("subscription", (d) => ({
   clerkUserId: d.text().notNull(),
   startDate: d.timestamp().notNull(),
   endDate: d.timestamp().notNull(),
-}));
+}), (t) => [index().on(t.channelId)]);
 
 export const CreateSubscriptionSchema = createInsertSchema(subscription, {
   channelId: z.string().min(2, "Channel ID required"),

@@ -1,5 +1,13 @@
-import React from "react";
-import { ActivityIndicator, TouchableOpacity, useColorScheme, View } from "react-native";
+import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
+import React, { useCallback, useRef } from "react";
+import {
+  ActivityIndicator,
+  RefreshControl,
+  StyleSheet,
+  TouchableOpacity,
+  useColorScheme,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Image, ImageBackground } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -14,24 +22,47 @@ import { useVideoPrefetch } from "@/hooks/useVideoPrefetch";
 import { THEME } from "@/lib/theme";
 import { formatDuration, formatNumber } from "@/lib/utils";
 import { trpc } from "@/utils/api";
+import {
+  BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetView,
+} from "@gorhom/bottom-sheet";
 import { FlashList } from "@shopify/flash-list";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { ArrowLeftIcon, CardsThreeIcon, ClockIcon, CrownIcon, LockLaminatedIcon } from "phosphor-react-native";
+import {
+  ArrowLeftIcon,
+  CardsThreeIcon,
+  CaretDownIcon,
+  ClockIcon,
+  CrownIcon,
+  LockLaminatedIcon,
+} from "phosphor-react-native";
 
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 
-
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card";
-
-
-export function ChannelLessonsList({ channelId }: { channelId: string }) {
-  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
-    useInfiniteQuery(
-      trpc.lms.video.listPublicByChannelIdWithPagination.infiniteQueryOptions(
-        { channelId },
-        { getNextPageParam: (p) => p.nextCursor },
-      ),
-    );
+export function ChannelLessonsList() {
+  const chapterId = useLocalSearchParams().chapterId as string;
+  const {
+    data,
+    isLoading,
+    refetch,
+    isRefetching,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery(
+    trpc.lms.video.listPublicByChapterId.infiniteQueryOptions(
+      { chapterId },
+      { getNextPageParam: (p) => p.nextCursor },
+    ),
+  );
 
   const videos = data?.pages.flatMap((p) => p.items);
 
@@ -43,10 +74,7 @@ export function ChannelLessonsList({ channelId }: { channelId: string }) {
       const videoIds = videos
         .filter(
           (item): item is NonNullable<typeof item> & { id: string } =>
-            typeof item === "object" &&
-            "canWatch" in item &&
-            "id" in item &&
-            item.canWatch,
+            "id" in item && item.canWatch,
         )
         .map((item) => item.id);
 
@@ -61,6 +89,9 @@ export function ChannelLessonsList({ channelId }: { channelId: string }) {
       data={videos ?? []}
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={<ChannelDetailsSection />}
+      refreshControl={
+        <RefreshControl onRefresh={() => refetch()} refreshing={isRefetching} />
+      }
       ListEmptyComponent={
         isLoading ? (
           <View className="px-4">
@@ -108,97 +139,79 @@ export function ChannelLessonsList({ channelId }: { channelId: string }) {
       }
       ItemSeparatorComponent={() => <View className="h-2.5 w-full" />}
       renderItem={({ item }) => {
-        if (typeof item === "string") {
-          // Rendering header
-          return (
-            <Text
-              variant={"large"}
-              className="mt-4 px-4 text-base font-medium first:mt-0"
+        return (
+          <Link
+            asChild
+            href={`/video?playbackId=${item.playbackId}&videoId=${item.id}&assetId=${item.assetId}`}
+            disabled={!item.canWatch}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                if (item.canWatch) {
+                  prefetchVideo(item.id);
+                }
+              }}
+              style={{ paddingHorizontal: 16 }}
             >
-              {item}
-            </Text>
-          );
-        } else {
-          // Render item
-          return (
-            <Link
-              asChild
-              href={`/video?playbackId=${item.playbackId}&videoId=${item.id}&assetId=${item.assetId}`}
-              disabled={!item.canWatch}
-            >
-              <TouchableOpacity
-                onPress={() => {
-                  if (item.canWatch) {
-                    prefetchVideo(item.id);
-                  }
-                }}
-                style={{ paddingHorizontal: 16 }}
-              >
-                <Card className="bg-accent/40 flex-row gap-2 p-2">
-                  <CardContent className="p-0">
-                    <Image
-                      source={{
-                        uri: item.thumbnailId
-                          ? `https://${process.env.EXPO_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${item.thumbnailId}`
-                          : `https://image.mux.com/${item.playbackId}/thumbnail.png?width=214&height=121&time=15`,
-                      }}
-                      className="bg-accent h-14 w-auto rounded-sm p-0"
-                      style={{
-                        height: 64,
-                        width: "auto",
-                        aspectRatio: 16 / 11,
-                        borderRadius: 8,
-                      }}
+              <Card className="bg-accent/40 flex-row gap-2 p-2">
+                <CardContent className="p-0">
+                  <Image
+                    source={{
+                      uri: item.thumbnailId
+                        ? `https://${process.env.EXPO_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${item.thumbnailId}`
+                        : `https://image.mux.com/${item.playbackId}/thumbnail.png?width=214&height=121&time=15`,
+                    }}
+                    className="bg-accent h-14 w-auto rounded-sm p-0"
+                    style={{
+                      height: 64,
+                      width: "auto",
+                      aspectRatio: 16 / 11,
+                      borderRadius: 8,
+                    }}
+                  />
+                </CardContent>
+                <CardHeader className="flex-1 justify-center pl-0">
+                  <CardTitle
+                    numberOfLines={2}
+                    className="w-full text-sm font-medium"
+                  >
+                    {item.title}
+                  </CardTitle>
+                  <View className="flex-row items-center gap-1">
+                    <Icon
+                      as={ClockIcon}
+                      weight="duotone"
+                      className="text-muted-foreground"
                     />
-                  </CardContent>
-                  <CardHeader className="flex-1 justify-center pl-0">
-                    <CardTitle
-                      numberOfLines={2}
-                      className="w-full text-sm font-medium"
-                    >
-                      {item.title}
-                    </CardTitle>
-                    <View className="flex-row items-center gap-1">
-                      <Icon
-                        as={ClockIcon}
-                        weight="duotone"
-                        className="text-muted-foreground"
-                      />
 
-                      <Text
-                        variant={"muted"}
-                        className="text-muted-foreground text-xs"
-                      >
-                        {formatDuration(item.duration ?? 0)}
-                      </Text>
-                      <Text variant={"muted"}>·</Text>
-                      <Text
-                        variant={"muted"}
-                        className="text-muted-foreground text-xs"
-                      >
-                        {formatNumber(item.overallValues.data.total_views)}{" "}
-                        Views
-                      </Text>
-                    </View>
-                  </CardHeader>
-                  {!item.canWatch && (
-                    <CardFooter>
-                      <Icon
-                        weight="duotone"
-                        as={LockLaminatedIcon}
-                        className="text-muted-foreground"
-                      />
-                    </CardFooter>
-                  )}
-                </Card>
-              </TouchableOpacity>
-            </Link>
-          );
-        }
-      }}
-      getItemType={(item) => {
-        // To achieve better performance, specify the type based on the item
-        return typeof item === "string" ? "sectionHeader" : "row";
+                    <Text
+                      variant={"muted"}
+                      className="text-muted-foreground text-xs"
+                    >
+                      {formatDuration(item.duration ?? 0)}
+                    </Text>
+                    <Text variant={"muted"}>·</Text>
+                    <Text
+                      variant={"muted"}
+                      className="text-muted-foreground text-xs"
+                    >
+                      {formatNumber(item.overallValues.data.total_views)} Views
+                    </Text>
+                  </View>
+                </CardHeader>
+                {!item.canWatch && (
+                  <CardFooter>
+                    <Icon
+                      weight="duotone"
+                      as={LockLaminatedIcon}
+                      className="text-muted-foreground"
+                    />
+                  </CardFooter>
+                )}
+              </Card>
+            </TouchableOpacity>
+          </Link>
+        );
       }}
     />
   );
@@ -225,7 +238,6 @@ function ChannelDetailsSection() {
 
   const thumbnailUri = `https://${process.env.EXPO_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${channel?.thumbneilId}`;
   const theme = useColorScheme();
-
 
   return (
     <>
@@ -383,6 +395,8 @@ function ChannelDetailsSection() {
             </View>
             <SubscribeButton />
           </View>
+
+          <ChapterButton />
         </View>
       )}
     </>
@@ -443,3 +457,112 @@ function SubscribeButton() {
 
   return <>{renderSubscriptionButotn()}</>;
 }
+
+function ChapterButton() {
+  const { chapterId, channelId } = useLocalSearchParams<{
+    chapterId: string;
+    channelId: string;
+  }>();
+  const { data, isLoading } = useQuery(
+    trpc.lms.chapter.list.queryOptions({ channelId, published: true }),
+  );
+  const router = useRouter();
+
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const theme = useColorScheme();
+
+  // callbacks
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+
+  const renderBackdrop = useCallback(
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop {...props} appearsOnIndex={1} />
+    ),
+    [],
+  );
+
+  if (isLoading) return <Skeleton className={"h-10 w-40"} />;
+
+  const selectedChapter = data?.find((chapter) => chapter.id == chapterId);
+
+  if (!selectedChapter) return null;
+
+  return (
+    <>
+      <Button
+        variant={"secondary"}
+        onPress={handlePresentModalPress}
+        className="w-40 justify-between"
+      >
+        <Text>{selectedChapter.title}</Text>
+        <Icon as={CaretDownIcon} className="text-muted-foreground" />
+      </Button>
+      <BottomSheetModal
+        ref={bottomSheetModalRef}
+        backgroundStyle={{
+          backgroundColor: THEME[theme ?? "light"].popover,
+          borderWidth: 1,
+          borderColor: THEME[theme ?? "light"].border,
+        }}
+        backdropComponent={renderBackdrop}
+        enableDynamicSizing={false}
+        handleStyle={{
+          borderTopEndRadius: 8,
+          borderTopStartRadius: 8,
+          paddingVertical: 10,
+        }}
+        handleIndicatorStyle={{
+          backgroundColor: THEME[theme ?? "light"].mutedForeground,
+        }}
+        snapPoints={["60%", "60%"]}
+        $modal={false}
+        style={{
+          minHeight: 320,
+        }}
+      >
+        <BottomSheetView
+          style={{
+            ...styles.contentContainer,
+          }}
+        >
+          <View className="pb-4">
+            <Text variant={"muted"} className="text-xs">
+              CHAPTERS
+            </Text>
+          </View>
+          <FlashList
+            data={data}
+            renderItem={({ item: chapter }) => (
+              <Button
+                size={"lg"}
+                variant={chapter.id == chapterId ? "secondary" : "ghost"}
+                key={chapter.id}
+                className="w-full justify-start"
+                onPress={() => {
+                  if (chapter.id !== chapterId) {
+                    router.setParams({
+                      chapterId: chapter.id,
+                    });
+                    bottomSheetModalRef.current?.close();
+                  }
+                }}
+              >
+                <Text>{chapter.title}</Text>
+              </Button>
+            )}
+          />
+        </BottomSheetView>
+      </BottomSheetModal>
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    flex: 1,
+    paddingVertical: 24,
+    paddingHorizontal: 16,
+  },
+});

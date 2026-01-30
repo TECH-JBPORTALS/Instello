@@ -7,6 +7,7 @@ import { lmsPgTable } from "../table.helpers";
 import { chapter } from "./chapter";
 import { collegeOrBranch } from "./college-or-branch";
 import { subscription } from "./subscription";
+import { index } from "drizzle-orm/pg-core";
 
 export const channel = lmsPgTable("channel", (d) => ({
   ...initialColumns,
@@ -18,7 +19,7 @@ export const channel = lmsPgTable("channel", (d) => ({
   collegeId: d.text().references(() => collegeOrBranch.id),
   branchId: d.text().references(() => collegeOrBranch.id),
   subjectCode: d.text(),
-}));
+}), (t) => [index().on(t.isPublic)]);
 
 export const channelRelations = relations(channel, ({ many }) => ({
   chapters: many(chapter),

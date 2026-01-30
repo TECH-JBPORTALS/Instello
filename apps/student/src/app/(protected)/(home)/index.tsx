@@ -37,7 +37,10 @@ function ChannelCard({
   const thumbnailUri = `https://${process.env.EXPO_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${channel.thumbneilId}`;
 
   return (
-    <Link href={`/channel?channelId=${channel.id}`} asChild>
+    <Link
+      href={`/channel?channelId=${channel.id}&chapterId=${channel.firstChapter?.id}`}
+      asChild
+    >
       <TouchableOpacity>
         <Card
           key={channel.id}

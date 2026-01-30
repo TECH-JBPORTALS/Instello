@@ -142,6 +142,7 @@ export const videoRouter = {
       });
     }),
 
+  // Used in Student App v1.2.1
   listPublicByChannelIdWithPagination: protectedProcedure
     .input(
       z.object({
@@ -179,7 +180,7 @@ export const videoRouter = {
             asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+') AS INTEGER), 0)`),
             asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+(\.[0-9]+)?') AS NUMERIC), 0)`),
             asc(video.id), // ensures stable pagination
-          )
+        )
           .limit(limit + 1); // fetch one extra to detect next page
 
         const hasNextPage = videos.length > limit;
@@ -224,6 +225,92 @@ export const videoRouter = {
 
         return {
           items: grouped,
+          nextCursor: hasNextPage
+            ? items[items.length - 1]?.id
+            : null,
+        };
+      });
+    }),
+
+
+  // Used in Student App v1.3.0
+  listPublicByChapterId: protectedProcedure
+    .input(
+      z.object({
+        chapterId: z.string(),
+        cursor: z.string().optional().nullish(), // video.id cursor
+        limit: z.number().min(1).max(50).optional().default(10),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { chapterId, cursor, limit } = input;
+
+      return await ctx.db.transaction(async (tx) => {
+
+        const videos = await tx
+          .select({
+            chapter: getTableColumns(chapter),
+            ...getTableColumns(video),
+          })
+          .from(video)
+          .innerJoin(
+            chapter,
+            eq(chapter.isPublished, true)
+          )
+          .where(
+            and(eq(video.chapterId, chapterId), cursor ? gt(video.id, cursor) : undefined,)
+          )
+          .orderBy(
+            asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+') AS INTEGER), 0)`),
+            asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+(\.[0-9]+)?') AS NUMERIC), 0)`),
+            asc(video.id), // ensures stable pagination
+          )
+          .limit(limit + 1); // fetch one extra to detect next page
+
+        // const videos = await tx.query.video.findMany({
+        //   where: and(
+        //     eq(video.chapterId, chapterId),
+        //     eq(video.isPublished, true),
+        //     cursor ? gt(video.id, cursor) : undefined,
+        //   ),
+        //   with: { chapter: true },
+        //   limit: limit + 1,
+        //   orderBy: [
+        //     asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+') AS NUMERIC), 0)`),
+        //     asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+(\.[0-9]+)?') AS NUMERIC), 0)`),
+        //     asc(video.id),
+        //   ]
+        // })
+
+        const hasNextPage = videos.length > limit;
+        const items = hasNextPage ? videos.slice(0, -1) : videos;
+
+        const videosWithAuthorization = await Promise.all(
+          items.map(async (video) => {
+            const userSubscription = await tx.query.subscription.findFirst({
+              where: and(
+                eq(subscription.clerkUserId, ctx.auth.userId),
+                eq(subscription.channelId, video.chapter.channelId),
+                gte(subscription.endDate, endOfDay(new Date())),
+              ),
+            });
+
+            const overallValues =
+              await ctx.mux.data.metrics.getOverallValues("views", {
+                filters: [`video_id:${video.id}`],
+                timeframe: ["3:months"],
+              });
+
+            return {
+              ...video,
+              canWatch: !!userSubscription,
+              overallValues,
+            };
+          }),
+        );
+
+        return {
+          items: videosWithAuthorization,
           nextCursor: hasNextPage
             ? items[items.length - 1]?.id
             : null,
