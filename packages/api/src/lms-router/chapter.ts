@@ -1,4 +1,4 @@
-import { asc, eq, sql } from "@instello/db";
+import { and, asc, eq, sql } from "@instello/db";
 import {
   chapter,
   CreateChapterSchema,
@@ -27,10 +27,11 @@ export const chapterRouter = {
     }),
 
   list: protectedProcedure
-    .input(z.object({ channelId: z.string() }))
+    .input(z.object({ channelId: z.string(), published: z.boolean().optional() }))
     .query(async ({ ctx, input }) => {
+      const publisedClause = input.published ? eq(chapter.isPublished, input.published) : undefined;
       return await ctx.db.query.chapter.findMany({
-        where: eq(chapter.channelId, input.channelId),
+        where: and(eq(chapter.channelId, input.channelId), publisedClause),
         orderBy: [
           asc(sql`CAST(SUBSTRING(${chapter.title} FROM '^[0-9]+') AS INTEGER)`),
           asc(chapter.title),

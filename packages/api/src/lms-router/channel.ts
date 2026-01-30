@@ -1,4 +1,4 @@
-import { and, count, countDistinct, eq, sum } from "@instello/db";
+import { and, asc, count, countDistinct, sql, eq, sum } from "@instello/db";
 import {
   channel,
   chapter,
@@ -90,13 +90,20 @@ export const channelRouter = {
 
           const thumbneilBlurHash = channel.thumbneilId ? await generateBlurHash(`https://${process.env.NEXT_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${channel.thumbneilId}`) : undefined
 
+          const firstChapter = await tx.query.chapter.findFirst({
+            where: eq(chapter.channelId, channel.id), orderBy: [
+              asc(sql`CAST(SUBSTRING(${chapter.title} FROM '^[0-9]+') AS INTEGER)`),
+              asc(chapter.title),
+            ]
+          })
           return {
             ...channel,
             numberOfChapters: chapterAggr[0]?.total ?? 0,
             createdByClerkUser: user,
             totalSubscribers: subscribersAggr[0]?.total ?? 0,
             overallValues,
-            thumbneilBlurHash
+            thumbneilBlurHash,
+            firstChapter
           };
         }),
       );

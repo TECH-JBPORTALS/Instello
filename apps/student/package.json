@@ -13,6 +13,7 @@
   "dependencies": {
     "@clerk/clerk-expo": "^2.14.14",
     "@expo-google-fonts/montserrat": "^0.4.2",
+    "@gorhom/bottom-sheet": "^5.2.8",
     "@instello/api": "workspace:^",
     "@mux/mux-data-react-native-video": "^0.19.4",
     "@react-native-community/datetimepicker": "8.4.4",

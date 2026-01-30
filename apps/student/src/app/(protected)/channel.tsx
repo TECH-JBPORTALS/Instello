@@ -1,15 +1,17 @@
-import { useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { ChannelLessonsList } from "@/components/channel-lessons-list";
 
-export default function ChannelDetailsScreen() {
-  const { channelId } = useLocalSearchParams<{ channelId: string }>();
 
+
+
+
+// We are passing the channelId & initialChapterId to select lessons from the channel to the localSearchParams
+export default function ChannelDetailsScreen() {
   return (
     <>
       <StatusBar style="light" />
 
-      <ChannelLessonsList channelId={channelId} />
+      <ChannelLessonsList />
     </>
   );
 }
