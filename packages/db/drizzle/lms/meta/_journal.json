@@ -71,6 +71,13 @@
       "when": 1768743341826,
       "tag": "20260118133541_chief_harry_osborn",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1769793546319,
+      "tag": "20260130171906_add_idx_to_channel_subscription_chapter_video",
+      "breakpoints": true
     }
   ]
 }

@@ -6,6 +6,7 @@ import { initialColumns } from "../columns.helpers";
 import { lmsPgTable } from "../table.helpers";
 import { author } from "./author";
 import { chapter } from "./chapter";
+import { index } from "drizzle-orm/pg-core";
 
 export const video = lmsPgTable("video", (d) => ({
   ...initialColumns,
@@ -35,7 +36,7 @@ export const video = lmsPgTable("video", (d) => ({
     .notNull(),
   authorId: d.text().references(() => author.id),
   isPublished: d.boolean().default(false),
-}));
+}), (t) => [index().on(t.chapterId, t.isPublished), index().on(t.authorId)]);
 
 export const CreateVideoSchema = createInsertSchema(video, {
   title: z

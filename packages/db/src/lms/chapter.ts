@@ -6,6 +6,7 @@ import { initialColumns } from "../columns.helpers";
 import { lmsPgTable } from "../table.helpers";
 import { channel } from "./channel";
 import { video } from "./video";
+import { index } from "drizzle-orm/pg-core";
 
 export const chapter = lmsPgTable("chapter", (d) => ({
   ...initialColumns,
@@ -16,7 +17,7 @@ export const chapter = lmsPgTable("chapter", (d) => ({
     .notNull()
     .references(() => channel.id, { onDelete: "cascade" }),
   isPublished: d.boolean().default(false),
-}));
+}), (t) => [index().on(t.channelId, t.isPublished)]);
 
 export const CreateChapterSchema = createInsertSchema(chapter, {
   title: z
