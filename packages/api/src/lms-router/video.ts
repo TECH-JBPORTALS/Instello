@@ -253,10 +253,11 @@ export const videoRouter = {
             ...getTableColumns(video),
           })
           .from(video)
-          .rightJoin(
-            chapter,
+          .rightJoin(chapter, and(
+            eq(video.chapterId, chapter.id),
             eq(chapter.isPublished, true)
           )
+        )
           .where(
             and(eq(video.chapterId, chapterId), cursor ? gte(video.id, cursor) : undefined,)
           )
