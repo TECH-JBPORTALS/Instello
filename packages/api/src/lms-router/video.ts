@@ -1,4 +1,4 @@
-import { and, asc, eq, getTableColumns, gt, gte, sql } from "@instello/db";
+import { and, asc, eq, getTableColumns, gt, gte, or, sql } from "@instello/db";
 import {
   channel,
   chapter,
@@ -247,40 +247,55 @@ export const videoRouter = {
 
       return await ctx.db.transaction(async (tx) => {
 
+        const numExpr = sql<number>`
+  COALESCE(
+    CAST(SUBSTRING(${video.title} FROM '^[0-9]+') AS INTEGER),
+    0
+  )
+`;
+
+        const decExpr = sql<number>`
+  COALESCE(
+    CAST(SUBSTRING(${video.title} FROM '^[0-9]+(\\.[0-9]+)?') AS NUMERIC),
+    0
+  )
+`;
+
         const videos = await tx
           .select({
             chapter: getTableColumns(chapter),
             ...getTableColumns(video),
+            num: numExpr,
+            dec: decExpr,
           })
           .from(video)
-          .innerJoin(
-            chapter,
-            eq(chapter.isPublished, true)
-          )
+          .innerJoin(chapter, eq(chapter.isPublished, true))
           .where(
-            and(eq(video.chapterId, chapterId), cursor ? gt(video.id, cursor) : undefined,)
+            and(
+              eq(video.chapterId, chapterId),
+
+              cursor
+                ? or(
+                  // num > cursor.num
+                  gt(numExpr, cursor),
+
+                  // num == cursor.num AND dec > cursor.dec
+                  and(eq(numExpr, cursor), gt(decExpr, cursor)),
+
+                  // num == cursor.num AND dec == cursor.dec AND id > cursor.id
+                  and(
+                    eq(numExpr, cursor),
+                    eq(decExpr, cursor),
+                  )
+                )
+                : undefined
+            )
           )
           .orderBy(
-            asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+') AS INTEGER), 0)`),
-            asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+(\.[0-9]+)?') AS NUMERIC), 0)`),
-            asc(video.id), // ensures stable pagination
+            asc(numExpr),
+            asc(decExpr),
           )
-          .limit(limit + 1); // fetch one extra to detect next page
-
-        // const videos = await tx.query.video.findMany({
-        //   where: and(
-        //     eq(video.chapterId, chapterId),
-        //     eq(video.isPublished, true),
-        //     cursor ? gt(video.id, cursor) : undefined,
-        //   ),
-        //   with: { chapter: true },
-        //   limit: limit + 1,
-        //   orderBy: [
-        //     asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+') AS NUMERIC), 0)`),
-        //     asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+(\.[0-9]+)?') AS NUMERIC), 0)`),
-        //     asc(video.id),
-        //   ]
-        // })
+          .limit(limit + 1);
 
         const hasNextPage = videos.length > limit;
         const items = hasNextPage ? videos.slice(0, -1) : videos;
@@ -312,7 +327,7 @@ export const videoRouter = {
         return {
           items: videosWithAuthorization,
           nextCursor: hasNextPage
-            ? items[items.length - 1]?.id
+            ? items[items.length - 1]?.title
             : null,
         };
       });
