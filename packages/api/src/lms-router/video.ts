@@ -59,6 +59,7 @@ export const videoRouter = {
       await ctx.db.query.video.findMany({
         where: eq(video.chapterId, input.chapterId),
         orderBy: [
+          asc(video.orderIndex),
           asc(sql`CAST(SUBSTRING(${video.title} FROM '^[0-9]+') AS INTEGER)`),
           asc(video.title),
         ],
@@ -314,6 +315,17 @@ export const videoRouter = {
         .where(eq(video.id, input.videoId))
         .returning()
         .then((r) => r.at(0));
+    }),
+
+  reorder: protectedProcedure
+    .input(z.object({ reorderedVideos: z.array(z.object({ videoId: z.string(), orderIndex: z.number() })) }))
+    .mutation(async ({ ctx, input }) => {
+      await Promise.all(input.reorderedVideos.map(async ({ orderIndex, videoId }) => ctx.db
+        .update(video)
+        .set({ orderIndex })
+        .where(eq(video.id, videoId))
+        .returning()
+        .then((r) => r.at(0))))
     }),
 
   getById: protectedProcedure

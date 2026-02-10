@@ -1,8 +1,9 @@
 "use client";
 
 import type { UnifiedVideo } from "@/hooks/useUnifiedVideoList";
+import type { DragEndEvent } from "@dnd-kit/core";
 import type { ChangeEvent } from "react";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { env } from "@/env";
@@ -14,11 +15,24 @@ import {
 } from "@/hooks/useUnifiedVideoList";
 import { useUploadManager } from "@/hooks/useUploadManager";
 import { useTRPC } from "@/trpc/react";
+import { closestCenter, DndContext } from "@dnd-kit/core";
+import {
+  restrictToParentElement,
+  restrictToVerticalAxis,
+} from "@dnd-kit/modifiers";
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { Button } from "@instello/ui/components/button";
 import { Progress } from "@instello/ui/components/progress";
 import { Skeleton } from "@instello/ui/components/skeleton";
 import { cn } from "@instello/ui/lib/utils";
 import {
+  DotsSixIcon,
   GlobeHemisphereEastIcon,
   LockLaminatedIcon,
   PenNibIcon,
@@ -27,11 +41,54 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
+
+
 import { ChangeVisibilityVideoDropdown } from "./change-visibility-video-dropdown";
 import { DeleteVideoDialog } from "./dialogs/delete-video-dialog";
 
+
 export function VideosList({ chapterId }: { chapterId: string }) {
   const { data, isLoading, isError } = useUnifiedVideoList(chapterId);
+  const [videos, setVideos] = useState<UnifiedVideo[]>(data);
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+  const reorderMutation = useMutation(
+    trpc.lms.video.reorder.mutationOptions({
+      async onSettled() {
+        await queryClient.invalidateQueries(trpc.lms.video.list.pathFilter());
+      },
+    }),
+  );
+
+  useEffect(() => {
+    setVideos(data);
+  }, [data]);
+
+  const handleDragEnd = (e: DragEndEvent) => {
+    const { active, over } = e;
+
+    // 1. Dropped outside list
+    if (!over) return;
+
+    // 2. Dropped on itself
+    if (active.id === over.id) return;
+
+    setVideos((items) => {
+      const oldIndex = items.findIndex((i) => i.id === active.id);
+      const newIndex = items.findIndex((i) => i.id === over.id);
+
+      const reordered = arrayMove(items, oldIndex, newIndex);
+
+      reorderMutation.mutate({
+        reorderedVideos: reordered.map((video, index) => ({
+          videoId: video.id,
+          orderIndex: index,
+        })),
+      });
+
+      return reordered;
+    });
+  };
 
   if (isLoading)
     return (
@@ -57,15 +114,45 @@ export function VideosList({ chapterId }: { chapterId: string }) {
 
   return (
     <div className="w-full space-y-2">
-      {data.map((video) => (
-        <VideoItem key={video.id} video={video} />
-      ))}
+      <DndContext
+        collisionDetection={closestCenter}
+        modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={videos.map((v) => v.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {videos.map((video) => (
+            <VideoItem key={video.id} video={video} />
+          ))}
+        </SortableContext>
+      </DndContext>
     </div>
   );
 }
 
 function VideoItem({ video }: { video: UnifiedVideo }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const {
+    listeners,
+    transition,
+    transform,
+    attributes,
+    isDragging,
+    setNodeRef,
+    setDraggableNodeRef,
+  } = useSortable({
+    id: video.id,
+    strategy: verticalListSortingStrategy,
+    getNewIndex: (arg) => arg.items.indexOf(arg.id),
+    transition: { duration: 200, easing: "linear" },
+  });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
   const { retryUpload, getUpload } = useUploadManager();
   const router = useRouter();
   const { channelId } = useParams<{ channelId: string }>();
@@ -115,11 +202,25 @@ function VideoItem({ video }: { video: UnifiedVideo }) {
         video.isUploading
           ? "bg-transparent"
           : "hover:bg-accent/25 hover:text-accent-foreground",
+        isDragging && "bg-accent!",
       )}
       key={video.id}
+      style={style}
+      {...attributes}
+      {...listeners}
+      ref={setNodeRef}
     >
-      {/* Status Icon */}
+      {/* Sortable Handle */}
+      <Button
+        ref={setDraggableNodeRef}
+        variant={"ghost"}
+        className="cursor-grab"
+        size={"icon-sm"}
+      >
+        <DotsSixIcon />
+      </Button>
 
+      {/* Status Icon */}
       <div className="shrink-0">
         <div className="bg-accent relative aspect-video h-full w-20 overflow-hidden rounded-sm">
           {video.status === "ready" && (
