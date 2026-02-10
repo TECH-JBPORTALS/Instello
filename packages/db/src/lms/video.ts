@@ -36,6 +36,7 @@ export const video = lmsPgTable("video", (d) => ({
     .notNull(),
   authorId: d.text().references(() => author.id),
   isPublished: d.boolean().default(false),
+  orderIndex: d.integer().default(0)
 }), (t) => [index().on(t.chapterId, t.isPublished), index().on(t.authorId)]);
 
 export const CreateVideoSchema = createInsertSchema(video, {

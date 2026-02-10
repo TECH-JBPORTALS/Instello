@@ -259,9 +259,10 @@ export const videoRouter = {
           )
         )
           .where(
-            and(eq(video.chapterId, chapterId), cursor ? gte(video.id, cursor) : undefined,)
+            and(eq(video.chapterId, chapterId), eq(video.isPublished, true), cursor ? gte(video.id, cursor) : undefined,)
           )
           .orderBy(
+            asc(video.orderIndex),
             asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+') AS INTEGER), 0)`),
             asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+(\.[0-9]+)?') AS NUMERIC), 0)`),
             asc(video.id), // ensures stable pagination
@@ -428,14 +429,9 @@ export function deleteVideo(
         code: "BAD_REQUEST",
       });
 
-    if (!singleVideo.assetId)
-      throw new TRPCError({
-        message: "Can't delete the video, no asset ID found.",
-        code: "BAD_REQUEST",
-      });
-
     await tx.delete(video).where(eq(video.id, input.videoId));
 
+    if (singleVideo.assetId)
     await ctx.mux.video.assets.delete(singleVideo.assetId);
 
     return singleVideo;
