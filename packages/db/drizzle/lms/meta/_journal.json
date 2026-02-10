@@ -78,6 +78,13 @@
       "when": 1769793546319,
       "tag": "20260130171906_add_idx_to_channel_subscription_chapter_video",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1770749247112,
+      "tag": "20260210184727_add_order_idx_to_video",
+      "breakpoints": true
     }
   ]
 }
