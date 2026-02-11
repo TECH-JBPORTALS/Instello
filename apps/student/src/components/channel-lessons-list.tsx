@@ -1,13 +1,6 @@
 import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
 import React, { useCallback, useRef } from "react";
-import {
-  ActivityIndicator,
-  RefreshControl,
-  StyleSheet,
-  TouchableOpacity,
-  useColorScheme,
-  View,
-} from "react-native";
+import { ActivityIndicator, RefreshControl, StyleSheet, TouchableOpacity, useColorScheme, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Image, ImageBackground } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -22,30 +15,16 @@ import { useVideoPrefetch } from "@/hooks/useVideoPrefetch";
 import { THEME } from "@/lib/theme";
 import { formatDuration, formatNumber } from "@/lib/utils";
 import { trpc } from "@/utils/api";
-import {
-  BottomSheetBackdrop,
-  BottomSheetModal,
-  BottomSheetView,
-} from "@gorhom/bottom-sheet";
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { FlashList } from "@shopify/flash-list";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import {
-  ArrowLeftIcon,
-  CardsThreeIcon,
-  CaretDownIcon,
-  ClockIcon,
-  CrownIcon,
-  LockLaminatedIcon,
-} from "phosphor-react-native";
+import { ArrowLeftIcon, CardsThreeIcon, CaretDownIcon, ClockIcon, CrownIcon, LockLaminatedIcon } from "phosphor-react-native";
 
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
+
+
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card";
+
 
 export function ChannelLessonsList() {
   const chapterId = useLocalSearchParams().chapterId as string;
@@ -65,6 +44,7 @@ export function ChannelLessonsList() {
   );
 
   const videos = data?.pages.flatMap((p) => p.items);
+  const theme = useColorScheme();
 
   const { prefetchVideo, prefetchVideos } = useVideoPrefetch();
 
@@ -147,7 +127,7 @@ export function ChannelLessonsList() {
           >
             <TouchableOpacity
               onPress={() => {
-                if (item.canWatch) {
+                if (item.canWatch && item.id) {
                   prefetchVideo(item.id);
                 }
               }}
@@ -167,6 +147,8 @@ export function ChannelLessonsList() {
                       width: "auto",
                       aspectRatio: 16 / 11,
                       borderRadius: 8,
+                      borderWidth: 1,
+                      borderColor: THEME[theme ?? "light"].border,
                     }}
                   />
                 </CardContent>
@@ -395,7 +377,6 @@ function ChannelDetailsSection() {
             </View>
             <SubscribeButton />
           </View>
-
           <ChapterButton />
         </View>
       )}
@@ -491,14 +472,18 @@ function ChapterButton() {
 
   return (
     <>
-      <Button
-        variant={"secondary"}
-        onPress={handlePresentModalPress}
-        className="w-40 justify-between"
-      >
-        <Text>{selectedChapter.title}</Text>
-        <Icon as={CaretDownIcon} className="text-muted-foreground" />
-      </Button>
+      <View className="flex-row">
+        <Button
+          variant={"secondary"}
+          onPress={handlePresentModalPress}
+          className="justify-between"
+        >
+          <Text numberOfLines={1} ellipsizeMode="tail" className="max-w-[90%]">
+            {selectedChapter.title}
+          </Text>
+          <Icon as={CaretDownIcon} className="text-muted-foreground" />
+        </Button>
+      </View>
       <BottomSheetModal
         ref={bottomSheetModalRef}
         backgroundStyle={{
