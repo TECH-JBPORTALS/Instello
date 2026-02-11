@@ -1,4 +1,13 @@
-import { and, asc, eq, getTableColumns, gt, gte, sql } from "@instello/db";
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  getTableColumns,
+  gt,
+  gte,
+  sql,
+} from "@instello/db";
 import {
   channel,
   chapter,
@@ -58,11 +67,7 @@ export const videoRouter = {
     async ({ ctx, input }) =>
       await ctx.db.query.video.findMany({
         where: eq(video.chapterId, input.chapterId),
-        orderBy: [
-          asc(video.orderIndex),
-          asc(sql`CAST(SUBSTRING(${video.title} FROM '^[0-9]+') AS INTEGER)`),
-          asc(video.title),
-        ],
+        orderBy: [asc(video.orderIndex), desc(video.createdAt)],
       }),
   ),
 
@@ -89,18 +94,14 @@ export const videoRouter = {
             and(eq(video.chapterId, chapter.id), eq(chapter.isPublished, true)),
           )
           .innerJoin(channel, eq(chapter.channelId, channel.id))
-          .where(
-            and(
-              eq(channel.id, channelId),
-              eq(video.isPublished, true),
-            ),
-          )
+          .where(and(eq(channel.id, channelId), eq(video.isPublished, true)))
           .orderBy(
-            asc(sql`CAST(SUBSTRING(${chapter.title} FROM '^[0-9]+') AS INTEGER)`),
-            asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+') AS INTEGER), 0)`),
-            asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+(\.[0-9]+)?') AS NUMERIC), 0)`),
+            asc(video.orderIndex),
+            asc(
+              sql`CAST(SUBSTRING(${chapter.title} FROM '^[0-9]+') AS INTEGER)`,
+            ),
             asc(video.id), // ensures stable pagination
-          )
+          );
 
         const videosWithAuthorization = await Promise.all(
           videos.map(async (video) => {
@@ -112,11 +113,13 @@ export const videoRouter = {
               ),
             });
 
-            const overallValues =
-              await ctx.mux.data.metrics.getOverallValues("views", {
+            const overallValues = await ctx.mux.data.metrics.getOverallValues(
+              "views",
+              {
                 filters: [`video_id:${video.id}`],
                 timeframe: ["3:months"],
-              });
+              },
+            );
 
             return {
               ...video,
@@ -177,11 +180,12 @@ export const videoRouter = {
             ),
           )
           .orderBy(
-            asc(sql`CAST(SUBSTRING(${chapter.title} FROM '^[0-9]+') AS INTEGER)`),
-            asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+') AS INTEGER), 0)`),
-            asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+(\.[0-9]+)?') AS NUMERIC), 0)`),
+            asc(
+              sql`CAST(SUBSTRING(${chapter.title} FROM '^[0-9]+') AS INTEGER)`,
+            ),
+            asc(video.orderIndex),
             asc(video.id), // ensures stable pagination
-        )
+          )
           .limit(limit + 1); // fetch one extra to detect next page
 
         const hasNextPage = videos.length > limit;
@@ -197,11 +201,13 @@ export const videoRouter = {
               ),
             });
 
-            const overallValues =
-              await ctx.mux.data.metrics.getOverallValues("views", {
+            const overallValues = await ctx.mux.data.metrics.getOverallValues(
+              "views",
+              {
                 filters: [`video_id:${video.id}`],
                 timeframe: ["3:months"],
-              });
+              },
+            );
 
             return {
               ...video,
@@ -226,13 +232,10 @@ export const videoRouter = {
 
         return {
           items: grouped,
-          nextCursor: hasNextPage
-            ? items[items.length - 1]?.id
-            : null,
+          nextCursor: hasNextPage ? items[items.length - 1]?.id : null,
         };
       });
     }),
-
 
   // Used in Student App v1.3.0
   listPublicByChapterId: protectedProcedure
@@ -247,25 +250,25 @@ export const videoRouter = {
       const { chapterId, cursor, limit } = input;
 
       return await ctx.db.transaction(async (tx) => {
-
         const videos = await tx
           .select({
             chapter: getTableColumns(chapter),
             ...getTableColumns(video),
           })
           .from(video)
-          .rightJoin(chapter, and(
-            eq(video.chapterId, chapter.id),
-            eq(chapter.isPublished, true)
+          .rightJoin(
+            chapter,
+            and(eq(video.chapterId, chapter.id), eq(chapter.isPublished, true)),
           )
-        )
           .where(
-            and(eq(video.chapterId, chapterId), eq(video.isPublished, true), cursor ? gte(video.id, cursor) : undefined,)
+            and(
+              eq(video.chapterId, chapterId),
+              eq(video.isPublished, true),
+              cursor ? gte(video.id, cursor) : undefined,
+            ),
           )
           .orderBy(
             asc(video.orderIndex),
-            asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+') AS INTEGER), 0)`),
-            asc(sql`COALESCE(CAST(SUBSTRING(${video.title} FROM '^[0-9]+(\.[0-9]+)?') AS NUMERIC), 0)`),
             asc(video.id), // ensures stable pagination
           )
           .limit(limit + 1); // fetch one extra to detect next page
@@ -283,11 +286,13 @@ export const videoRouter = {
               ),
             });
 
-            const overallValues =
-              await ctx.mux.data.metrics.getOverallValues("views", {
+            const overallValues = await ctx.mux.data.metrics.getOverallValues(
+              "views",
+              {
                 filters: [`video_id:${video.id}`],
                 timeframe: ["3:months"],
-              });
+              },
+            );
 
             return {
               ...video,
@@ -299,9 +304,7 @@ export const videoRouter = {
 
         return {
           items: videosWithAuthorization,
-          nextCursor: hasNextPage
-            ? items[items.length - 1]?.id
-            : null,
+          nextCursor: hasNextPage ? items[items.length - 1]?.id : null,
         };
       });
     }),
@@ -318,14 +321,24 @@ export const videoRouter = {
     }),
 
   reorder: protectedProcedure
-    .input(z.object({ reorderedVideos: z.array(z.object({ videoId: z.string(), orderIndex: z.number() })) }))
+    .input(
+      z.object({
+        reorderedVideos: z.array(
+          z.object({ videoId: z.string(), orderIndex: z.number() }),
+        ),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
-      await Promise.all(input.reorderedVideos.map(async ({ orderIndex, videoId }) => ctx.db
-        .update(video)
-        .set({ orderIndex })
-        .where(eq(video.id, videoId))
-        .returning()
-        .then((r) => r.at(0))))
+      await Promise.all(
+        input.reorderedVideos.map(async ({ orderIndex, videoId }) =>
+          ctx.db
+            .update(video)
+            .set({ orderIndex })
+            .where(eq(video.id, videoId))
+            .returning()
+            .then((r) => r.at(0)),
+        ),
+      );
     }),
 
   getById: protectedProcedure
@@ -444,7 +457,7 @@ export function deleteVideo(
     await tx.delete(video).where(eq(video.id, input.videoId));
 
     if (singleVideo.assetId)
-    await ctx.mux.video.assets.delete(singleVideo.assetId);
+      await ctx.mux.video.assets.delete(singleVideo.assetId);
 
     return singleVideo;
   });
