@@ -357,7 +357,15 @@ export const videoRouter = {
       if (!singleVideo)
         throw new TRPCError({ message: "No video found", code: "NOT_FOUND" });
 
-      return singleVideo;
+      const overallValues = await ctx.mux.data.metrics.getOverallValues(
+        "views",
+        {
+          filters: [`video_id:${input.videoId}`],
+          timeframe: ["3:months"],
+        },
+      );
+
+      return { ...singleVideo, overallValues };
     }),
 
   delete: protectedProcedure

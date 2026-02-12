@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Separator } from "@/components/ui/separator";
 import { Text } from "@/components/ui/text";
+import { formatNumber } from "@/lib/utils";
 import { trpc } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -21,6 +22,7 @@ import {
   CalendarIcon,
   CaretDownIcon,
   ClockIcon,
+  EyeIcon,
   InstagramLogoIcon,
 } from "phosphor-react-native";
 
@@ -160,6 +162,12 @@ function VideoDetails({
           <ClockIcon weight="duotone" size={16} color="#6B7280" />
           <Text className="text-muted-foreground text-sm">
             {formatDuration(video.duration)}
+          </Text>
+        </View>
+        <View className="flex-row items-center gap-1">
+          <EyeIcon weight="duotone" size={16} color="#6B7280" />
+          <Text className="text-muted-foreground text-sm">
+            {formatNumber(video.overallValues.data.total_views)}
           </Text>
         </View>
         <View className="flex-row items-center gap-1">
