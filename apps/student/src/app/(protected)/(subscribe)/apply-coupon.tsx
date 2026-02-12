@@ -25,9 +25,7 @@ export default function ApplyCouponScreen() {
           }),
         );
         await queryClient.invalidateQueries(
-          trpc.lms.video.listPublicByChannelId.queryFilter({
-            channelId: data.channelId!,
-          }),
+          trpc.lms.video.listPublicByChapterId.pathFilter(),
         );
         router.replace(`/coupon-success?subscriptionId=${data.id}`);
       },
@@ -44,6 +42,7 @@ export default function ApplyCouponScreen() {
   return (
     <View className="flex-1 items-center justify-between py-20">
       <Image
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-require-imports
         source={require("assets/images/instello.png")}
         style={{ height: 24, width: 110 }}
       />
