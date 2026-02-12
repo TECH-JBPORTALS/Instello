@@ -1,18 +1,8 @@
-import type {
-  VideoContentFit,
-  VideoMetadata,
-  VideoPlayer,
-  VideoSource,
-} from "expo-video";
+import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
+import type { VideoContentFit, VideoMetadata, VideoPlayer, VideoSource } from "expo-video";
 import type { ViewProps } from "react-native";
-import React from "react";
-import {
-  ActivityIndicator,
-  BackHandler,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
+import React, { useCallback, useRef } from "react";
+import { ActivityIndicator, BackHandler, StyleSheet, TouchableWithoutFeedback, useColorScheme, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { useEvent } from "expo";
 import * as NavigationBar from "expo-navigation-bar";
@@ -23,29 +13,30 @@ import { useVideoPlayer, VideoView } from "expo-video";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
+import { THEME } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/clerk-expo";
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
+// eslint-disable-next-line
+//@ts-expect-error
 import muxReactNativeVideo from "@mux/mux-data-react-native-video";
 import Slider from "@react-native-community/slider";
-import {
-  ArrowLeftIcon,
-  ArrowsInSimpleIcon,
-  ArrowsOutSimpleIcon,
-  CaretDownIcon,
-  ClockClockwiseIcon,
-  ClockCounterClockwiseIcon,
-  PauseIcon,
-  PlayIcon,
-} from "phosphor-react-native";
+import { FlashList } from "@shopify/flash-list";
+import { ArrowClockwiseIcon, ArrowCounterClockwiseIcon, ArrowLeftIcon, ArrowsInSimpleIcon, ArrowsOutSimpleIcon, CaretDownIcon, PauseIcon, PlayIcon, SpeedometerIcon } from "phosphor-react-native";
+
+
 
 import app from "../../package.json";
+
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
 const MuxVideo = muxReactNativeVideo(VideoView);
 
 const NativeVideoPlayerContext = React.createContext({
   fullscreen: false,
-  setFullscreen: (value: boolean) => {},
+  setFullscreen: (value: boolean) => {
+    console.log("Implement full screen logic", value);
+  },
 });
 
 export const NativeVideo = ({ ...props }: ViewProps) => {
@@ -278,15 +269,18 @@ function NativeVideoControlsOverlay({
               alignItems: "center",
               justifyContent: "space-between",
               backgroundColor: "rgba(0,0,0,0.2)",
-              paddingHorizontal: 10,
-              paddingVertical: 16,
+              paddingHorizontal: fullscreen ? 24 : 8,
+              paddingVertical: fullscreen ? 24 : 8,
             }}
+            pointerEvents={showControls ? "auto" : "none"}
           >
             {/** Controls Header*/}
             <View className="w-full flex-row justify-between">
               <Button
                 size={"icon"}
-                className={cn("rounded-full bg-black/40 p-5")}
+                className={cn(
+                  "rounded-full bg-transparent p-5 hover:bg-transparent",
+                )}
                 variant={"ghost"}
                 onPress={() => (fullscreen ? exitFullscreen() : router.back())}
               >
@@ -298,33 +292,23 @@ function NativeVideoControlsOverlay({
                 />
               </Button>
 
-              {/** Video meta info */}
-              {fullscreen && (
-                <View className="items-center">
-                  <Text className="font-bold text-white">
-                    {metadata?.title}
-                  </Text>
-                  <Text variant={"muted"} className="text-white/80">
-                    {metadata?.artist}
-                  </Text>
-                </View>
-              )}
-
-              <Button
-                size={"icon"}
-                className="rounded-full bg-black/40 p-5"
-                variant={"ghost"}
-                onPress={() =>
-                  fullscreen ? exitFullscreen() : enterFullscreen()
-                }
-              >
-                <Icon
-                  weight="bold"
-                  as={fullscreen ? ArrowsInSimpleIcon : ArrowsOutSimpleIcon}
-                  className="text-white"
-                  size={24}
-                />
-              </Button>
+              <View className="flex-row items-center gap-2">
+                <Button
+                  size={"icon"}
+                  className="rounded-full bg-transparent p-5 hover:bg-transparent"
+                  variant={"ghost"}
+                  onPress={() =>
+                    fullscreen ? exitFullscreen() : enterFullscreen()
+                  }
+                >
+                  <Icon
+                    weight="bold"
+                    as={fullscreen ? ArrowsInSimpleIcon : ArrowsOutSimpleIcon}
+                    className="text-white"
+                    size={24}
+                  />
+                </Button>
+              </View>
             </View>
 
             {/** Play Puase & Loading state */}
@@ -339,27 +323,30 @@ function NativeVideoControlsOverlay({
                 }}
               >
                 <Icon
-                  as={ClockCounterClockwiseIcon}
+                  as={ArrowCounterClockwiseIcon}
                   className="text-white"
                   size={32}
                 />
               </Button>
 
-              <Button
-                size={"icon"}
-                disabled={player.status === "loading"}
-                className={cn("rounded-full bg-black/40 p-8")}
-                variant={"ghost"}
-                onPress={() => togglePlaying()}
-                style={{ opacity: player.status !== "loading" ? 100 : 0 }}
-              >
-                <Icon
-                  as={player.playing ? PauseIcon : PlayIcon}
-                  size={40}
-                  className="text-white"
-                  weight="fill"
-                />
-              </Button>
+              {/** Loading indicator */}
+              {player.status === "loading" ? (
+                <ActivityIndicator size={64} color={"white"} />
+              ) : (
+                <Button
+                  size={"icon"}
+                  className={cn("rounded-full bg-black/40 p-8")}
+                  variant={"ghost"}
+                  onPress={() => togglePlaying()}
+                >
+                  <Icon
+                    as={player.playing ? PauseIcon : PlayIcon}
+                    size={52}
+                    className="text-white"
+                    weight="fill"
+                  />
+                </Button>
+              )}
 
               <Button
                 onPress={() => {
@@ -371,81 +358,200 @@ function NativeVideoControlsOverlay({
                 className="rounded-full bg-black/40 p-6"
               >
                 <Icon
-                  as={ClockClockwiseIcon}
+                  as={ArrowClockwiseIcon}
                   className="text-white"
                   size={32}
                 />
               </Button>
             </View>
 
+            {/** Sliding timespamp preview */}
+            {sliding && (
+              <View className="absolute bottom-16 rounded-full bg-black/30 px-2 py-0.5 backdrop-blur-sm">
+                <Text className="text-sm text-white">
+                  {formatTime(slidingTime)}
+                </Text>
+              </View>
+            )}
+
             {/** Controls footer */}
-            <View
-              className={cn(
-                "w-full flex-row items-center justify-between",
-                fullscreen && "bottom-9",
-              )}
-            >
-              <Text className="rounded-full bg-black/20 px-2 py-0.5 text-xs text-white">
-                {formatTime(player.currentTime)}
-              </Text>
-              <Text className="rounded-full bg-black/20 px-2 py-0.5 text-xs text-white">
-                {formatTime(player.duration)}
-              </Text>
+            <View className="w-full gap-2.5 py-0.5">
+              <View className="w-full flex-row items-center justify-between px-4">
+                {/** Video meta info */}
+                <View
+                  style={{ maxWidth: "50%", opacity: fullscreen ? 100 : 0 }}
+                >
+                  <Text
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    className="text-sm text-white/80"
+                  >
+                    {metadata?.artist}
+                  </Text>
+                  <Text
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    variant={"h4"}
+                    className="font-bold text-white"
+                  >
+                    {metadata?.title}
+                  </Text>
+                </View>
+
+                <PlaybackSpeedButton player={player} />
+              </View>
+              <Slider
+                style={{
+                  height: 4,
+                  width: "100%",
+                  zIndex: 10,
+                  opacity: !showControls ? 0 : 100,
+                }}
+                minimumTrackTintColor="#F7941D"
+                maximumTrackTintColor="white"
+                thumbTintColor={showControls ? "#F7941D" : "transparent"}
+                maximumValue={player.duration}
+                value={player.currentTime}
+                onSlidingStart={(time) => {
+                  setSliding(true);
+                  setSlidingTime(time);
+                  player.pause();
+                  stopTimeToHideControls();
+                }}
+                onValueChange={(time) => {
+                  player.currentTime = time;
+                  setSlidingTime(time);
+                }}
+                onSlidingComplete={(time) => {
+                  setSliding(false);
+                  setSlidingTime(time);
+                  if (!player.playing) player.play(); //play if playback is paused
+                  startTimeToHideControls();
+                }}
+              />
+
+              <View
+                className={cn(
+                  "w-full flex-row items-center justify-between px-4",
+                )}
+              >
+                <Text className="rounded-full bg-black/20 text-sm text-white">
+                  {formatTime(player.currentTime)}
+                </Text>
+                <Text className="rounded-full bg-black/20  text-sm text-white">
+                  -{formatTime(player.duration - player.currentTime)}
+                </Text>
+              </View>
             </View>
           </View>
-
-          {/** Sliding timespamp preview */}
-          {sliding && (
-            <View className="absolute bottom-16 rounded-full bg-black/30 px-2 py-0.5 backdrop-blur-sm">
-              <Text className="text-sm text-white">
-                {formatTime(slidingTime)}
-              </Text>
-            </View>
-          )}
-
-          {/** Loading indicator */}
-          {player.status === "loading" && (
-            <ActivityIndicator
-              style={{ position: "absolute", top: "auto", bottom: "auto" }}
-              size={64}
-              color={"white"}
-            />
-          )}
-
-          <Slider
-            style={{
-              height: "auto",
-              width: "100%",
-              zIndex: 10,
-              opacity: fullscreen && !showControls ? 0 : 100,
-              position: "absolute",
-              bottom: fullscreen ? 24 : -8,
-            }}
-            minimumTrackTintColor="#F7941D"
-            maximumTrackTintColor="white"
-            thumbTintColor={showControls ? "#F7941D" : "transparent"}
-            maximumValue={player.duration}
-            value={player.currentTime}
-            onSlidingStart={(time) => {
-              setSliding(true);
-              setSlidingTime(time);
-              player.pause();
-              stopTimeToHideControls();
-            }}
-            onValueChange={(time) => {
-              player.currentTime = time;
-              setSlidingTime(time);
-            }}
-            onSlidingComplete={(time) => {
-              setSliding(false);
-              setSlidingTime(time);
-              if (!player.playing) player.play(); //play if playback is paused
-              startTimeToHideControls();
-            }}
-          />
         </View>
       </TouchableWithoutFeedback>
     </GestureDetector>
+  );
+}
+
+const data: { label: string; speed: number }[] = [
+  { label: "0.5x", speed: 0.5 },
+  { label: "0.75x", speed: 0.75 },
+  { label: "1x Normal", speed: 1.0 },
+  { label: "1.5x", speed: 1.5 },
+  { label: "2x", speed: 2.0 },
+];
+
+function PlaybackSpeedButton({ player }: { player: VideoPlayer }) {
+  const theme = useColorScheme();
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+  // callbacks
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+
+  const setPlaybackRate = useCallback(
+    (rate: number) => {
+      player.playbackRate = rate;
+    },
+    [player],
+  );
+
+  const renderBackdrop = useCallback(
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop {...props} appearsOnIndex={1} />
+    ),
+    [],
+  );
+
+  return (
+    <>
+      <View className="flex-row">
+        <Button
+          size={"icon"}
+          className="rounded-full bg-transparent p-5 hover:bg-transparent"
+          variant={"ghost"}
+          onPress={handlePresentModalPress}
+        >
+          <Icon
+            weight="bold"
+            as={SpeedometerIcon}
+            className="text-white"
+            size={16}
+          />
+        </Button>
+      </View>
+      <BottomSheetModal
+        ref={bottomSheetModalRef}
+        backgroundStyle={{
+          backgroundColor: THEME[theme ?? "light"].popover,
+          borderWidth: 1,
+          borderColor: THEME[theme ?? "light"].border,
+        }}
+        containerStyle={{
+          width: "70%",
+          transform: [{ translateX: "25%" }],
+        }}
+        backdropComponent={renderBackdrop}
+        handleStyle={{
+          borderTopEndRadius: 8,
+          borderTopStartRadius: 8,
+        }}
+        handleIndicatorStyle={{
+          backgroundColor: THEME[theme ?? "light"].mutedForeground,
+        }}
+        snapPoints={["60%", "60%"]}
+        $modal={true}
+      >
+        <BottomSheetView
+          style={{
+            ...styles.contentContainer,
+          }}
+        >
+          <View className="pb-4">
+            <Text variant={"muted"} className="text-xs">
+              PLAYBACK SPEED
+            </Text>
+          </View>
+          <FlashList
+            data={data}
+            renderItem={({ item }) => (
+              <Button
+                size={"lg"}
+                variant={
+                  item.speed == player.playbackRate ? "secondary" : "ghost"
+                }
+                key={item.speed}
+                className="w-full justify-start"
+                onPress={() => {
+                  setPlaybackRate(item.speed);
+                  bottomSheetModalRef.current?.close();
+                }}
+              >
+                <Text>{item.label}</Text>
+              </Button>
+            )}
+          />
+        </BottomSheetView>
+      </BottomSheetModal>
+    </>
   );
 }
 
@@ -477,5 +583,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  contentContainer: {
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
   },
 });

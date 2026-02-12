@@ -1,6 +1,10 @@
 import type { SvgProps as DefaultSvgProps } from "react-native-svg";
 
-declare module "*.png"
+
+
+
+
+declare module "*.png";
 
 declare module "react-native-svg" {
   interface SvgProps extends DefaultSvgProps {
@@ -21,3 +25,4 @@ declare global {
   }
 }
 
+declare module "@mux/mux-data-react-native-video";
