@@ -1,12 +1,15 @@
 import { relations } from "drizzle-orm";
+import { index } from "drizzle-orm/pg-core";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 import { z } from "zod/v4";
+
+
 
 import { initialColumns } from "../columns.helpers";
 import { lmsPgTable } from "../table.helpers";
 import { channel } from "./channel";
 import { video } from "./video";
-import { index } from "drizzle-orm/pg-core";
+
 
 export const chapter = lmsPgTable("chapter", (d) => ({
   ...initialColumns,
@@ -33,10 +36,7 @@ export const CreateChapterSchema = createInsertSchema(chapter, {
 
 export const UpdateChapterSchema = createUpdateSchema(chapter, {
   id: z.string().min(1, "Chapter ID is required for updation"),
-  title: z
-    .string()
-    .min(3, "Title of the chapter must be atlease 2 characters long")
-    .optional(),
+  title: z.string().optional(),
   isPublished: z.boolean().optional(),
 }).omit({
   createdAt: true,

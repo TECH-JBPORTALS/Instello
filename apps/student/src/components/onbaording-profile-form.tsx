@@ -3,10 +3,11 @@ import { View } from "react-native";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useOnboardingStore } from "@/lib/useOnboardingStore";
-import { cn } from "@/lib/utils";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { format } from "date-fns";
+import { format, subYears } from "date-fns";
 import { ArrowCircleRightIcon } from "phosphor-react-native";
+
+
 
 import { Button } from "./ui/button";
 import { Icon } from "./ui/icon";
@@ -19,13 +20,14 @@ export function OnboardingProfileForm() {
   const { dob, firstName, lastName, setField } = useOnboardingStore();
   const router = useRouter();
 
-  async function onSubmit() {
-    router.push(`/(onboarding)/step-two`);
+  function onSubmit() {
+    router.push(`/(protected)/(onboarding)/step-two`);
   }
 
   return (
     <View className="relative gap-3.5">
       <Image
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-require-imports
         source={require("assets/images/instello.png")}
         style={{ width: 130, height: 28, marginBottom: 16 }}
       />
@@ -66,9 +68,7 @@ export function OnboardingProfileForm() {
             className="justify-start"
             onPress={() => setShowPicker(true)}
           >
-            <Text className={cn(!dob && "text-muted-foreground")}>
-              {dob ? format(dob, "dd MMM, yyyy") : "Select date..."}
-            </Text>
+            <Text>{format(dob, "dd MMM, yyyy")}</Text>
           </Button>
 
           {showPicker && (
@@ -78,9 +78,11 @@ export function OnboardingProfileForm() {
               negativeButton={{ textColor: "white", label: "Cancel" }}
               mode="date"
               value={dob}
+              minimumDate={new Date("1/1/1900")}
+              maximumDate={subYears(new Date(), 6)}
               onChange={(_e, date) => {
                 setShowPicker(false);
-                date && setField("dob", date);
+                if (date) setField("dob", date);
               }}
             />
           )}
