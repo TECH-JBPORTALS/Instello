@@ -1,25 +1,32 @@
 import { relations } from "drizzle-orm";
+import { index } from "drizzle-orm/pg-core";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 import { z } from "zod/v4";
+
+
 
 import { initialColumns } from "../columns.helpers";
 import { lmsPgTable } from "../table.helpers";
 import { chapter } from "./chapter";
 import { collegeOrBranch } from "./college-or-branch";
 import { subscription } from "./subscription";
-import { index } from "drizzle-orm/pg-core";
 
-export const channel = lmsPgTable("channel", (d) => ({
-  ...initialColumns,
-  createdByClerkUserId: d.text().notNull(),
-  title: d.varchar({ length: 100 }).notNull(),
-  description: d.varchar({ length: 256 }),
-  isPublic: d.boolean().default(false),
-  thumbneilId: d.varchar({ length: 100 }),
-  collegeId: d.text().references(() => collegeOrBranch.id),
-  branchId: d.text().references(() => collegeOrBranch.id),
-  subjectCode: d.text(),
-}), (t) => [index().on(t.isPublic)]);
+
+export const channel = lmsPgTable(
+  "channel",
+  (d) => ({
+    ...initialColumns,
+    createdByClerkUserId: d.text().notNull(),
+    title: d.varchar({ length: 100 }).notNull(),
+    description: d.varchar({ length: 256 }),
+    isPublic: d.boolean().default(false),
+    thumbneilId: d.varchar({ length: 100 }),
+    collegeId: d.text().references(() => collegeOrBranch.id),
+    branchId: d.text().references(() => collegeOrBranch.id),
+    subjectCode: d.text(),
+  }),
+  (t) => [index().on(t.isPublic), index().on(t.createdAt)],
+);
 
 export const channelRelations = relations(channel, ({ many }) => ({
   chapters: many(chapter),

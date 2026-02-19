@@ -11,16 +11,24 @@ import { channel } from "./channel";
 import { video } from "./video";
 
 
-export const chapter = lmsPgTable("chapter", (d) => ({
-  ...initialColumns,
-  createdByClerkUserId: d.text().notNull(),
-  title: d.text().notNull(),
-  channelId: d
-    .text()
-    .notNull()
-    .references(() => channel.id, { onDelete: "cascade" }),
-  isPublished: d.boolean().default(false),
-}), (t) => [index().on(t.channelId, t.isPublished)]);
+export const chapter = lmsPgTable(
+  "chapter",
+  (d) => ({
+    ...initialColumns,
+    createdByClerkUserId: d.text().notNull(),
+    title: d.text().notNull(),
+    channelId: d
+      .text()
+      .notNull()
+      .references(() => channel.id, { onDelete: "cascade" }),
+    isPublished: d.boolean().default(false),
+  }),
+  (t) => [
+    index().on(t.channelId),
+    index().on(t.isPublished),
+    index().on(t.title),
+  ],
+);
 
 export const CreateChapterSchema = createInsertSchema(chapter, {
   title: z

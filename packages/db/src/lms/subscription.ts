@@ -1,19 +1,30 @@
 import { relations } from "drizzle-orm";
+import { index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
+
+
 
 import { initialColumns } from "../columns.helpers";
 import { lmsPgTable } from "../table.helpers";
 import { channel } from "./channel";
-import { index } from "drizzle-orm/pg-core";
 
-export const subscription = lmsPgTable("subscription", (d) => ({
-  ...initialColumns,
-  channelId: d.text().references(() => channel.id, { onDelete: "cascade" }),
-  clerkUserId: d.text().notNull(),
-  startDate: d.timestamp().notNull(),
-  endDate: d.timestamp().notNull(),
-}), (t) => [index().on(t.channelId)]);
+
+export const subscription = lmsPgTable(
+  "subscription",
+  (d) => ({
+    ...initialColumns,
+    channelId: d.text().references(() => channel.id, { onDelete: "cascade" }),
+    clerkUserId: d.text().notNull(),
+    startDate: d.timestamp().notNull(),
+    endDate: d.timestamp().notNull(),
+  }),
+  (t) => [
+    index().on(t.channelId),
+    index().on(t.clerkUserId),
+    index().on(t.endDate),
+  ],
+);
 
 export const CreateSubscriptionSchema = createInsertSchema(subscription, {
   channelId: z.string().min(2, "Channel ID required"),

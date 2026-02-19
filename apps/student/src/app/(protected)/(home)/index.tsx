@@ -77,18 +77,18 @@ function ChannelCard({
             <View className=" flex-row flex-wrap items-center gap-2">
               <Avatar alt="Channel Creator" className="size-4">
                 <AvatarImage
-                  source={{ uri: channel.createdByClerkUser.imageUrl }}
+                  source={{ uri: channel.createdByClerkUser?.imageUrl }}
                 />
                 <AvatarFallback>
-                  <Text>{channel.createdByClerkUser.firstName?.charAt(0)}</Text>
+                  <Text>{channel.createdByClerkUser?.firstName?.charAt(0)}</Text>
                 </AvatarFallback>
               </Avatar>
               <Text
                 variant={"muted"}
                 className="text-muted-foreground mt-3 text-xs"
               >
-                {channel.createdByClerkUser.firstName}{" "}
-                {channel.createdByClerkUser.lastName}
+                {channel.createdByClerkUser?.firstName}{" "}
+                {channel.createdByClerkUser?.lastName}
               </Text>
             </View>
           </CardContent>

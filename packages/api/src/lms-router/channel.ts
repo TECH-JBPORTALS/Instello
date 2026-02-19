@@ -1,4 +1,13 @@
-import { and, asc, count, countDistinct, sql, eq, sum } from "@instello/db";
+import {
+  and,
+  asc,
+  count,
+  countDistinct,
+  eq,
+  inArray,
+  sql,
+  sum,
+} from "@instello/db";
 import {
   channel,
   chapter,
@@ -13,7 +22,6 @@ import { z } from "zod/v4";
 import { getClerkUserById, withTx } from "../router.helpers";
 import { protectedProcedure } from "../trpc";
 import { deleteChapter } from "./chapter";
-import { generateBlurHash } from "../utils";
 
 export const channelRouter = {
   create: protectedProcedure
@@ -39,74 +47,128 @@ export const channelRouter = {
 
   listPublic: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.transaction(async (tx) => {
-      // 1. List all published channels
-      const allPublicChannels = await tx.query.channel.findMany({
+      /* -------------------------------------------------- */
+      /* 1. Fetch channels with chapters + videos */
+      /* -------------------------------------------------- */
+
+      const channels = await tx.query.channel.findMany({
+        columns: {
+          branchId: false,
+          collegeId: false,
+          isPublic: false,
+        },
         where: eq(channel.isPublic, true),
         orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
         with: {
           chapters: {
-            columns: {},
+            columns: { channelId: true },
             with: { videos: { columns: { id: true } } },
           },
         },
       });
 
-      // 2. Append the user details & chapters count to the each channel
-      return await Promise.all(
-        allPublicChannels.map(async (channel) => {
-          const chapterAggr = await tx
-            .select({ total: countDistinct(chapter.id) })
-            .from(chapter)
-            .where(
-              and(
-                eq(chapter.channelId, channel.id),
-                eq(chapter.isPublished, true),
-              ),
-            );
+      if (!channels.length) return [];
 
-          // Fetch channel creator's user details from the clerk api
-          const user = await ctx.clerk.users.getUser(
-            channel.createdByClerkUserId,
-          );
+      const channelIds = channels.map((c) => c.id);
 
-          // Get total subscribers
-          const subscribersAggr = await tx
-            .select({ total: count() })
-            .from(subscription)
-            .where(eq(subscription.channelId, channel.id));
+      /* -------------------------------------------------- */
+      /* 2. Batch chapter counts */
+      /* -------------------------------------------------- */
 
-          // Get total views
-          const filters = channel.chapters.flatMap((c) =>
-            c.videos.map((v) => `video_id:${v.id}`),
-          );
+      const chapterCounts = await tx
+        .select({
+          channelId: chapter.channelId,
+          total: countDistinct(chapter.id),
+        })
+        .from(chapter)
+        .where(
+          and(
+            eq(chapter.isPublished, true),
+            inArray(chapter.channelId, channelIds),
+          ),
+        )
+        .groupBy(chapter.channelId);
 
-          const overallValues = await ctx.mux.data.metrics.getOverallValues(
-            "views",
-            {
-              filters,
-              timeframe: ["3:months"],
-            },
-          );
-
-          const thumbneilBlurHash = channel.thumbneilId ? await generateBlurHash(`https://${process.env.NEXT_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${channel.thumbneilId}`) : undefined
-
-          const firstChapter = await tx.query.chapter.findFirst({
-            where: eq(chapter.channelId, channel.id), orderBy: [
-              asc(sql`CAST(SUBSTRING(${chapter.title} FROM '^[0-9]+') AS INTEGER)`),
-              asc(chapter.title),
-            ]
-          })
-          return {
-            ...channel,
-            numberOfChapters: chapterAggr[0]?.total ?? 0,
-            createdByClerkUser: user,
-            totalSubscribers: subscribersAggr[0]?.total ?? 0,
-            overallValues,
-            thumbneilBlurHash,
-            firstChapter
-          };
-        }),
+      const chapterCountMap = new Map(
+        chapterCounts.map((c) => [c.channelId, c.total]),
       );
+
+      // /* -------------------------------------------------- */
+      // /* 3. Batch subscriber counts */
+      // /* -------------------------------------------------- */
+
+      const subscriberCounts = await tx
+        .select({
+          channelId: subscription.channelId,
+          total: count(),
+        })
+        .from(subscription)
+        .where(inArray(subscription.channelId, channelIds))
+        .groupBy(subscription.channelId);
+
+      const subscriberMap = new Map(
+        subscriberCounts.map((s) => [s.channelId, s.total]),
+      );
+
+      // /* -------------------------------------------------- */
+      // /* 4. Batch first chapters (window function) */
+      // /* -------------------------------------------------- */
+
+      const fc = tx
+        .select({
+          channelId: chapter.channelId,
+          chapterId: chapter.id,
+        })
+        .from(chapter)
+        .where(
+          and(
+            eq(chapter.isPublished, true),
+            inArray(chapter.channelId, channelIds),
+          ),
+        )
+        .orderBy(
+          asc(sql`CAST(SUBSTRING(${chapter.title} FROM '^[0-9]+') AS INTEGER)`),
+        )
+        .groupBy(chapter.id, chapter.channelId)
+        .as("fc");
+
+      const firstChapters = await tx
+        .select({
+          channelId: fc.channelId,
+          id: fc.chapterId,
+        })
+        .from(fc);
+
+      const firstChapterMap = new Map(
+        firstChapters.map((c) => [c.channelId, c]),
+      );
+
+      /* -------------------------------------------------- */
+      /* 5. Batch Clerk users request */
+      /* -------------------------------------------------- */
+
+      const userIds = [...new Set(channels.map((c) => c.createdByClerkUserId))];
+
+      const clerkUsers = await ctx.clerk.users.getUserList({
+        userId: userIds,
+      });
+
+      const userMap = new Map(clerkUsers.data.map((u) => [u.id, u]));
+
+      /* -------------------------------------------------- */
+      /* 7. Final mapping (NO ASYNC INSIDE LOOP) */
+      /* -------------------------------------------------- */
+
+      return channels.map((channel) => {
+        return {
+          ...channel,
+          numberOfChapters: chapterCountMap.get(channel.id) ?? 0,
+          createdByClerkUser: userMap.get(channel.createdByClerkUserId),
+          totalSubscribers: subscriberMap.get(channel.id) ?? 0,
+          firstChapter: firstChapterMap.get(channel.id),
+          overallValues: { data: { total_views: 0 } },
+        };
+      });
     });
   }),
 
@@ -164,16 +226,13 @@ export const channelRouter = {
 
         // 5. Get total subscribers
         const subscribersAggr = await tx
-          .select({ total: count() })
+          .select({ total: countDistinct(subscription.clerkUserId) })
           .from(subscription)
           .where(eq(subscription.channelId, singleChannel.id));
-
-        const thumbneilBlurHash = singleChannel.thumbneilId ? await generateBlurHash(`https://${process.env.NEXT_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${singleChannel.thumbneilId}`) : undefined
 
         return {
           ...singleChannel,
           createdByClerkUser,
-          thumbneilBlurHash,
           numberOfChapters: chapterAggr[0]?.total ?? 0,
           totalDuration: hoursAggr[0]?.total ?? 0,
           totalSubscribers: subscribersAggr[0]?.total ?? 0,

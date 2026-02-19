@@ -1,29 +1,16 @@
-import {
-  and,
-  asc,
-  desc,
-  eq,
-  getTableColumns,
-  gt,
-  gte,
-  sql,
-} from "@instello/db";
-import {
-  channel,
-  chapter,
-  CreateVideoSchema,
-  subscription,
-  UpdateVideoSchema,
-  video,
-} from "@instello/db/lms";
+import { and, asc, desc, eq, getTableColumns, gt, gte, inArray, sql } from "@instello/db";
+import { channel, chapter, CreateVideoSchema, subscription, UpdateVideoSchema, video } from "@instello/db/lms";
 import { createId } from "@paralleldrive/cuid2";
 import { TRPCError } from "@trpc/server";
 import { endOfDay } from "date-fns";
 import { z } from "zod/v4";
 
+
+
 import type { withTx } from "../router.helpers";
 import type { Context } from "../trpc";
 import { protectedProcedure } from "../trpc";
+
 
 export const videoRouter = {
   create: protectedProcedure
@@ -276,31 +263,31 @@ export const videoRouter = {
         const hasNextPage = videos.length > limit;
         const items = hasNextPage ? videos.slice(0, -1) : videos;
 
-        const videosWithAuthorization = await Promise.all(
-          items.map(async (video) => {
-            const userSubscription = await tx.query.subscription.findFirst({
-              where: and(
-                eq(subscription.clerkUserId, ctx.auth.userId),
-                eq(subscription.channelId, video.chapter.channelId),
-                gte(subscription.endDate, endOfDay(new Date())),
-              ),
-            });
+        const channelIds = videos.map((v) => v.chapter.channelId);
 
-            const overallValues = await ctx.mux.data.metrics.getOverallValues(
-              "views",
-              {
-                filters: [`video_id:${video.id}`],
-                timeframe: ["3:months"],
-              },
-            );
+        const userSubscription = await tx.query.subscription.findFirst({
+          where: and(
+            eq(subscription.clerkUserId, ctx.auth.userId),
+            inArray(subscription.channelId, channelIds),
+            gte(subscription.endDate, endOfDay(new Date())),
+          ),
+        });
 
-            return {
-              ...video,
-              canWatch: !!userSubscription,
-              overallValues,
-            };
-          }),
-        );
+        const videosWithAuthorization = items.map((video) => {
+          // const overallValues = await ctx.mux.data.metrics.getOverallValues(
+          //   "views",
+          //   {
+          //     filters: [`video_id:${video.id}`],
+          //     timeframe: ["3:months"],
+          //   },
+          // );
+
+          return {
+            ...video,
+            canWatch: !!userSubscription,
+            overallValues: { data: { total_views: 0 } },
+          };
+        });
 
         return {
           items: videosWithAuthorization,

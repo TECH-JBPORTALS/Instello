@@ -1,43 +1,55 @@
 import { relations } from "drizzle-orm";
+import { index } from "drizzle-orm/pg-core";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 import { z } from "zod/v4";
+
+
 
 import { initialColumns } from "../columns.helpers";
 import { lmsPgTable } from "../table.helpers";
 import { author } from "./author";
 import { chapter } from "./chapter";
-import { index } from "drizzle-orm/pg-core";
 
-export const video = lmsPgTable("video", (d) => ({
-  ...initialColumns,
-  thumbnailId: d.text(),
-  createdByClerkUserId: d.text().notNull(),
-  chapterId: d
-    .text()
-    .notNull()
-    .references(() => chapter.id, { onDelete: "cascade" }),
-  title: d.varchar({ length: 100 }).notNull(),
-  description: d.varchar({ length: 5000 }),
-  uploadId: d.text().notNull(),
-  assetId: d.text(),
-  playbackId: d.text(),
-  duration: d.real(),
-  status: d
-    .text({
-      enum: [
-        "errored",
-        "waiting",
-        "asset_created",
-        "cancelled",
-        "timed_out",
-        "ready",
-      ],
-    })
-    .notNull(),
-  authorId: d.text().references(() => author.id),
-  isPublished: d.boolean().default(false),
-  orderIndex: d.integer().default(0)
-}), (t) => [index().on(t.chapterId, t.isPublished), index().on(t.authorId), index().on(t.orderIndex)]);
+
+export const video = lmsPgTable(
+  "video",
+  (d) => ({
+    ...initialColumns,
+    thumbnailId: d.text(),
+    createdByClerkUserId: d.text().notNull(),
+    chapterId: d
+      .text()
+      .notNull()
+      .references(() => chapter.id, { onDelete: "cascade" }),
+    title: d.varchar({ length: 100 }).notNull(),
+    description: d.varchar({ length: 5000 }),
+    uploadId: d.text().notNull(),
+    assetId: d.text(),
+    playbackId: d.text(),
+    duration: d.real(),
+    status: d
+      .text({
+        enum: [
+          "errored",
+          "waiting",
+          "asset_created",
+          "cancelled",
+          "timed_out",
+          "ready",
+        ],
+      })
+      .notNull(),
+    authorId: d.text().references(() => author.id),
+    isPublished: d.boolean().default(false),
+    orderIndex: d.integer().default(0),
+  }),
+  (t) => [
+    index().on(t.chapterId),
+    index().on(t.isPublished),
+    index().on(t.authorId),
+    index().on(t.orderIndex),
+  ],
+);
 
 export const CreateVideoSchema = createInsertSchema(video, {
   title: z
