@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "storybook dev -p 6006",
     "build:storybook": "storybook build",
-    "start": "pnpx serve storybook-static"
+    "start": "bunx serve storybook-static"
   },
   "dependencies": {
     "@instello/ui": "workspace:^",

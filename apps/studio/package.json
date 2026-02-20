@@ -3,14 +3,14 @@
   "version": "1.1.0",
   "private": true,
   "scripts": {
-    "build": "pnpm with-env next build",
+    "build": "bun --bun with-env next build",
     "clean": "git clean -xdf .cache .next .turbo node_modules",
-    "dev": "pnpm with-env next dev --turbopack",
+    "dev": "bun --bun with-env next dev --turbopack",
     "db:migrate": "turbo -F @instello/db migrate-lms",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "test": "vitest",
-    "start": "pnpm with-env next start",
+    "start": "bun --bun with-env next start",
     "typecheck": "tsc --noEmit",
     "with-env": "dotenv -e ../../.env --"
   },
