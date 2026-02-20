@@ -65,18 +65,17 @@ function Button({
       data-size={size}
       className={cn(buttonVariants({ variant, size, className }))}
       disabled={disabled}
-      children={
-        loading ? (
-          <>
-            <Spinner weight="bold" className="animate-spin" />
-            {loadingText}
-          </>
-        ) : (
-          children
-        )
-      }
       {...props}
-    />
+    >
+      {loading ? (
+        <>
+          <Spinner weight="bold" className="animate-spin" />
+          {loadingText}
+        </>
+      ) : (
+        children
+      )}
+    </Comp>
   )
 }
 

@@ -91,7 +91,7 @@ export function ChannelLessonsList() {
         isLoading ? (
           <View className="px-4">
             {Array.from({ length: 6 }).map((_, index) => (
-              <View key={index} className="mb-2.5">
+              <View key={`skeleton-${index + 1}`} className="mb-2.5">
                 <View className="bg-accent/40 flex-row gap-2 rounded-md p-2">
                   <Skeleton
                     className="h-14 w-[120px] rounded-md"
@@ -224,6 +224,7 @@ function ChannelDetailsSection() {
     isError,
     error,
   } = useQuery(trpc.lms.channel.getById.queryOptions({ channelId }))
+  const theme = useColorScheme()
 
   if (isError)
     return (
@@ -234,7 +235,6 @@ function ChannelDetailsSection() {
     )
 
   const thumbnailUri = `https://${process.env.EXPO_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${channel?.thumbneilId}`
-  const theme = useColorScheme()
 
   return (
     <>

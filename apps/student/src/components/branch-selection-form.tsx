@@ -42,9 +42,10 @@ export function BranchSelectionForm() {
 
   React.useEffect(() => {
     setField('isBranchesLoading', isLoading)
-  }, [isLoading])
+  }, [isLoading, setField])
 
-  if (!college?.id) return <Redirect href={'/(onboarding)/step-two'} />
+  if (!college?.id)
+    return <Redirect href={'/(protected)/(onboarding)/step-two'} />
 
   return (
     <View className="relative gap-3.5">

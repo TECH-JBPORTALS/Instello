@@ -175,7 +175,7 @@ function NativeVideoControlsOverlay({
   const [showControls, setShowControls] = React.useState(true)
   const controlsTimeout = React.useRef<NodeJS.Timeout>(null)
 
-  const startTimeToHideControls = () => {
+  const startTimeToHideControls = useCallback(() => {
     // Clear any existing timeout before setting a new one
     if (controlsTimeout.current) {
       clearTimeout(controlsTimeout.current)
@@ -185,32 +185,32 @@ function NativeVideoControlsOverlay({
       setShowControls(false)
       controlsTimeout.current = null // Reset the timeout reference
     }, 5000) as unknown as NodeJS.Timeout
-  }
+  }, [])
 
-  const stopTimeToHideControls = () => {
+  const stopTimeToHideControls = useCallback(() => {
     // Clear any existing timeout before setting a new one
     if (controlsTimeout.current) {
       clearTimeout(controlsTimeout.current)
     }
-  }
+  }, [])
 
-  const enterFullscreen = async () => {
+  const enterFullscreen = useCallback(async () => {
     await ScreenOrientation.lockAsync(
       ScreenOrientation.OrientationLock.LANDSCAPE,
     )
     onChangeFullScreen(true)
     setStatusBarHidden(true, 'slide')
     await NavigationBar.setVisibilityAsync('hidden')
-  }
+  }, [onChangeFullScreen])
 
-  const exitFullscreen = async () => {
+  const exitFullscreen = useCallback(async () => {
     await ScreenOrientation.lockAsync(
       ScreenOrientation.OrientationLock.PORTRAIT_UP,
     )
     onChangeFullScreen(false)
     setStatusBarHidden(false, 'slide')
     await NavigationBar.setVisibilityAsync('visible')
-  }
+  }, [onChangeFullScreen])
 
   const toggleShowControls = () => {
     setShowControls(!showControls)
@@ -241,7 +241,7 @@ function NativeVideoControlsOverlay({
     startTimeToHideControls()
 
     return () => sub.remove()
-  }, [fullscreen])
+  }, [fullscreen, exitFullscreen, startTimeToHideControls])
 
   // Events
   useEvent(player, 'timeUpdate', {

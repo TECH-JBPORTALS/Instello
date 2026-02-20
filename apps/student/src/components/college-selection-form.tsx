@@ -40,7 +40,7 @@ export function CollegeSelectionForm() {
 
   React.useEffect(() => {
     setField('isCoursesLoading', isLoading)
-  }, [isLoading])
+  }, [isLoading, setField])
 
   return (
     <View className="relative gap-3.5">

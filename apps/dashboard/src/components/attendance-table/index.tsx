@@ -114,7 +114,7 @@ export function AttendanceTable({
         {children}
         {Array.from({ length: Math.max(0, 17 - students.length) }).map(
           (_, i) => (
-            <React.Fragment key={`empty-${i}`}>
+            <React.Fragment key={`empty-${i + 1}`}>
               <div className="bg-background sticky top-0 left-0 h-12 border-r" />
               <div className="bg-background h-12" />
             </React.Fragment>
@@ -276,11 +276,11 @@ export function AttendanceTableHeaderDates() {
   return (
     <>
       {dates.map((date, i) => (
-        <div className="h-full max-w-max min-w-20 border-r-2" key={i + 1}>
-          <div
-            key={i}
-            className="flex h-10 w-full items-center justify-center border-b px-2.5 text-sm"
-          >
+        <div
+          className="h-full max-w-max min-w-20 border-r-2"
+          key={`date-${i + 1}`}
+        >
+          <div className="flex h-10 w-full items-center justify-center border-b px-2.5 text-sm">
             {format(date, 'dd EEE')}
           </div>
 
@@ -295,7 +295,7 @@ export function AttendanceTableHeaderDates() {
                 >
                   <div
                     className="bg-primary text-primary-foreground flex items-center justify-center rounded-full px-2.5 text-xs"
-                    key={i + 1}
+                    key={`slot-${i + 1}`}
                   >
                     H{slot.startOfPeriod} - H{slot.endOfPeriod}
                   </div>

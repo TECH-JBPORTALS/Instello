@@ -184,7 +184,7 @@ export function TimeTable({
           <div className="bg-accent col-span-1 h-12 border-r" />
           {Array.from({ length: numberOfHours }).map((_, i) => (
             <div
-              key={`h-${i}`}
+              key={`h-${i + 1}`}
               ref={i === 0 ? hourSlotRef : null}
               className="bg-accent/20 col-span-1 flex h-12 items-center justify-center border-r"
             >

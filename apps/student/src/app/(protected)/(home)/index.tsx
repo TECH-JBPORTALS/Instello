@@ -140,7 +140,10 @@ export default function Home() {
           isLoading ? (
             <View className="w-full flex-1 flex-row flex-wrap">
               {Array.from({ length: 8 }).map((_, i) => (
-                <ChannelCardSkeleton className="w-full" key={i} />
+                <ChannelCardSkeleton
+                  className="w-full"
+                  key={`skeleton-${i + 1}`}
+                />
               ))}
             </View>
           ) : (

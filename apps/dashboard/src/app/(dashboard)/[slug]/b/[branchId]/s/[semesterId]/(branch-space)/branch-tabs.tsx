@@ -58,15 +58,15 @@ export function BranchTabs() {
       <TablerReactIcon
         isActive
         name={data?.icon as IconPickerIcon}
-        className="size-6 [&>svg]:!size-4"
+        className="size-6 [&>svg]:size-4!"
       />
-      <Separator orientation="vertical" className="!h-4" />
+      <Separator orientation="vertical" className="h-4!" />
       <Tabs value={pathname}>
         <TabsList className="h-9">
           {items.map((item, i) => (
             <TabsTrigger
               onClick={() => router.push(`${baseUrl}${item.url}`)}
-              key={i}
+              key={`item-${i + 1}`}
               value={`${baseUrl}${item.url}`}
               className="text-xs"
             >

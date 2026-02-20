@@ -34,7 +34,7 @@ export function MembersTabs() {
           {items.map((item, i) => (
             <TabsTrigger
               onClick={() => router.push(`${baseUrl}${item.url}`)}
-              key={i}
+              key={`items-${i + 1}`}
               value={`${baseUrl}${item.url}`}
               className="text-xs"
             >

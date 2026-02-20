@@ -56,7 +56,7 @@ export default function ProfileScreen() {
         <View className="flex-row items-center justify-center gap-1.5">
           {items.map((item, i) => (
             <Button
-              key={i}
+              key={`item-${i + 1}`}
               onPress={() => Linking.openURL(item.link)}
               size={'icon'}
               variant={'link'}

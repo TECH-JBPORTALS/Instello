@@ -109,7 +109,7 @@ export function ReactTimetable({
         <div className="bg-accent col-span-1 h-12 border" />
         {Array.from({ length: numberOfHours }).map((_, i) => (
           <div
-            key={`h-${i}`}
+            key={`h-${i + 1}`}
             className="bg-accent/20 col-span-1 flex h-12 items-center justify-center border"
           >
             H{i + 1}
@@ -148,7 +148,7 @@ export function ReactTimetable({
                   return (
                     <div
                       data-slot="empty"
-                      key={`empty-${dayIdx}-${i}`}
+                      key={`empty-${dayIdx}-${i + 1}`}
                       className={cn(
                         'hover:bg-muted bg-muted/10 absolute top-0 bottom-0 cursor-pointer transition-colors',
                         occupied &&

@@ -90,14 +90,12 @@ function Routes() {
     }
   }, [isLoaded, fontLoaded])
 
-  function onAppStateChange(status: AppStateStatus) {
-    if (Platform.OS !== 'web') {
-      focusManager.setFocused(status === 'active')
-    }
-  }
-
   React.useEffect(() => {
-    const subscription = AppState.addEventListener('change', onAppStateChange)
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (Platform.OS !== 'web') {
+        focusManager.setFocused(state === 'active')
+      }
+    })
 
     return () => subscription.remove()
   }, [])

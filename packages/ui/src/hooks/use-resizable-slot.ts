@@ -39,7 +39,7 @@ export function useResizableSlot({
   useEffect(() => {
     x.set(calcInitialX)
     width.set(calcInitialWidth)
-  }, [slot, defaultSlotWidth, width, x, calcInitialX, calcInitialWidth])
+  }, [width, x, calcInitialX, calcInitialWidth])
 
   const updateStart = useCallback(
     (mx: number, last: boolean) => {

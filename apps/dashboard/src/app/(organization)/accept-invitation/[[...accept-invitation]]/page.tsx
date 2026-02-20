@@ -71,11 +71,12 @@ export default function Page() {
   ])
 
   useEffect(() => {
-    getInvitation()
-      .then(() => {
-        router.refresh()
-      })
-      .catch((e) => console.log(e))
+    if (isLoaded)
+      getInvitation()
+        .then(() => {
+          router.refresh()
+        })
+        .catch((e) => console.log(e))
   }, [isLoaded, getInvitation, router])
 
   if (clerk_status === 'sign_in')
