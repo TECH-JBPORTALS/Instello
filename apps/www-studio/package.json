@@ -10,7 +10,6 @@
     "deploy": "sanity deploy",
     "deploy-graphql": "sanity graphql deploy",
     "typecheck": "tsc --noEmit",
-    "with-env": "dotenv -e ../../.env --",
     "clean": "git clean -xdf .cache .next .turbo node_modules"
   },
   "keywords": [
