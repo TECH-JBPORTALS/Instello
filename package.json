@@ -19,9 +19,6 @@
     "db:studio": "turbo -F @instello/db studio",
     "clean": "git clean -xdf node_modules",
     "clean:workspaces": "turbo run clean",
-    "lint": "turbo run lint --continue -- --cache --cache-location .cache/.eslintcache",
-    "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location .cache/.eslintcache",
-    "lint:ws": "bunx sherif@latest",
     "format-lint": "biome check .",
     "format-lint:fix": "biome check . --write",
     "typecheck": "turbo typecheck"

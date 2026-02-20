@@ -26,8 +26,6 @@
     "build": "tsc",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "dev": "tsc",
-    "format": "biome format .",
-    "lint": "biome lint .",
     "push-erp": "bun --env-file=../../.env drizzle-kit push --config=./drizzle.config.erp.ts",
     "push-lms": "bun --env-file=../../.env drizzle-kit push --config=./drizzle.config.lms.ts",
     "generate-erp": "bun --env-file=../../.env drizzle-kit generate --config=./drizzle.config.erp.ts",

@@ -7,8 +7,6 @@
     "clean": "git clean -xdf .cache .next .turbo node_modules",
     "dev": "bun --bun --env-file=../../.env next dev --turbopack",
     "db:migrate": "bun --filter=\"@instello/db\" migrate-lms",
-    "format": "biome format .",
-    "lint": "biome lint .",
     "test": "vitest",
     "start": "bun --bun --env-file=../../.env next start",
     "typecheck": "tsc --noEmit"

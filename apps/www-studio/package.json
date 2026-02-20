@@ -10,9 +10,7 @@
     "deploy": "sanity deploy",
     "deploy-graphql": "sanity graphql deploy",
     "typecheck": "tsc --noEmit",
-    "clean": "git clean -xdf .cache .next .turbo node_modules",
-    "format": "biome format .",
-    "lint": "biome lint ."
+    "clean": "git clean -xdf .cache .next .turbo node_modules"
   },
   "keywords": ["sanity"],
   "dependencies": {

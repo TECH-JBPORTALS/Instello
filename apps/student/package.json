@@ -8,9 +8,7 @@
     "ios": "expo start -c --ios",
     "web": "expo start -c --web",
     "clean": "rm -rf .cache .expo node_modules",
-    "typecheck": "tsc --noEmit",
-    "format": "biome format .",
-    "lint": "biome lint ."
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@clerk/clerk-expo": "^2.14.14",
