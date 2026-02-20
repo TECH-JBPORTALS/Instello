@@ -1,11 +1,11 @@
-import { redirect } from "next/navigation";
-import { auth } from "@clerk/nextjs/server";
-import { LockKeyIcon } from "@phosphor-icons/react/dist/ssr";
+import { auth } from '@clerk/nextjs/server'
+import { LockKeyIcon } from '@phosphor-icons/react/dist/ssr'
+import { redirect } from 'next/navigation'
 
 export default async function Page() {
-  const { sessionClaims } = await auth();
+  const { sessionClaims } = await auth()
 
-  if (sessionClaims?.metadata.hasCreatorRole) redirect("/");
+  if (sessionClaims?.metadata.hasCreatorRole) redirect('/')
 
   return (
     <div className="flex h-screen flex-col items-center justify-center gap-3.5">
@@ -15,5 +15,5 @@ export default async function Page() {
         You don't have studio creator role to access studio dashboard
       </p>
     </div>
-  );
+  )
 }

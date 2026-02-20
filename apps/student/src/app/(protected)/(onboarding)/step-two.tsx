@@ -1,10 +1,10 @@
-import React from "react";
-import { ScrollView, View } from "react-native";
-import { Stack } from "expo-router";
+import { Stack } from 'expo-router'
+import React from 'react'
+import { ScrollView, View } from 'react-native'
 import {
   CollegeSelectionForm,
   CollegeSelectionFormFooter,
-} from "@/components/college-selection-form";
+} from '@/components/college-selection-form'
 
 export default function OnboardingStepTwo() {
   return (
@@ -18,7 +18,7 @@ export default function OnboardingStepTwo() {
         <Stack.Screen
           options={{
             headerShown: true,
-            headerTitle: "",
+            headerTitle: '',
           }}
         />
         <CollegeSelectionForm />
@@ -27,5 +27,5 @@ export default function OnboardingStepTwo() {
         <CollegeSelectionFormFooter />
       </View>
     </View>
-  );
+  )
 }

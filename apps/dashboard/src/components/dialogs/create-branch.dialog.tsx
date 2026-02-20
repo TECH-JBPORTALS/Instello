@@ -1,13 +1,9 @@
-"use client";
+'use client'
 
-import type { SemesterMode } from "@instello/db/erp";
-import type React from "react";
-import type { z } from "zod/v4";
-import { useState } from "react";
-import { useTRPC } from "@/trpc/react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { CreateBranchSchema as _CreateBranchSchema } from "@instello/db/erp";
-import { Button } from "@instello/ui/components/button";
+import { zodResolver } from '@hookform/resolvers/zod'
+import type { SemesterMode } from '@instello/db/erp'
+import { CreateBranchSchema as _CreateBranchSchema } from '@instello/db/erp'
+import { Button } from '@instello/ui/components/button'
 import {
   Dialog,
   DialogBody,
@@ -17,63 +13,67 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@instello/ui/components/dialog";
+} from '@instello/ui/components/dialog'
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@instello/ui/components/form";
-import { Input } from "@instello/ui/components/input";
+} from '@instello/ui/components/form'
+import { Input } from '@instello/ui/components/input'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@instello/ui/components/select";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+} from '@instello/ui/components/select'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import type React from 'react'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import type { z } from 'zod/v4'
+import { useTRPC } from '@/trpc/react'
 
-import type { IconPickerIcon } from "../icon-picker";
-import IconPicker, { TablerReactIcon } from "../icon-picker";
+import type { IconPickerIcon } from '../icon-picker'
+import IconPicker, { TablerReactIcon } from '../icon-picker'
 
-const CreateBranchSchema = _CreateBranchSchema;
+const CreateBranchSchema = _CreateBranchSchema
 
 export function CreateBranchDialog(
   props: React.ComponentProps<typeof DialogTrigger>,
 ) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
   const form = useForm({
     resolver: zodResolver(CreateBranchSchema),
     defaultValues: {
-      name: "",
-      icon: "IconCircleFilled",
-      currentSemesterMode: "odd" as SemesterMode,
+      name: '',
+      icon: 'IconCircleFilled',
+      currentSemesterMode: 'odd' as SemesterMode,
       totalSemesters: 6,
     },
-  });
+  })
 
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
   const { mutateAsync: createBranch } = useMutation(
     trpc.erp.branch.create.mutationOptions({
       async onSuccess(_data, variables) {
-        await queryClient.invalidateQueries(trpc.erp.branch.list.queryFilter());
-        toast.success(`${variables.name} created.`);
-        setOpen(false);
-        form.reset();
+        await queryClient.invalidateQueries(trpc.erp.branch.list.queryFilter())
+        toast.success(`${variables.name} created.`)
+        setOpen(false)
+        form.reset()
       },
       onError(error) {
-        toast.error(error.message);
+        toast.error(error.message)
       },
     }),
-  );
+  )
 
   async function onSubmit(values: z.infer<typeof CreateBranchSchema>) {
-    await createBranch(values);
+    await createBranch(values)
   }
 
   return (
@@ -184,5 +184,5 @@ export function CreateBranchDialog(
         </Form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

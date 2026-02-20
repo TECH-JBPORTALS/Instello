@@ -1,8 +1,8 @@
-import { eq } from "@instello/db";
-import { CreatePreferenceSchema, preference } from "@instello/db/lms";
-import { z } from "zod/v4";
+import { eq } from '@instello/db'
+import { CreatePreferenceSchema, preference } from '@instello/db/lms'
+import { z } from 'zod/v4'
 
-import { protectedProcedure } from "../trpc";
+import { protectedProcedure } from '../trpc'
 
 export const preferenceRouter = {
   update: protectedProcedure
@@ -25,7 +25,7 @@ export const preferenceRouter = {
           },
           firstName: input.firstName,
           lastName: input.lastName,
-        });
+        })
 
         // 2. Insert or Update the preferences in the db for the user
         await tx
@@ -35,7 +35,7 @@ export const preferenceRouter = {
             set: input,
             target: [preference.id],
             setWhere: eq(preference.id, ctx.auth.userId),
-          });
-      });
+          })
+      })
     }),
-};
+}

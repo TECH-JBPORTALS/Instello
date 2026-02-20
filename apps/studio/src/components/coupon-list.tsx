@@ -1,41 +1,41 @@
-"use client";
+'use client'
 
-import type { RouterOutputs } from "@instello/api";
-import { useParams } from "next/navigation";
-import { CouponContextMenu } from "@/components/coupon-context-menu";
-import { useTRPC } from "@/trpc/react";
-import { Alert, AlertDescription } from "@instello/ui/components/alert";
-import { Badge } from "@instello/ui/components/badge";
-import { Card, CardContent, CardHeader } from "@instello/ui/components/card";
-import { Skeleton } from "@instello/ui/components/skeleton";
-import { cn } from "@instello/ui/lib/utils";
+import type { RouterOutputs } from '@instello/api'
+import { Alert, AlertDescription } from '@instello/ui/components/alert'
+import { Badge } from '@instello/ui/components/badge'
+import { Card, CardContent, CardHeader } from '@instello/ui/components/card'
+import { Skeleton } from '@instello/ui/components/skeleton'
+import { cn } from '@instello/ui/lib/utils'
 import {
   CalendarIcon,
   CrownIcon,
   GiftIcon,
   UsersIcon,
-} from "@phosphor-icons/react";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
+} from '@phosphor-icons/react'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { format } from 'date-fns'
+import { useParams } from 'next/navigation'
+import { CouponContextMenu } from '@/components/coupon-context-menu'
+import { useTRPC } from '@/trpc/react'
 
-type Coupon = RouterOutputs["lms"]["coupon"]["list"][number];
+type Coupon = RouterOutputs['lms']['coupon']['list'][number]
 
 function CouponCard({ coupon }: { coupon: Coupon }) {
-  const isExpired = new Date(coupon.valid.to) < new Date();
-  const isActive = new Date(coupon.valid.from) <= new Date() && !isExpired;
+  const isExpired = new Date(coupon.valid.to) < new Date()
+  const isActive = new Date(coupon.valid.from) <= new Date() && !isExpired
 
   const formatDate = (date: string | Date) =>
-    format(new Date(date), "MMM dd, yyyy");
+    format(new Date(date), 'MMM dd, yyyy')
 
   return (
     <Card
       className={cn(
         `bg-accent relative aspect-auto overflow-hidden border-0 transition-all hover:shadow-lg`,
         isExpired
-          ? "bg-accent/50 border border-dashed shadow-none"
+          ? 'bg-accent/50 border border-dashed shadow-none'
           : isActive
-            ? "ring-primary"
-            : "",
+            ? 'ring-primary'
+            : '',
       )}
     >
       {/* Coupon design with diagonal cut */}
@@ -50,13 +50,13 @@ function CouponCard({ coupon }: { coupon: Coupon }) {
               <div className="mb-2 flex items-center gap-2">
                 <Badge
                   variant={
-                    isActive ? "default" : isExpired ? "outline" : "secondary"
+                    isActive ? 'default' : isExpired ? 'outline' : 'secondary'
                   }
                 >
-                  {isActive ? "Active" : isExpired ? "Expired" : "Upcoming"}
+                  {isActive ? 'Active' : isExpired ? 'Expired' : 'Upcoming'}
                 </Badge>
                 <Badge variant="outline" className="text-xs">
-                  {coupon.type === "general" ? "General" : "Targeted"}
+                  {coupon.type === 'general' ? 'General' : 'Targeted'}
                 </Badge>
               </div>
               <div className="text-foreground font-mono text-2xl font-bold tracking-wider">
@@ -71,7 +71,7 @@ function CouponCard({ coupon }: { coupon: Coupon }) {
             <div className="text-muted-foreground flex items-center gap-2 text-sm">
               <CalendarIcon weight="duotone" className="h-4 w-4" />
               <span>
-                Valid: {formatDate(coupon.valid.from)} -{" "}
+                Valid: {formatDate(coupon.valid.from)} -{' '}
                 {formatDate(coupon.valid.to)}
               </span>
             </div>
@@ -98,7 +98,7 @@ function CouponCard({ coupon }: { coupon: Coupon }) {
         </CardContent>
       </div>
     </Card>
-  );
+  )
 }
 
 function EmptyState() {
@@ -116,7 +116,7 @@ function EmptyState() {
         your students.
       </p>
     </div>
-  );
+  )
 }
 
 export function CouponListSkeleton() {
@@ -148,16 +148,16 @@ export function CouponListSkeleton() {
         </Card>
       ))}
     </>
-  );
+  )
 }
 
 export function CouponList() {
-  const { channelId } = useParams<{ channelId: string }>();
-  const trpc = useTRPC();
+  const { channelId } = useParams<{ channelId: string }>()
+  const trpc = useTRPC()
 
   const { data, error } = useSuspenseQuery(
     trpc.lms.coupon.list.queryOptions({ channelId }),
-  );
+  )
 
   if (error) {
     return (
@@ -168,11 +168,11 @@ export function CouponList() {
           </AlertDescription>
         </Alert>
       </div>
-    );
+    )
   }
 
   if (data.length === 0) {
-    return <EmptyState />;
+    return <EmptyState />
   }
 
   return (
@@ -181,5 +181,5 @@ export function CouponList() {
         <CouponCard key={coupon.id} coupon={coupon} />
       ))}
     </>
-  );
+  )
 }

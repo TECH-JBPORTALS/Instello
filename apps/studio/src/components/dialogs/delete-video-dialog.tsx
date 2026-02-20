@@ -1,7 +1,5 @@
-"use client";
+'use client'
 
-import React from "react";
-import { useTRPC } from "@/trpc/react";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -11,37 +9,39 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@instello/ui/components/alert-dialog";
-import { Button } from "@instello/ui/components/button";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+} from '@instello/ui/components/alert-dialog'
+import { Button } from '@instello/ui/components/button'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import React from 'react'
+import { toast } from 'sonner'
+import { useTRPC } from '@/trpc/react'
 
 export function DeleteVideoDialog({
   children,
   chapterId,
   videoId,
 }: {
-  children: React.ReactNode;
-  chapterId: string;
-  videoId: string;
+  children: React.ReactNode
+  chapterId: string
+  videoId: string
 }) {
-  const [open, setOpen] = React.useState(false);
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
+  const [open, setOpen] = React.useState(false)
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
   const { mutate: deleteVideo, isPending } = useMutation(
     trpc.lms.video.delete.mutationOptions({
       async onSuccess(data) {
-        toast.info(`Video ${data.title} deleted`);
+        toast.info(`Video ${data.title} deleted`)
         await queryClient.invalidateQueries(
           trpc.lms.video.list.queryOptions({ chapterId }),
-        );
-        setOpen(false);
+        )
+        setOpen(false)
       },
       onError(error) {
-        toast.error(error.message);
+        toast.error(error.message)
       },
     }),
-  );
+  )
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -56,17 +56,17 @@ export function DeleteVideoDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel asChild>
-            <Button variant={"secondary"}>Cancel</Button>
+            <Button variant={'secondary'}>Cancel</Button>
           </AlertDialogCancel>
           <Button
             loading={isPending}
             onClick={() => deleteVideo({ videoId })}
-            variant={"destructive"}
+            variant={'destructive'}
           >
             Delete
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  );
+  )
 }

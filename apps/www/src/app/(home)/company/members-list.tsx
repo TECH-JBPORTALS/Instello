@@ -2,46 +2,46 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@instello/ui/components/avatar";
+} from '@instello/ui/components/avatar'
 
 const members = [
   {
-    name: "Narayana R",
-    designation: "Founder & Trainer",
-    img: "/team/narayana.jpg",
+    name: 'Narayana R',
+    designation: 'Founder & Trainer',
+    img: '/team/narayana.jpg',
   },
   {
-    name: "Gayathri Emparala",
-    designation: "Co-Founder",
-    img: "/team/gayathri.jpg",
+    name: 'Gayathri Emparala',
+    designation: 'Co-Founder',
+    img: '/team/gayathri.jpg',
   },
   {
-    name: "Manoj M",
-    designation: "Developer",
-    img: "/team/manoj.jpg",
+    name: 'Manoj M',
+    designation: 'Developer',
+    img: '/team/manoj.jpg',
   },
 
   {
-    name: "Kshama Gururaj Chimmalgi",
-    designation: "Trainer",
-    img: "/team/kshama.jpg",
+    name: 'Kshama Gururaj Chimmalgi',
+    designation: 'Trainer',
+    img: '/team/kshama.jpg',
   },
   {
-    name: "Srinithi Ashokan",
-    designation: "Trainer",
-    img: "/team/srinithi.png",
+    name: 'Srinithi Ashokan',
+    designation: 'Trainer',
+    img: '/team/srinithi.png',
   },
   {
-    name: "Devendra P",
-    designation: "Trainer",
-    img: "/team/devendra.jpg",
+    name: 'Devendra P',
+    designation: 'Trainer',
+    img: '/team/devendra.jpg',
   },
   {
-    name: "Akash Bhandari G",
-    designation: "Trainer",
-    img: "/team/akash.jpg",
+    name: 'Akash Bhandari G',
+    designation: 'Trainer',
+    img: '/team/akash.jpg',
   },
-];
+]
 
 export function MembersList() {
   return (
@@ -67,5 +67,5 @@ export function MembersList() {
         ))}
       </div>
     </section>
-  );
+  )
 }

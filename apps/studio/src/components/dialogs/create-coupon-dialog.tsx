@@ -1,14 +1,9 @@
-"use client";
+'use client'
 
-import type React from "react";
-import type { z } from "zod/v4";
-import { useState } from "react";
-import { useParams } from "next/navigation";
-import { useTRPC } from "@/trpc/react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { CreateCouponSchema } from "@instello/db/lms";
-import { Button } from "@instello/ui/components/button";
-import { Calendar } from "@instello/ui/components/calendar";
+import { zodResolver } from '@hookform/resolvers/zod'
+import { CreateCouponSchema } from '@instello/db/lms'
+import { Button } from '@instello/ui/components/button'
+import { Calendar } from '@instello/ui/components/calendar'
 import {
   Dialog,
   DialogBody,
@@ -17,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@instello/ui/components/dialog";
+} from '@instello/ui/components/dialog'
 import {
   Form,
   FormControl,
@@ -26,62 +21,67 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@instello/ui/components/form";
-import { Input } from "@instello/ui/components/input";
+} from '@instello/ui/components/form'
+import { Input } from '@instello/ui/components/input'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@instello/ui/components/popover";
-import { Tabs, TabsList, TabsTrigger } from "@instello/ui/components/tabs";
-import { Textarea } from "@instello/ui/components/textarea";
-import { cn } from "@instello/ui/lib/utils";
-import { ArrowRightIcon, CalendarIcon } from "@phosphor-icons/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { format, subDays } from "date-fns";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+} from '@instello/ui/components/popover'
+import { Tabs, TabsList, TabsTrigger } from '@instello/ui/components/tabs'
+import { Textarea } from '@instello/ui/components/textarea'
+import { cn } from '@instello/ui/lib/utils'
+import { ArrowRightIcon, CalendarIcon } from '@phosphor-icons/react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { format, subDays } from 'date-fns'
+import { useParams } from 'next/navigation'
+import type React from 'react'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import type { z } from 'zod/v4'
+import { useTRPC } from '@/trpc/react'
 
 export function CreateCouponDialog({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  const [open, setOpen] = useState(false);
-  const { channelId } = useParams<{ channelId: string }>();
+  const [open, setOpen] = useState(false)
+  const { channelId } = useParams<{ channelId: string }>()
   const form = useForm({
     resolver: zodResolver(CreateCouponSchema),
     defaultValues: {
-      code: "",
+      code: '',
       maxRedemptions: 10,
       subscriptionDurationDays: 30,
-      type: "general",
+      type: 'general',
       valid: { from: new Date(), to: new Date() },
       channelId,
     },
-  });
+  })
 
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
 
   const { mutateAsync: createCoupon } = useMutation(
     trpc.lms.coupon.create.mutationOptions({
       async onSuccess() {
-        await queryClient.invalidateQueries(trpc.lms.coupon.list.queryFilter());
-        setOpen(false);
-        form.reset();
-        toast.success("Coupon created successfully");
+        await queryClient.invalidateQueries(trpc.lms.coupon.list.queryFilter())
+        setOpen(false)
+        form.reset()
+        toast.success('Coupon created successfully')
       },
       onError(error) {
-        toast.error(error.message);
+        toast.error(error.message)
       },
     }),
-  );
+  )
 
-  const values = form.watch();
+  const values = form.watch()
 
   async function onSubmit(values: z.infer<typeof CreateCouponSchema>) {
-    await createCoupon(values);
+    await createCoupon(values)
   }
 
   return (
@@ -104,7 +104,7 @@ export function CreateCouponDialog({
                       <Tabs
                         value={field.value}
                         onValueChange={(value) =>
-                          field.onChange(value as "general" | "targeted")
+                          field.onChange(value as 'general' | 'targeted')
                         }
                       >
                         <TabsList className="w-full">
@@ -148,16 +148,16 @@ export function CreateCouponDialog({
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            variant={"outline"}
-                            className={cn("w-full pl-3 text-left font-normal")}
+                            variant={'outline'}
+                            className={cn('w-full pl-3 text-left font-normal')}
                           >
                             <span className="inline-flex items-center gap-1.5">
-                              {format(field.value.from, "PP")}
+                              {format(field.value.from, 'PP')}
                               <ArrowRightIcon
                                 weight="duotone"
                                 className="text-muted-foreground"
                               />
-                              {format(field.value.to, "PP")}
+                              {format(field.value.to, 'PP')}
                             </span>
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
@@ -181,7 +181,7 @@ export function CreateCouponDialog({
                 )}
               />
 
-              {values.type == "general" && (
+              {values.type == 'general' && (
                 <FormField
                   control={form.control}
                   name="maxRedemptions"
@@ -241,7 +241,7 @@ export function CreateCouponDialog({
                 )}
               />
 
-              {values.type == "targeted" && (
+              {values.type == 'targeted' && (
                 <FormField
                   control={form.control}
                   name="targetEmails"
@@ -271,5 +271,5 @@ export function CreateCouponDialog({
         </Form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

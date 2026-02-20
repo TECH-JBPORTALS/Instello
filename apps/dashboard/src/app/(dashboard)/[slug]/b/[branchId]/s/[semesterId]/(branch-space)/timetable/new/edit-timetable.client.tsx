@@ -1,11 +1,5 @@
-"use client";
+'use client'
 
-import type { TimetableInput } from "@/components/timetable";
-import React from "react";
-import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
-import { ReactTimetable } from "@/components/timetable";
-import { useTRPC } from "@/trpc/react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,50 +7,56 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@instello/ui/components/breadcrumb";
-import { Button } from "@instello/ui/components/button";
-import { Input } from "@instello/ui/components/input";
+} from '@instello/ui/components/breadcrumb'
+import { Button } from '@instello/ui/components/button'
+import { Input } from '@instello/ui/components/input'
 import {
   useMutation,
   useQueryClient,
   useSuspenseQuery,
-} from "@tanstack/react-query";
-import { toast } from "sonner";
+} from '@tanstack/react-query'
+import Link from 'next/link'
+import { useParams, useRouter } from 'next/navigation'
+import React from 'react'
+import { toast } from 'sonner'
+import type { TimetableInput } from '@/components/timetable'
+import { ReactTimetable } from '@/components/timetable'
+import { useTRPC } from '@/trpc/react'
 
 export function TimetableClient() {
   const { branchId, slug, semesterId } = useParams<{
-    branchId: string;
-    slug: string;
-    semesterId: string;
-  }>();
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
+    branchId: string
+    slug: string
+    semesterId: string
+  }>()
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
   const { data } = useSuspenseQuery(
     trpc.erp.timetable.findByActiveSemester.queryOptions({ branchId }),
-  );
+  )
 
   const timetableSlots = data.timetableData?.timetableSlots.map((s) => ({
     ...s,
     subjectName: s.subject.name,
-  }));
+  }))
   const [slots, setSlots] = React.useState<TimetableInput[]>(
     timetableSlots ?? [],
-  );
+  )
 
-  const [message, setMessage] = React.useState("");
-  const router = useRouter();
+  const [message, setMessage] = React.useState('')
+  const router = useRouter()
   const { mutate: createTimetable, isPending } = useMutation(
     trpc.erp.timetable.create.mutationOptions({
       async onSuccess() {
-        await queryClient.invalidateQueries(trpc.erp.timetable.pathFilter());
-        router.replace(`/${slug}/b/${branchId}/s/${semesterId}/timetable`);
-        toast.success(`Timetable updated`);
+        await queryClient.invalidateQueries(trpc.erp.timetable.pathFilter())
+        router.replace(`/${slug}/b/${branchId}/s/${semesterId}/timetable`)
+        toast.success(`Timetable updated`)
       },
       onError(error) {
-        toast.error(error.message);
+        toast.error(error.message)
       },
     }),
-  );
+  )
 
   return (
     <React.Fragment>
@@ -109,5 +109,5 @@ export function TimetableClient() {
         editable
       />
     </React.Fragment>
-  );
+  )
 }

@@ -1,17 +1,17 @@
-import { redirect } from "next/navigation";
-import { AppSidebar } from "@/components/app-sidebar";
-import { auth } from "@clerk/nextjs/server";
-import { SidebarInset, SidebarProvider } from "@instello/ui/components/sidebar";
-import NextTopLoader from "nextjs-toploader";
+import { auth } from '@clerk/nextjs/server'
+import { SidebarInset, SidebarProvider } from '@instello/ui/components/sidebar'
+import { redirect } from 'next/navigation'
+import NextTopLoader from 'nextjs-toploader'
+import { AppSidebar } from '@/components/app-sidebar'
 
 export default async function Layout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  const { sessionClaims } = await auth();
+  const { sessionClaims } = await auth()
 
-  if (!sessionClaims?.metadata.hasCreatorRole) redirect("/no-access");
+  if (!sessionClaims?.metadata.hasCreatorRole) redirect('/no-access')
 
   return (
     <>
@@ -25,8 +25,8 @@ export default async function Layout({
       <SidebarProvider
         style={
           {
-            "--sidebar-width": "calc(var(--spacing) * 64)",
-            "--header-height": "calc(var(--spacing) * 14)",
+            '--sidebar-width': 'calc(var(--spacing) * 64)',
+            '--header-height': 'calc(var(--spacing) * 14)',
           } as React.CSSProperties
         }
       >
@@ -34,5 +34,5 @@ export default async function Layout({
         <SidebarInset className="@container/main">{children}</SidebarInset>
       </SidebarProvider>
     </>
-  );
+  )
 }

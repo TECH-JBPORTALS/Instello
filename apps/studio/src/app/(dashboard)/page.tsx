@@ -1,5 +1,5 @@
-import Container from "@/components/container";
-import { SiteHeader } from "@/components/site-header";
+import Container from '@/components/container'
+import { SiteHeader } from '@/components/site-header'
 
 export default function Home() {
   return (
@@ -12,5 +12,5 @@ export default function Home() {
         <p className="font-semibold">Coming soon!</p>
       </Container>
     </>
-  );
+  )
 }

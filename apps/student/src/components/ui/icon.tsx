@@ -1,29 +1,29 @@
+import { styled } from 'nativewind'
 import type {
   Icon as PhosphorIcon,
   IconProps as PhosphorIconProps,
-} from "phosphor-react-native";
-import { cn } from "@/lib/utils";
-import { styled } from "nativewind";
+} from 'phosphor-react-native'
+import { cn } from '@/lib/utils'
 
 type IconProps = PhosphorIconProps & {
-  as: PhosphorIcon;
-};
+  as: PhosphorIcon
+}
 
 function IconImpl({ as: IconComponent, ...props }: IconProps) {
-  return <IconComponent {...props} />;
+  return <IconComponent {...props} />
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const StyledIconIml = styled(IconImpl, {
   className: {
-    target: "style",
+    target: 'style',
     nativeStyleMapping: {
-      color: "color",
-      height: "size",
-      width: "size",
+      color: 'color',
+      height: 'size',
+      width: 'size',
     },
   },
-});
+})
 
 /**
  * A wrapper component for Lucide icons with Nativewind `className` support via `cssInterop`.
@@ -54,11 +54,11 @@ function Icon({
   return (
     <StyledIconIml
       as={IconComponent}
-      className={cn("text-foreground", className)}
+      className={cn('text-foreground', className)}
       size={size}
       {...props}
     />
-  );
+  )
 }
 
-export { Icon };
+export { Icon }

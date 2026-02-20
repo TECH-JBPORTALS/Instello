@@ -1,12 +1,8 @@
-"use client";
+'use client'
 
-import type React from "react";
-import type { z } from "zod/v4";
-import { useState } from "react";
-import { useTRPC } from "@/trpc/react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { CreateChannelSchema } from "@instello/db/lms";
-import { Button } from "@instello/ui/components/button";
+import { zodResolver } from '@hookform/resolvers/zod'
+import { CreateChannelSchema } from '@instello/db/lms'
+import { Button } from '@instello/ui/components/button'
 import {
   Dialog,
   DialogBody,
@@ -15,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@instello/ui/components/dialog";
+} from '@instello/ui/components/dialog'
 import {
   Form,
   FormControl,
@@ -24,66 +20,68 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@instello/ui/components/form";
-import { Input } from "@instello/ui/components/input";
+} from '@instello/ui/components/form'
+import { Input } from '@instello/ui/components/input'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@instello/ui/components/select";
-import { Textarea } from "@instello/ui/components/textarea";
+} from '@instello/ui/components/select'
+import { Textarea } from '@instello/ui/components/textarea'
 import {
   GlobeHemisphereEastIcon,
   LockLaminatedIcon,
-} from "@phosphor-icons/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+} from '@phosphor-icons/react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import type React from 'react'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import type { z } from 'zod/v4'
+import { useTRPC } from '@/trpc/react'
 
-import CollegeBranchCommand from "../college-branch.command";
+import CollegeBranchCommand from '../college-branch.command'
 
 export function CreateChannelDialog({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
   const form = useForm({
     resolver: zodResolver(CreateChannelSchema),
     defaultValues: {
-      subjectCode: "",
-      title: "",
-      description: "",
-      collegeId: "",
-      branchId: "",
+      subjectCode: '',
+      title: '',
+      description: '',
+      collegeId: '',
+      branchId: '',
       isPublic: false,
     },
-  });
+  })
 
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
 
   const { mutateAsync: createChannel } = useMutation(
     trpc.lms.channel.create.mutationOptions({
       async onSuccess() {
-        await queryClient.invalidateQueries(
-          trpc.lms.channel.list.queryFilter(),
-        );
-        setOpen(false);
-        form.reset();
+        await queryClient.invalidateQueries(trpc.lms.channel.list.queryFilter())
+        setOpen(false)
+        form.reset()
       },
       onError() {
-        toast.error("Failed to create channel");
+        toast.error('Failed to create channel')
       },
     }),
-  );
+  )
 
-  const values = form.watch();
+  const values = form.watch()
 
   async function onSubmit(values: z.infer<typeof CreateChannelSchema>) {
-    await createChannel(values);
+    await createChannel(values)
   }
 
   return (
@@ -136,7 +134,7 @@ export function CreateChannelDialog({
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{"Description (Optional)"}</FormLabel>
+                    <FormLabel>{'Description (Optional)'}</FormLabel>
                     <FormControl className="h-full">
                       <Textarea
                         {...field}
@@ -164,12 +162,12 @@ export function CreateChannelDialog({
                       <Select
                         {...field}
                         onValueChange={(value) =>
-                          field.onChange(value == "public")
+                          field.onChange(value == 'public')
                         }
-                        value={field.value ? "public" : "private"}
+                        value={field.value ? 'public' : 'private'}
                       >
                         <SelectTrigger className="min-w-full">
-                          <SelectValue placeholder={"Select..."} />
+                          <SelectValue placeholder={'Select...'} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="private">
@@ -193,13 +191,13 @@ export function CreateChannelDialog({
                     name="collegeId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{"College (Optional)"}</FormLabel>
+                        <FormLabel>{'College (Optional)'}</FormLabel>
                         <FormControl className="h-full">
                           <CollegeBranchCommand
                             value={field.value}
                             onChange={(value) => {
-                              field.onChange(value);
-                              form.setValue("branchId", undefined);
+                              field.onChange(value)
+                              form.setValue('branchId', undefined)
                             }}
                           />
                         </FormControl>
@@ -214,7 +212,7 @@ export function CreateChannelDialog({
                       name="branchId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{"Branch (Optional)"}</FormLabel>
+                          <FormLabel>{'Branch (Optional)'}</FormLabel>
                           <FormControl className="h-full">
                             <CollegeBranchCommand
                               value={field.value}
@@ -237,5 +235,5 @@ export function CreateChannelDialog({
         </Form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

@@ -1,10 +1,10 @@
-import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
-import { z } from "zod/v4";
+import { createInsertSchema, createUpdateSchema } from 'drizzle-zod'
+import { z } from 'zod/v4'
 
-import { initialColumns } from "../columns.helpers";
-import { lmsPgTable } from "../table.helpers";
+import { initialColumns } from '../columns.helpers'
+import { lmsPgTable } from '../table.helpers'
 
-export const author = lmsPgTable("author", (d) => ({
+export const author = lmsPgTable('author', (d) => ({
   ...initialColumns,
   createdByClerkUserId: d.text().notNull(),
   firstName: d.varchar({ length: 100 }).notNull(),
@@ -18,15 +18,15 @@ export const author = lmsPgTable("author", (d) => ({
   experienceYears: d.integer(),
   organization: d.text(),
   bio: d.text(),
-}));
+}))
 
 export const CreateAuthorSchema = createInsertSchema(author, {
   firstName: z
-    .string({ error: "Required" })
-    .min(3, "Atleast 3 letters required"),
+    .string({ error: 'Required' })
+    .min(3, 'Atleast 3 letters required'),
   lastName: z.string().optional(),
-  email: z.email({ error: "Required" }).min(1, "Required"),
-  phone: z.string().min(10, "Minimum 10 digits").max(10, "Maximum 10 digits"),
+  email: z.email({ error: 'Required' }).min(1, 'Required'),
+  phone: z.string().min(10, 'Minimum 10 digits').max(10, 'Maximum 10 digits'),
   organization: z.string().optional(),
   designation: z.string().optional(),
   experienceYears: z.number().min(0).optional(),
@@ -38,15 +38,15 @@ export const CreateAuthorSchema = createInsertSchema(author, {
   createdByClerkUserId: true,
   updatedAt: true,
   imageUTFileId: true,
-});
+})
 
 export const UpdateAuthorSchema = createUpdateSchema(author, {
-  id: z.string().min(1, "Author ID is required for updation"),
+  id: z.string().min(1, 'Author ID is required for updation'),
   firstName: z
-    .string({ error: "Required" })
-    .min(3, "Atleast 3 letters required"),
+    .string({ error: 'Required' })
+    .min(3, 'Atleast 3 letters required'),
   lastName: z.string().optional(),
-  email: z.email({ error: "Required" }).min(1, "Required"),
+  email: z.email({ error: 'Required' }).min(1, 'Required'),
   phone: z.string().min(10).max(10),
   designation: z.string().optional(),
   experienceYears: z.number().min(0),
@@ -58,4 +58,4 @@ export const UpdateAuthorSchema = createUpdateSchema(author, {
   createdAt: true,
   createdByClerkUserId: true,
   updatedAt: true,
-});
+})

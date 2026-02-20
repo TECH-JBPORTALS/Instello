@@ -1,5 +1,5 @@
-import {ListNumbersIcon} from '@phosphor-icons/react/dist/ssr'
-import {defineField, defineType} from 'sanity'
+import { ListNumbersIcon } from '@phosphor-icons/react/dist/ssr'
+import { defineField, defineType } from 'sanity'
 
 export const academicYearType = defineType({
   name: 'academicYear',

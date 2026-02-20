@@ -1,20 +1,20 @@
-"use client";
+'use client'
 
-import type { RouterOutputs } from "@instello/api";
-import { Button } from "@instello/ui/components/button";
+import type { RouterOutputs } from '@instello/api'
+import { Button } from '@instello/ui/components/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@instello/ui/components/dropdown-menu";
-import { DotsThreeIcon, PenNibIcon, TrashIcon } from "@phosphor-icons/react";
+} from '@instello/ui/components/dropdown-menu'
+import { DotsThreeIcon, PenNibIcon, TrashIcon } from '@phosphor-icons/react'
 
-import { DeleteCouponDialog } from "./dialogs/delete-coupon-dialog";
-import { ViewCouponSheet } from "./view-coupon.sheet";
+import { DeleteCouponDialog } from './dialogs/delete-coupon-dialog'
+import { ViewCouponSheet } from './view-coupon.sheet'
 
-type Coupon = RouterOutputs["lms"]["coupon"]["list"][number];
+type Coupon = RouterOutputs['lms']['coupon']['list'][number]
 
 export function CouponContextMenu({ coupon }: { coupon: Coupon }) {
   return (
@@ -28,7 +28,7 @@ export function CouponContextMenu({ coupon }: { coupon: Coupon }) {
         <ViewCouponSheet couponId={coupon.id}>
           <DropdownMenuItem
             onSelect={(e) => {
-              e.preventDefault();
+              e.preventDefault()
             }}
           >
             <PenNibIcon />
@@ -49,5 +49,5 @@ export function CouponContextMenu({ coupon }: { coupon: Coupon }) {
         </DeleteCouponDialog>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }

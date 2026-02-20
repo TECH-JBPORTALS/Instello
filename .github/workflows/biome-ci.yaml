@@ -1,0 +1,26 @@
+name: Biome Code Quality Checker
+
+on:
+  push:
+    branches: ["*"]
+
+jobs:
+  biome:
+    name: Biome Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run Biome check
+        run: bunx turbo check -- --error-on-warnings
+        

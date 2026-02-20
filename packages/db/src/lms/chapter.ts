@@ -1,18 +1,15 @@
-import { relations } from "drizzle-orm";
-import { index } from "drizzle-orm/pg-core";
-import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
-import { z } from "zod/v4";
+import { relations } from 'drizzle-orm'
+import { index } from 'drizzle-orm/pg-core'
+import { createInsertSchema, createUpdateSchema } from 'drizzle-zod'
+import { z } from 'zod/v4'
 
-
-
-import { initialColumns } from "../columns.helpers";
-import { lmsPgTable } from "../table.helpers";
-import { channel } from "./channel";
-import { video } from "./video";
-
+import { initialColumns } from '../columns.helpers'
+import { lmsPgTable } from '../table.helpers'
+import { channel } from './channel'
+import { video } from './video'
 
 export const chapter = lmsPgTable(
-  "chapter",
+  'chapter',
   (d) => ({
     ...initialColumns,
     createdByClerkUserId: d.text().notNull(),
@@ -20,7 +17,7 @@ export const chapter = lmsPgTable(
     channelId: d
       .text()
       .notNull()
-      .references(() => channel.id, { onDelete: "cascade" }),
+      .references(() => channel.id, { onDelete: 'cascade' }),
     isPublished: d.boolean().default(false),
   }),
   (t) => [
@@ -28,22 +25,22 @@ export const chapter = lmsPgTable(
     index().on(t.isPublished),
     index().on(t.title),
   ],
-);
+)
 
 export const CreateChapterSchema = createInsertSchema(chapter, {
   title: z
     .string()
-    .min(3, "Title of the chapter must be atleast 2 characters long"),
+    .min(3, 'Title of the chapter must be atleast 2 characters long'),
 }).omit({
   id: true,
   createdAt: true,
   isPublished: true,
   createdByClerkUserId: true,
   updatedAt: true,
-});
+})
 
 export const UpdateChapterSchema = createUpdateSchema(chapter, {
-  id: z.string().min(1, "Chapter ID is required for updation"),
+  id: z.string().min(1, 'Chapter ID is required for updation'),
   title: z.string().optional(),
   isPublished: z.boolean().optional(),
 }).omit({
@@ -51,7 +48,7 @@ export const UpdateChapterSchema = createUpdateSchema(chapter, {
   channelId: true,
   createdByClerkUserId: true,
   updatedAt: true,
-});
+})
 
 export const chapterRealations = relations(chapter, ({ many, one }) => ({
   videos: many(video),
@@ -59,4 +56,4 @@ export const chapterRealations = relations(chapter, ({ many, one }) => ({
     fields: [chapter.channelId],
     references: [channel.id],
   }),
-}));
+}))

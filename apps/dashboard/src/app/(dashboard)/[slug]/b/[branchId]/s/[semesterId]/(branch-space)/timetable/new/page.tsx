@@ -1,25 +1,25 @@
-import { notFound } from "next/navigation";
-import Container from "@/components/container";
-import { HydrateClient, prefetch, trpc } from "@/trpc/server";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from '@clerk/nextjs/server'
+import { notFound } from 'next/navigation'
+import Container from '@/components/container'
+import { HydrateClient, prefetch, trpc } from '@/trpc/server'
 
-import { TimetableClient } from "./edit-timetable.client";
+import { TimetableClient } from './edit-timetable.client'
 
 export default async function Page({
   params,
 }: {
-  params: Promise<{ branchId: string }>;
+  params: Promise<{ branchId: string }>
 }) {
-  const { branchId } = await params;
-  const { has } = await auth();
+  const { branchId } = await params
+  const { has } = await auth()
 
   if (
-    !has({ permission: "org:timetables:create" }) &&
-    !has({ permission: "org:timetables:update" })
+    !has({ permission: 'org:timetables:create' }) &&
+    !has({ permission: 'org:timetables:update' })
   )
-    notFound();
+    notFound()
 
-  prefetch(trpc.erp.timetable.findByActiveSemester.queryOptions({ branchId }));
+  prefetch(trpc.erp.timetable.findByActiveSemester.queryOptions({ branchId }))
 
   return (
     <HydrateClient>
@@ -27,5 +27,5 @@ export default async function Page({
         <TimetableClient />
       </Container>
     </HydrateClient>
-  );
+  )
 }

@@ -1,66 +1,66 @@
-import type { TextInput } from "react-native";
-import * as React from "react";
-import { View } from "react-native";
-import { Link, router } from "expo-router";
-import { SocialConnections } from "@/components/social-connections";
-import { Button } from "@/components/ui/button";
+import { useSignUp } from '@clerk/clerk-expo'
+import { Link, router } from 'expo-router'
+import * as React from 'react'
+import type { TextInput } from 'react-native'
+import { View } from 'react-native'
+import { SocialConnections } from '@/components/social-connections'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Text } from "@/components/ui/text";
-import { useSignUp } from "@clerk/clerk-expo";
+} from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Text } from '@/components/ui/text'
 
 export function SignUpForm() {
-  const { signUp, isLoaded } = useSignUp();
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [isLoading, setIsLoading] = React.useState(false);
-  const passwordInputRef = React.useRef<TextInput>(null);
+  const { signUp, isLoaded } = useSignUp()
+  const [email, setEmail] = React.useState('')
+  const [password, setPassword] = React.useState('')
+  const [isLoading, setIsLoading] = React.useState(false)
+  const passwordInputRef = React.useRef<TextInput>(null)
   const [error, setError] = React.useState<{
-    email?: string;
-    password?: string;
-  }>({});
+    email?: string
+    password?: string
+  }>({})
 
   async function onSubmit() {
-    if (!isLoaded) return;
+    if (!isLoaded) return
 
-    setIsLoading(true);
+    setIsLoading(true)
 
     // Start sign-up process using email and password provided
     try {
       await signUp.create({
         emailAddress: email,
         password,
-      });
+      })
 
       // Send user an email with verification code
-      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+      await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
 
-      router.push(`/(auth)/sign-up/verify-email?email=${email}`);
+      router.push(`/(auth)/sign-up/verify-email?email=${email}`)
     } catch (err) {
       // See https://go.clerk.com/mRUDrIe for more info on error handling
       if (err instanceof Error) {
         const isEmailMessage =
-          err.message.toLowerCase().includes("identifier") ||
-          err.message.toLowerCase().includes("email");
+          err.message.toLowerCase().includes('identifier') ||
+          err.message.toLowerCase().includes('email')
         setError(
           isEmailMessage ? { email: err.message } : { password: err.message },
-        );
+        )
       }
-      console.error(JSON.stringify(err, null, 2));
+      console.error(JSON.stringify(err, null, 2))
     }
 
-    setIsLoading(false);
+    setIsLoading(false)
   }
 
   function onEmailSubmitEditing() {
-    passwordInputRef.current?.focus();
+    passwordInputRef.current?.focus()
   }
 
   return (
@@ -118,11 +118,11 @@ export function SignUpForm() {
               className="w-full"
               onPress={onSubmit}
             >
-              <Text>{isLoading ? "Please wait..." : "Continue"}</Text>
+              <Text>{isLoading ? 'Please wait...' : 'Continue'}</Text>
             </Button>
           </View>
           <Text className="text-center text-sm">
-            Already have an account?{" "}
+            Already have an account?{' '}
             <Link
               href="/(auth)/sign-in"
               dismissTo
@@ -140,5 +140,5 @@ export function SignUpForm() {
         </CardContent>
       </Card>
     </View>
-  );
+  )
 }

@@ -1,4 +1,4 @@
-import { CrownIcon } from "@phosphor-icons/react/dist/ssr";
+import { CrownIcon } from '@phosphor-icons/react/dist/ssr'
 
 export function Hero() {
   return (
@@ -66,5 +66,5 @@ export function Hero() {
         through focused learning and expert guidance.
       </p>
     </section>
-  );
+  )
 }

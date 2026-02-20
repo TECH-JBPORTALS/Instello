@@ -1,5 +1,5 @@
-import { ScrollView, View } from "react-native";
-import { ResetPasswordForm } from "@/components/reset-password-form";
+import { ScrollView, View } from 'react-native'
+import { ResetPasswordForm } from '@/components/reset-password-form'
 
 export default function ResetPasswordScreen() {
   return (
@@ -12,5 +12,5 @@ export default function ResetPasswordScreen() {
         <ResetPasswordForm />
       </View>
     </ScrollView>
-  );
+  )
 }

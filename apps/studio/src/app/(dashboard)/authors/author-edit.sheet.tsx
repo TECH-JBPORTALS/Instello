@@ -1,18 +1,13 @@
-"use client";
+'use client'
 
-import type { z } from "zod/v4";
-import React, { useState } from "react";
-import { env } from "@/env";
-import { useTRPC } from "@/trpc/react";
-import { UploadButton } from "@/utils/uploadthing";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { UpdateAuthorSchema } from "@instello/db/lms";
+import { zodResolver } from '@hookform/resolvers/zod'
+import { UpdateAuthorSchema } from '@instello/db/lms'
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@instello/ui/components/avatar";
-import { Button, buttonVariants } from "@instello/ui/components/button";
+} from '@instello/ui/components/avatar'
+import { Button, buttonVariants } from '@instello/ui/components/button'
 import {
   Form,
   FormControl,
@@ -20,14 +15,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@instello/ui/components/form";
-import { Input } from "@instello/ui/components/input";
+} from '@instello/ui/components/form'
+import { Input } from '@instello/ui/components/input'
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from "@instello/ui/components/input-group";
-import { ScrollArea } from "@instello/ui/components/scroll-area";
+} from '@instello/ui/components/input-group'
+import { ScrollArea } from '@instello/ui/components/scroll-area'
 import {
   Sheet,
   SheetClose,
@@ -36,75 +31,80 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@instello/ui/components/sheet";
-import { Spinner } from "@instello/ui/components/spinner";
-import { Textarea } from "@instello/ui/components/textarea";
-import { cn } from "@instello/ui/lib/utils";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+} from '@instello/ui/components/sheet'
+import { Spinner } from '@instello/ui/components/spinner'
+import { Textarea } from '@instello/ui/components/textarea'
+import { cn } from '@instello/ui/lib/utils'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import React, { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import type { z } from 'zod/v4'
+import { env } from '@/env'
+import { useTRPC } from '@/trpc/react'
+import { UploadButton } from '@/utils/uploadthing'
 
 export function AuthorEditSheet({
   children,
   authorId,
 }: {
-  children: React.ReactNode;
-  authorId: string;
+  children: React.ReactNode
+  authorId: string
 }) {
-  const [open, setOpen] = useState(false);
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false)
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
 
   const { data: author, isLoading } = useQuery(
     trpc.lms.author.getById.queryOptions({ authorId }, { enabled: open }),
-  );
+  )
 
   const form = useForm({
     resolver: zodResolver(UpdateAuthorSchema),
     defaultValues: {
       id: authorId,
-      firstName: author?.firstName ?? "",
-      lastName: author?.lastName ?? "",
-      designation: author?.designation ?? "",
-      bio: author?.bio ?? "",
-      email: author?.email ?? "",
+      firstName: author?.firstName ?? '',
+      lastName: author?.lastName ?? '',
+      designation: author?.designation ?? '',
+      bio: author?.bio ?? '',
+      email: author?.email ?? '',
       experienceYears: author?.experienceYears ?? 0,
-      imageUTFileId: author?.imageUTFileId ?? "",
-      organization: author?.organization ?? "",
-      phone: author?.phone ?? "",
+      imageUTFileId: author?.imageUTFileId ?? '',
+      organization: author?.organization ?? '',
+      phone: author?.phone ?? '',
     },
-  });
+  })
 
   React.useEffect(() => {
     form.reset({
       id: authorId,
-      firstName: author?.firstName ?? "",
-      lastName: author?.lastName ?? "",
-      designation: author?.designation ?? "",
-      bio: author?.bio ?? "",
-      email: author?.email ?? "",
+      firstName: author?.firstName ?? '',
+      lastName: author?.lastName ?? '',
+      designation: author?.designation ?? '',
+      bio: author?.bio ?? '',
+      email: author?.email ?? '',
       experienceYears: author?.experienceYears ?? 0,
-      imageUTFileId: author?.imageUTFileId ?? "",
-      organization: author?.organization ?? "",
-      phone: author?.phone ?? "",
-    });
-  }, [author, authorId, form]);
+      imageUTFileId: author?.imageUTFileId ?? '',
+      organization: author?.organization ?? '',
+      phone: author?.phone ?? '',
+    })
+  }, [author, authorId, form])
 
   const { mutateAsync: updateAuthor } = useMutation(
     trpc.lms.author.update.mutationOptions({
       async onSuccess() {
-        await queryClient.invalidateQueries(trpc.lms.author.list.queryFilter());
-        setOpen(false);
-        toast.info("Author updated");
+        await queryClient.invalidateQueries(trpc.lms.author.list.queryFilter())
+        setOpen(false)
+        toast.info('Author updated')
       },
       onError(error) {
-        toast.error(error.message);
+        toast.error(error.message)
       },
     }),
-  );
+  )
 
   async function onSubmit(values: z.infer<typeof UpdateAuthorSchema>) {
-    await updateAuthor(values);
+    await updateAuthor(values)
   }
 
   return (
@@ -169,7 +169,7 @@ export function AuthorEditSheet({
                           <Avatar className="size-14 border-2 ">
                             <AvatarImage
                               src={`https://${env.NEXT_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${field.value}`}
-                              alt={"Video thumneil"}
+                              alt={'Video thumneil'}
                               className="object-cover"
                             />
                             <AvatarFallback>
@@ -180,8 +180,8 @@ export function AuthorEditSheet({
                             config={{ cn }}
                             appearance={{
                               button: buttonVariants({
-                                size: "sm",
-                                variant: "secondary",
+                                size: 'sm',
+                                variant: 'secondary',
                               }),
                             }}
                             content={{
@@ -191,28 +191,28 @@ export function AuthorEditSheet({
                                     <Spinner /> Uploading...
                                   </>
                                 ) : (
-                                  "Upload Picture"
+                                  'Upload Picture'
                                 ),
-                              allowedContent: () => "",
+                              allowedContent: () => '',
                             }}
                             input={{ authorId }}
-                            endpoint={"authorProfileUploader"}
+                            endpoint={'authorProfileUploader'}
                             onClientUploadComplete={async (res) => {
                               field.onChange(
-                                res.at(0)?.serverData.newimageUTFileId ?? "",
-                              );
+                                res.at(0)?.serverData.newimageUTFileId ?? '',
+                              )
                               await queryClient.invalidateQueries(
                                 trpc.lms.author.getById.queryOptions({
                                   authorId,
                                 }),
-                              );
+                              )
                               await queryClient.invalidateQueries(
                                 trpc.lms.author.list.queryFilter(),
-                              );
-                              toast.info(`Author profile image updated.`);
+                              )
+                              toast.info(`Author profile image updated.`)
                             }}
                             onUploadError={(e) => {
-                              toast.error(e.message);
+                              toast.error(e.message)
                             }}
                           />
                         </div>
@@ -247,7 +247,7 @@ export function AuthorEditSheet({
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{"Phone Number"}</FormLabel>
+                      <FormLabel>{'Phone Number'}</FormLabel>
                       <FormControl>
                         <Input {...field} type="number" />
                       </FormControl>
@@ -261,7 +261,7 @@ export function AuthorEditSheet({
                   name="organization"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{"Organization (optional)"}</FormLabel>
+                      <FormLabel>{'Organization (optional)'}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -274,7 +274,7 @@ export function AuthorEditSheet({
                   name="designation"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{"Designation (optional)"}</FormLabel>
+                      <FormLabel>{'Designation (optional)'}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -287,7 +287,7 @@ export function AuthorEditSheet({
                   name="experienceYears"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{"Experience (optional)"}</FormLabel>
+                      <FormLabel>{'Experience (optional)'}</FormLabel>
                       <FormControl>
                         <InputGroup>
                           <InputGroupInput
@@ -297,7 +297,7 @@ export function AuthorEditSheet({
                             }
                             type="number"
                           />
-                          <InputGroupAddon align={"inline-end"}>
+                          <InputGroupAddon align={'inline-end'}>
                             Years
                           </InputGroupAddon>
                         </InputGroup>
@@ -311,7 +311,7 @@ export function AuthorEditSheet({
                   name="instagramLink"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{"Instagram Link (optional)"}</FormLabel>
+                      <FormLabel>{'Instagram Link (optional)'}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -324,7 +324,7 @@ export function AuthorEditSheet({
                   name="bio"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{"Bio (optional)"}</FormLabel>
+                      <FormLabel>{'Bio (optional)'}</FormLabel>
                       <FormControl>
                         <Textarea
                           maxLength={256}
@@ -346,7 +346,7 @@ export function AuthorEditSheet({
                     Save
                   </Button>
                   <SheetClose asChild>
-                    <Button variant={"outline"}>Close</Button>
+                    <Button variant={'outline'}>Close</Button>
                   </SheetClose>
                 </SheetFooter>
               </form>
@@ -355,5 +355,5 @@ export function AuthorEditSheet({
         )}
       </SheetContent>
     </Sheet>
-  );
+  )
 }

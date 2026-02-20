@@ -1,69 +1,77 @@
-"use client";
+'use client'
 
-import type React from "react";
-import type { z } from "zod/v4";
-import { useEffect, useState } from "react";
-import { useTRPC } from "@/trpc/react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { UpdateChapterSchema } from "@instello/db/lms";
-import { Button } from "@instello/ui/components/button";
-import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@instello/ui/components/dialog";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@instello/ui/components/form";
-import { Input } from "@instello/ui/components/input";
-import { Skeleton } from "@instello/ui/components/skeleton";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-
-
-
-
+import { zodResolver } from '@hookform/resolvers/zod'
+import { UpdateChapterSchema } from '@instello/db/lms'
+import { Button } from '@instello/ui/components/button'
+import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@instello/ui/components/dialog'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@instello/ui/components/form'
+import { Input } from '@instello/ui/components/input'
+import { Skeleton } from '@instello/ui/components/skeleton'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type React from 'react'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import type { z } from 'zod/v4'
+import { useTRPC } from '@/trpc/react'
 
 export function EditChapterDialog({
   children,
   chapterId,
 }: {
-  children: React.ReactNode;
-  chapterId: string;
+  children: React.ReactNode
+  chapterId: string
 }) {
-  const [open, setOpen] = useState(false);
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false)
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
   const { data: chapter } = useQuery(
     trpc.lms.chapter.getById.queryOptions({ chapterId }, { enabled: open }),
-  );
+  )
 
   const form = useForm({
     resolver: zodResolver(UpdateChapterSchema),
     defaultValues: {
-      title: chapter?.title ?? "",
+      title: chapter?.title ?? '',
       id: chapterId,
     },
-  });
+  })
 
   const { mutateAsync: createChapter } = useMutation(
     trpc.lms.chapter.update.mutationOptions({
       async onSuccess(_, variable) {
-        await queryClient.invalidateQueries(
-          trpc.lms.chapter.list.queryFilter(),
-        );
-        form.reset({ title: variable.title, id: chapterId });
-        toast.info("Chapter details updated");
-        setOpen(false);
+        await queryClient.invalidateQueries(trpc.lms.chapter.list.queryFilter())
+        form.reset({ title: variable.title, id: chapterId })
+        toast.info('Chapter details updated')
+        setOpen(false)
       },
       onError() {
-        toast.error("Failed to update the chapter");
+        toast.error('Failed to update the chapter')
       },
     }),
-  );
+  )
 
   useEffect(() => {
     if (chapter?.title && open)
-      form.reset({ title: chapter.title, id: chapterId });
-  }, [chapter?.title, form, open, chapterId]);
+      form.reset({ title: chapter.title, id: chapterId })
+  }, [chapter?.title, form, open, chapterId])
 
   async function onSubmit(values: z.infer<typeof UpdateChapterSchema>) {
-    await createChapter(values);
+    await createChapter(values)
   }
 
   return (
@@ -111,5 +119,5 @@ export function EditChapterDialog({
         </Form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

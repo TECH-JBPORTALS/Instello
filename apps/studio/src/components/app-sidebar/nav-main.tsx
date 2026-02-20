@@ -1,20 +1,20 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@instello/ui/components/sidebar";
-import { HouseIcon, UsersThreeIcon } from "@phosphor-icons/react";
+} from '@instello/ui/components/sidebar'
+import { HouseIcon, UsersThreeIcon } from '@phosphor-icons/react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 const items = [
-  { title: "Home", url: "/", icon: HouseIcon },
-  { title: "Authors", url: "/authors", icon: UsersThreeIcon },
-];
+  { title: 'Home', url: '/', icon: HouseIcon },
+  { title: 'Authors', url: '/authors', icon: UsersThreeIcon },
+]
 
 export function NavMain() {
-  const pathname = usePathname();
+  const pathname = usePathname()
 
   return (
     <>
@@ -28,5 +28,5 @@ export function NavMain() {
         </SidebarMenuItem>
       ))}
     </>
-  );
+  )
 }

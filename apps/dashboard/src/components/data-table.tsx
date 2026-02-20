@@ -1,7 +1,5 @@
-"use client";
+'use client'
 
-import type { ColumnDef, VisibilityState } from "@tanstack/react-table";
-import React from "react";
 import {
   Table,
   TableBody,
@@ -9,16 +7,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@instello/ui/components/table";
+} from '@instello/ui/components/table'
+import type { ColumnDef, VisibilityState } from '@tanstack/react-table'
 import {
   flexRender,
   getCoreRowModel,
   useReactTable,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table'
+import React from 'react'
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+  columns: ColumnDef<TData, TValue>[]
+  data: TData[]
 }
 
 export function DataTable<TData, TValue>({
@@ -26,7 +26,7 @@ export function DataTable<TData, TValue>({
   data,
 }: DataTableProps<TData, TValue>) {
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+    React.useState<VisibilityState>({})
   const table = useReactTable({
     data,
     columns,
@@ -35,7 +35,7 @@ export function DataTable<TData, TValue>({
     state: {
       columnVisibility,
     },
-  });
+  })
 
   return (
     <div className="overflow-hidden rounded-md border">
@@ -53,7 +53,7 @@ export function DataTable<TData, TValue>({
                           header.getContext(),
                         )}
                   </TableHead>
-                );
+                )
               })}
             </TableRow>
           ))}
@@ -64,7 +64,7 @@ export function DataTable<TData, TValue>({
               <TableRow
                 key={row.id}
                 className="group"
-                data-state={row.getIsSelected() && "selected"}
+                data-state={row.getIsSelected() && 'selected'}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
@@ -87,5 +87,5 @@ export function DataTable<TData, TValue>({
         </TableBody>
       </Table>
     </div>
-  );
+  )
 }

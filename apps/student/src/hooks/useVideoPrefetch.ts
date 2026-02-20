@@ -1,8 +1,8 @@
-import { trpc } from "@/utils/api";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from '@tanstack/react-query'
+import { trpc } from '@/utils/api'
 
 export function useVideoPrefetch() {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   const prefetchVideo = (videoId: string) => {
     // Prefetch the video details
@@ -10,8 +10,8 @@ export function useVideoPrefetch() {
       trpc.lms.video.getById.queryOptions({
         videoId,
       }),
-    );
-  };
+    )
+  }
 
   const prefetchVideos = (videoIds: string[]) => {
     // Prefetch multiple videos in parallel
@@ -21,13 +21,13 @@ export function useVideoPrefetch() {
           videoId,
         }),
       ),
-    );
+    )
 
-    return Promise.all(prefetchPromises);
-  };
+    return Promise.all(prefetchPromises)
+  }
 
   return {
     prefetchVideo,
     prefetchVideos,
-  };
+  }
 }

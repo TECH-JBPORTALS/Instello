@@ -1,15 +1,15 @@
-import Container from "@/components/container";
-import { HydrateClient, prefetch, trpc } from "@/trpc/server";
+import Container from '@/components/container'
+import { HydrateClient, prefetch, trpc } from '@/trpc/server'
 
-import { ViewsChart } from "./views-chart";
+import { ViewsChart } from './views-chart'
 
 export default async function Page({
   params,
 }: {
-  params: Promise<{ videoId: string }>;
+  params: Promise<{ videoId: string }>
 }) {
-  const { videoId } = await params;
-  prefetch(trpc.lms.video.getMetrics.queryOptions({ videoId }));
+  const { videoId } = await params
+  prefetch(trpc.lms.video.getMetrics.queryOptions({ videoId }))
 
   return (
     <HydrateClient>
@@ -21,5 +21,5 @@ export default async function Page({
         <ViewsChart />
       </Container>
     </HydrateClient>
-  );
+  )
 }

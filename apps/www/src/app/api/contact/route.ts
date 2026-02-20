@@ -1,27 +1,27 @@
-import type { NextRequest } from "next/server";
-import { env } from "@/env";
-import * as nodemailer from "nodemailer";
+import type { NextRequest } from 'next/server'
+import * as nodemailer from 'nodemailer'
+import { env } from '@/env'
 
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as {
-      name: string;
-      role: string;
-      contact: string;
-      email: string;
-      message: string;
-    };
-    const { name, role, contact, email, message } = body;
+      name: string
+      role: string
+      contact: string
+      email: string
+      message: string
+    }
+    const { name, role, contact, email, message } = body
 
     if (!name || !email || !message) {
       return Response.json(
-        { message: "Missing required fields" },
+        { message: 'Missing required fields' },
         { status: 400 },
-      );
+      )
     }
 
     if (!env.SMTP_HOST || !env.SMTP_HOST || !env.SMTP_PORT || !env.SMTP_USER)
-      return Response.json({ message: "ENV not set" }, { status: 404 });
+      return Response.json({ message: 'ENV not set' }, { status: 404 })
 
     const transporter = nodemailer.createTransport({
       host: env.SMTP_HOST,
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
         user: env.SMTP_USER,
         pass: env.SMTP_PASS,
       },
-    });
+    })
 
     await transporter.sendMail({
       from: `"Instello Contact From ${name}" <${env.SMTP_MAIL_FROM}>`,
@@ -47,11 +47,11 @@ export async function POST(req: NextRequest) {
         <p><b>Message:</b></p>
         <p>${message}</p>
       `,
-    });
+    })
 
-    return Response.json({ success: true });
+    return Response.json({ success: true })
   } catch (error) {
-    console.error(error);
-    return Response.json({ message: "Failed to send email" }, { status: 500 });
+    console.error(error)
+    return Response.json({ message: 'Failed to send email' }, { status: 500 })
   }
 }

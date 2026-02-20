@@ -1,12 +1,8 @@
-"use client";
+'use client'
 
-import type React from "react";
-import type { z } from "zod/v4";
-import { useState } from "react";
-import { useTRPC } from "@/trpc/react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { CreateAuthorSchema } from "@instello/db/lms";
-import { Button } from "@instello/ui/components/button";
+import { zodResolver } from '@hookform/resolvers/zod'
+import { CreateAuthorSchema } from '@instello/db/lms'
+import { Button } from '@instello/ui/components/button'
 import {
   Dialog,
   DialogBody,
@@ -15,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@instello/ui/components/dialog";
+} from '@instello/ui/components/dialog'
 import {
   Form,
   FormControl,
@@ -23,50 +19,54 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@instello/ui/components/form";
-import { Input } from "@instello/ui/components/input";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+} from '@instello/ui/components/form'
+import { Input } from '@instello/ui/components/input'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import type React from 'react'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import type { z } from 'zod/v4'
+import { useTRPC } from '@/trpc/react'
 
 export function CreateAuthorDialog({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
   const form = useForm({
     resolver: zodResolver(CreateAuthorSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      designation: "",
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      designation: '',
       experienceYears: 0,
-      bio: "",
-      organization: "",
+      bio: '',
+      organization: '',
     },
-  });
+  })
 
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
 
   const { mutateAsync: createAuthor } = useMutation(
     trpc.lms.author.create.mutationOptions({
       async onSuccess() {
-        await queryClient.invalidateQueries(trpc.lms.author.list.queryFilter());
-        setOpen(false);
-        form.reset();
+        await queryClient.invalidateQueries(trpc.lms.author.list.queryFilter())
+        setOpen(false)
+        form.reset()
       },
       onError() {
-        toast.error("Failed to create channel");
+        toast.error('Failed to create channel')
       },
     }),
-  );
+  )
 
   async function onSubmit(values: z.infer<typeof CreateAuthorSchema>) {
-    await createAuthor(values);
+    await createAuthor(values)
   }
 
   return (
@@ -135,7 +135,7 @@ export function CreateAuthorDialog({
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{"Phone Number"}</FormLabel>
+                    <FormLabel>{'Phone Number'}</FormLabel>
                     <FormControl>
                       <Input {...field} type="number" />
                     </FormControl>
@@ -151,5 +151,5 @@ export function CreateAuthorDialog({
         </Form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

@@ -1,17 +1,17 @@
-"use client";
+'use client'
 
-import type { IconPickerIcon } from "@/components/icon-picker";
-import { useParams } from "next/navigation";
-import { TablerReactIcon } from "@/components/icon-picker";
-import { useTRPC } from "@/trpc/react";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { useParams } from 'next/navigation'
+import type { IconPickerIcon } from '@/components/icon-picker'
+import { TablerReactIcon } from '@/components/icon-picker'
+import { useTRPC } from '@/trpc/react'
 
 export function BranchInfoRow() {
-  const trpc = useTRPC();
-  const { branchId } = useParams<{ branchId: string }>();
+  const trpc = useTRPC()
+  const { branchId } = useParams<{ branchId: string }>()
   const { data } = useSuspenseQuery(
     trpc.erp.branch.getByBranchId.queryOptions({ branchId }),
-  );
+  )
 
   return (
     <div>
@@ -26,5 +26,5 @@ export function BranchInfoRow() {
         </h3>
       </div>
     </div>
-  );
+  )
 }

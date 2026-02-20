@@ -1,6 +1,6 @@
-import { ScrollView } from "react-native";
-import { Stack } from "expo-router";
-import { OnboardingProfileForm } from "@/components/onbaording-profile-form";
+import { Stack } from 'expo-router'
+import { ScrollView } from 'react-native'
+import { OnboardingProfileForm } from '@/components/onbaording-profile-form'
 
 export default function Onboarding() {
   return (
@@ -12,5 +12,5 @@ export default function Onboarding() {
       <Stack.Screen options={{ headerShown: false }} />
       <OnboardingProfileForm />
     </ScrollView>
-  );
+  )
 }

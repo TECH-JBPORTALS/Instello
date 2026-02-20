@@ -1,35 +1,35 @@
-"use client";
+'use client'
 
-import type { UploadItem } from "@/store/upload-store";
-import type { RouterOutputs } from "@instello/api";
-import { useMemo } from "react";
-import { useUploadStore } from "@/store/upload-store";
-import { useTRPC } from "@/trpc/react";
-import { useQuery } from "@tanstack/react-query";
+import type { RouterOutputs } from '@instello/api'
+import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
+import type { UploadItem } from '@/store/upload-store'
+import { useUploadStore } from '@/store/upload-store'
+import { useTRPC } from '@/trpc/react'
 
 // Type for database video
-type DatabaseVideo = RouterOutputs["lms"]["video"]["list"][number];
+type DatabaseVideo = RouterOutputs['lms']['video']['list'][number]
 
 // Unified video type that combines both
 export type UnifiedVideo = DatabaseVideo & {
   // Upload-specific properties (only present when uploading)
-  isUploading?: boolean;
-  interrupted?: boolean;
-  uploadProgress?: number;
-  uploadStatus?: UploadItem["status"];
-  uploadError?: string;
-  fileName?: string;
-  fileSize?: number;
-  uploadedBytes?: number;
-  uploadStartTime?: number;
-  uploadEndTime?: number;
-  uploadSpeed?: number;
-  estimatedTimeRemaining?: number;
-};
+  isUploading?: boolean
+  interrupted?: boolean
+  uploadProgress?: number
+  uploadStatus?: UploadItem['status']
+  uploadError?: string
+  fileName?: string
+  fileSize?: number
+  uploadedBytes?: number
+  uploadStartTime?: number
+  uploadEndTime?: number
+  uploadSpeed?: number
+  estimatedTimeRemaining?: number
+}
 
 export function useUnifiedVideoList(chapterId: string) {
-  const trpc = useTRPC();
-  const { uploads } = useUploadStore();
+  const trpc = useTRPC()
+  const { uploads } = useUploadStore()
 
   // Get database videos
   const dbQuery = useQuery(
@@ -39,40 +39,40 @@ export function useUnifiedVideoList(chapterId: string) {
         refetchInterval: (q) => {
           // Keep polling if any video is still processing or if there are active uploads
           const hasProcessingVideos = q.state.data?.some(
-            (v) => v.status === "asset_created" || v.status === "waiting",
-          );
+            (v) => v.status === 'asset_created' || v.status === 'waiting',
+          )
           const hasActiveUploads = Object.values(uploads).some(
-            (upload) => upload.status === "uploading",
-          );
-          return hasProcessingVideos || hasActiveUploads ? 3000 : false;
+            (upload) => upload.status === 'uploading',
+          )
+          return hasProcessingVideos || hasActiveUploads ? 3000 : false
         },
       },
     ),
-  );
+  )
 
   // Merge database videos with upload videos
   const unifiedVideos = useMemo(() => {
-    const dbVideos = dbQuery.data ?? [];
-    const uploadVideos = Object.values(uploads);
+    const dbVideos = dbQuery.data ?? []
+    const uploadVideos = Object.values(uploads)
 
     // Create a map of upload videos by videoId for quick lookup
-    const uploadMap = new Map<string, UploadItem>();
+    const uploadMap = new Map<string, UploadItem>()
 
     uploadVideos.forEach((upload) => {
-      uploadMap.set(upload.videoId, upload);
-    });
+      uploadMap.set(upload.videoId, upload)
+    })
 
     // Merge database videos with upload data
     const mergedVideos: UnifiedVideo[] = dbVideos.map((dbVideo) => {
-      const uploadData = uploadMap.get(dbVideo.id);
+      const uploadData = uploadMap.get(dbVideo.id)
 
       if (uploadData) {
         // Calculate upload speed and estimated time remaining
-        const uploadSpeed = calculateUploadSpeed(uploadData);
+        const uploadSpeed = calculateUploadSpeed(uploadData)
         const estimatedTimeRemaining = calculateEstimatedTimeRemaining(
           uploadData,
           uploadSpeed,
-        );
+        )
 
         return {
           ...dbVideo,
@@ -88,38 +88,38 @@ export function useUnifiedVideoList(chapterId: string) {
           uploadEndTime: uploadData.endTime,
           uploadSpeed,
           estimatedTimeRemaining,
-        } as UnifiedVideo;
+        } as UnifiedVideo
       }
 
       return {
         ...dbVideo,
         isUploading: false,
-      } as UnifiedVideo;
-    });
+      } as UnifiedVideo
+    })
 
     return mergedVideos.sort((a, b) => {
       // Sort by upload status first, then by creation time
-      if (a.isUploading && !b.isUploading) return -1;
-      if (!a.isUploading && b.isUploading) return 1;
-      return 1;
-    });
-  }, [dbQuery.data, uploads]);
+      if (a.isUploading && !b.isUploading) return -1
+      if (!a.isUploading && b.isUploading) return 1
+      return 1
+    })
+  }, [dbQuery.data, uploads])
 
   return {
     data: unifiedVideos,
     isLoading: dbQuery.isLoading,
     isError: dbQuery.isError,
     refetch: dbQuery.refetch,
-  };
+  }
 }
 
 // Helper function to calculate upload speed (bytes per second)
 function calculateUploadSpeed(upload: UploadItem): number {
-  if (!upload.startTime) return 0;
+  if (!upload.startTime) return 0
 
-  const now = upload.endTime ?? Date.now();
-  const elapsed = (now - upload.startTime) / 1000; // seconds
-  return elapsed > 0 ? upload.uploadedBytes / elapsed : 0;
+  const now = upload.endTime ?? Date.now()
+  const elapsed = (now - upload.startTime) / 1000 // seconds
+  return elapsed > 0 ? upload.uploadedBytes / elapsed : 0
 }
 
 // Helper function to calculate estimated time remaining (seconds)
@@ -127,39 +127,39 @@ function calculateEstimatedTimeRemaining(
   upload: UploadItem,
   speed: number,
 ): number {
-  if (upload.progress === 0 || upload.progress === 100 || speed === 0) return 0;
+  if (upload.progress === 0 || upload.progress === 100 || speed === 0) return 0
 
-  const remainingBytes = upload.fileSize - upload.uploadedBytes;
-  return remainingBytes / speed;
+  const remainingBytes = upload.fileSize - upload.uploadedBytes
+  return remainingBytes / speed
 }
 
 // Helper function to format file size
 export function formatFileSize(bytes: number): string {
-  if (bytes === 0) return "0 B";
+  if (bytes === 0) return '0 B'
 
-  const k = 1024;
-  const sizes = ["B", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  const k = 1024
+  const sizes = ['B', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
 
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i] ?? "B"}`;
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i] ?? 'B'}`
 }
 
 // Helper function to format upload speed
 export function formatUploadSpeed(bytesPerSecond: number): string {
-  return `${formatFileSize(bytesPerSecond)}/s`;
+  return `${formatFileSize(bytesPerSecond)}/s`
 }
 
 // Helper function to format time remaining
 export function formatTimeRemaining(seconds: number): string {
-  if (seconds === 0 || !isFinite(seconds)) return "";
+  if (seconds === 0 || !isFinite(seconds)) return ''
 
   if (seconds < 60) {
-    return `${Math.round(seconds)}s remaining`;
+    return `${Math.round(seconds)}s remaining`
   } else if (seconds < 3600) {
-    const minutes = Math.round(seconds / 60);
-    return `${minutes}m remaining`;
+    const minutes = Math.round(seconds / 60)
+    return `${minutes}m remaining`
   } else {
-    const hours = Math.round(seconds / 3600);
-    return `${hours}h remaining`;
+    const hours = Math.round(seconds / 3600)
+    return `${hours}h remaining`
   }
 }

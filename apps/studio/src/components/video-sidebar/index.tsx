@@ -4,10 +4,10 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
-} from "@instello/ui/components/sidebar";
+} from '@instello/ui/components/sidebar'
 
-import { NavHeader } from "./nav-header";
-import { NavMain } from "./nav-main";
+import { NavHeader } from './nav-header'
+import { NavMain } from './nav-main'
 
 export function VideoSidebar() {
   return (
@@ -23,5 +23,5 @@ export function VideoSidebar() {
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
-  );
+  )
 }

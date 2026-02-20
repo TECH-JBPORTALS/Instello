@@ -1,17 +1,17 @@
-import { and, desc, eq } from "@instello/db";
-import { CreateSubjectSchema, subject } from "@instello/db/erp";
-import { z } from "zod/v4";
+import { and, desc, eq } from '@instello/db'
+import { CreateSubjectSchema, subject } from '@instello/db/erp'
+import { z } from 'zod/v4'
 
-import { branchProcedure, hasPermission } from "../trpc";
+import { branchProcedure, hasPermission } from '../trpc'
 
 export const subjectRouter = {
   create: branchProcedure
-    .use(hasPermission({ permission: "org:subjects:create" }))
+    .use(hasPermission({ permission: 'org:subjects:create' }))
     .input(CreateSubjectSchema)
     .mutation(async ({ ctx, input }) => {
       return ctx.db
         .insert(subject)
-        .values({ ...input, semesterValue: ctx.auth.activeSemester.value });
+        .values({ ...input, semesterValue: ctx.auth.activeSemester.value })
     }),
 
   /**
@@ -20,7 +20,7 @@ export const subjectRouter = {
    *  @role Staff: Can see his/her assigned subjects only
    * */
   list: branchProcedure.query(async ({ ctx, input }) => {
-    const isStaff = ctx.auth.orgRole == "org:staff";
+    const isStaff = ctx.auth.orgRole == 'org:staff'
 
     return ctx.db.query.subject.findMany({
       where: and(
@@ -30,7 +30,7 @@ export const subjectRouter = {
         isStaff ? eq(subject.staffClerkUserId, ctx.auth.userId) : undefined,
       ),
       orderBy: desc(subject.createdAt),
-    });
+    })
   }),
 
   getBySubjectId: branchProcedure
@@ -42,11 +42,11 @@ export const subjectRouter = {
           eq(subject.semesterValue, ctx.auth.activeSemester.value),
           eq(subject.id, input.subjectId),
         ),
-      });
+      })
     }),
 
   assignStaff: branchProcedure
-    .use(hasPermission({ permission: "org:subjects:update" }))
+    .use(hasPermission({ permission: 'org:subjects:update' }))
     .input(
       z.object({
         staffClerkUserId: z.string().nullable().optional(),
@@ -54,7 +54,7 @@ export const subjectRouter = {
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { branchId, staffClerkUserId, subjectId } = input;
+      const { branchId, staffClerkUserId, subjectId } = input
 
       return ctx.db
         .update(subject)
@@ -65,6 +65,6 @@ export const subjectRouter = {
             eq(subject.semesterValue, ctx.auth.activeSemester.value),
             eq(subject.id, subjectId),
           ),
-        );
+        )
     }),
-};
+}

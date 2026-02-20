@@ -1,19 +1,17 @@
-"use client";
+'use client'
 
-import { useParams, usePathname } from "next/navigation";
-import { useTRPC } from "@/trpc/react";
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbList,
   BreadcrumbPage,
-} from "@instello/ui/components/breadcrumb";
-import { Tabs, TabsList, TabsTrigger } from "@instello/ui/components/tabs";
+} from '@instello/ui/components/breadcrumb'
+import { Tabs, TabsList, TabsTrigger } from '@instello/ui/components/tabs'
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@instello/ui/components/tooltip";
+} from '@instello/ui/components/tooltip'
 import {
   ChartLineIcon,
   CrownIcon,
@@ -21,26 +19,28 @@ import {
   ListBulletsIcon,
   LockLaminatedIcon,
   TicketIcon,
-} from "@phosphor-icons/react";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { useRouter } from "nextjs-toploader/app";
+} from '@phosphor-icons/react'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { useParams, usePathname } from 'next/navigation'
+import { useRouter } from 'nextjs-toploader/app'
+import { useTRPC } from '@/trpc/react'
 
 const items = [
-  { title: "Chapters", url: "", icon: ListBulletsIcon },
-  { title: "Analytics", url: "/analytics", icon: ChartLineIcon },
-  { title: "Subscriptions", url: "/subscriptions", icon: CrownIcon },
-  { title: "Coupons", url: "/coupons", icon: TicketIcon },
-];
+  { title: 'Chapters', url: '', icon: ListBulletsIcon },
+  { title: 'Analytics', url: '/analytics', icon: ChartLineIcon },
+  { title: 'Subscriptions', url: '/subscriptions', icon: CrownIcon },
+  { title: 'Coupons', url: '/coupons', icon: TicketIcon },
+]
 
 export function ChannelPageBreadcrumb() {
-  const trpc = useTRPC();
-  const { channelId } = useParams<{ channelId: string }>();
+  const trpc = useTRPC()
+  const { channelId } = useParams<{ channelId: string }>()
   const { data } = useSuspenseQuery(
     trpc.lms.channel.getById.queryOptions({ channelId }),
-  );
-  const pathname = usePathname();
-  const router = useRouter();
-  const baseUrl = `/c/${channelId}`;
+  )
+  const pathname = usePathname()
+  const router = useRouter()
+  const baseUrl = `/c/${channelId}`
 
   return (
     <div className="flex items-center gap-2.5">
@@ -79,5 +79,5 @@ export function ChannelPageBreadcrumb() {
         </TabsList>
       </Tabs>
     </div>
-  );
+  )
 }

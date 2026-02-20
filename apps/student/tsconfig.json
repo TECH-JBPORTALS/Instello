@@ -7,8 +7,7 @@
       "@/assets/*": ["./assets/*"]
     },
     "jsx": "react-native",
-    "checkJs": false,
-    "moduleSuffixes": [".ios", ".android", ".native", ""]
+    "checkJs": false
   },
   "include": [
     "**/*.ts",

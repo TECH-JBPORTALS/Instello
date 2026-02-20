@@ -1,36 +1,36 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { Button } from "@instello/ui/components/button";
+import { Button } from '@instello/ui/components/button'
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@instello/ui/components/sheet";
-import { ListIcon } from "@phosphor-icons/react/dist/ssr";
+} from '@instello/ui/components/sheet'
+import { ListIcon } from '@phosphor-icons/react/dist/ssr'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useState } from 'react'
 
-import { NavLink } from "./nav-link";
+import { NavLink } from './nav-link'
 
 export function MoreActionsSheet() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button size={"icon"} className="sm:hidden" variant={"ghost"}>
+        <Button size={'icon'} className="sm:hidden" variant={'ghost'}>
           <ListIcon weight="bold" className="text-muted-foreground size-5" />
         </Button>
       </SheetTrigger>
       <SheetContent className="bg-background/80 w-full backdrop-blur-lg">
         <SheetHeader>
           <SheetTitle className="sr-only">More actions</SheetTitle>
-          <Link href={"/"} onClick={() => setOpen(false)}>
+          <Link href={'/'} onClick={() => setOpen(false)}>
             <Image
-              src={"/instello.svg"}
+              src={'/instello.svg'}
               height={28}
               width={120}
               alt="Instello Logo"
@@ -42,7 +42,7 @@ export function MoreActionsSheet() {
             <NavLink
               id="services"
               onClick={() => setOpen(false)}
-              href={"/#services"}
+              href={'/#services'}
               scroll
             >
               Services
@@ -50,15 +50,15 @@ export function MoreActionsSheet() {
             <NavLink
               id="contact"
               onClick={() => setOpen(false)}
-              href={"/#contact"}
+              href={'/#contact'}
               scroll
             >
               Contact
             </NavLink>
-            <Link href={"/company"} onClick={() => setOpen(false)}>
+            <Link href={'/company'} onClick={() => setOpen(false)}>
               Company
             </Link>
-            <Link href={"/achievements"} onClick={() => setOpen(false)}>
+            <Link href={'/achievements'} onClick={() => setOpen(false)}>
               Achievements
             </Link>
           </div>
@@ -66,15 +66,15 @@ export function MoreActionsSheet() {
             <Link
               target="_blank"
               href={
-                "https://play.google.com/store/apps/details?id=in.instello.app"
+                'https://play.google.com/store/apps/details?id=in.instello.app'
               }
             >
-              <Image src={"/play.png"} alt="Play" height={16} width={16} />
+              <Image src={'/play.png'} alt="Play" height={16} width={16} />
               Download App
             </Link>
           </Button>
         </div>
       </SheetContent>
     </Sheet>
-  );
+  )
 }

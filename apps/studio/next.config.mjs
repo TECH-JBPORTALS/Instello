@@ -1,15 +1,15 @@
-import { createJiti } from "jiti";
+import { createJiti } from 'jiti'
 
-const jiti = createJiti(import.meta.url);
+const jiti = createJiti(import.meta.url)
 
 // Import env files to validate at build time. Use jiti so we can load .ts files in here.
-await jiti.import("./src/env");
+await jiti.import('./src/env')
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["@instello/ui", "@instello/db", "@instello/api"],
+  transpilePackages: ['@instello/ui', '@instello/db', '@instello/api'],
   experimental: {
-    optimizePackageImports: ["@phosphor-icons/react"],
+    optimizePackageImports: ['@phosphor-icons/react'],
   },
   eslint: {
     ignoreDuringBuilds: true,
@@ -20,15 +20,15 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "https",
+        protocol: 'https',
         hostname: `${process.env.NEXT_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh`,
-        pathname: "/f/*",
+        pathname: '/f/*',
       },
       {
-        hostname: "image.mux.com",
+        hostname: 'image.mux.com',
       },
     ],
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig

@@ -1,18 +1,18 @@
-import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
-import { Button } from "@instello/ui/components/button";
-import { ArrowRightIcon, HouseIcon } from "@phosphor-icons/react/dist/ssr";
+import { Button } from '@instello/ui/components/button'
+import { ArrowRightIcon, HouseIcon } from '@phosphor-icons/react/dist/ssr'
+import type { Metadata } from 'next'
+import Image from 'next/image'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: "Page Not Found",
+  title: 'Page Not Found',
   description:
     "The page you're looking for doesn't exist. Return to Instello's homepage to continue your educational journey.",
   robots: {
     index: false,
     follow: true,
   },
-};
+}
 
 export default function NotFound() {
   return (
@@ -20,7 +20,7 @@ export default function NotFound() {
       <div className="flex flex-col items-center justify-center gap-6 text-center">
         <div className="bg-accent/50 shadow-accent-foreground/50 flex size-24 items-center justify-center rounded-3xl shadow-2xl backdrop-blur-2xl dark:border">
           <Image
-            src={"/instello-feather.svg"}
+            src={'/instello-feather.svg'}
             alt="Instello Feather Logo"
             height={60}
             width={60}
@@ -61,5 +61,5 @@ export default function NotFound() {
         <span>© 2025 Instello. All rights reserved.</span>
       </footer>
     </div>
-  );
+  )
 }

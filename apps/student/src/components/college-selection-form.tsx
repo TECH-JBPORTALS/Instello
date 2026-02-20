@@ -1,30 +1,30 @@
-import React, { useState } from "react";
+import { FlashList } from '@shopify/flash-list'
+import { useInfiniteQuery } from '@tanstack/react-query'
+import { useDebounce } from '@uidotdev/usehooks'
+import { useRouter } from 'expo-router'
+import { ArrowCircleRightIcon, CheckCircleIcon } from 'phosphor-react-native'
+import React, { useState } from 'react'
 import {
   ActivityIndicator,
   TouchableOpacity,
   useColorScheme,
   View,
-} from "react-native";
-import { useRouter } from "expo-router";
-import { useOnboardingStore } from "@/lib/useOnboardingStore";
-import { cn } from "@/lib/utils";
-import { trpc } from "@/utils/api";
-import { FlashList } from "@shopify/flash-list";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { useDebounce } from "@uidotdev/usehooks";
-import { ArrowCircleRightIcon, CheckCircleIcon } from "phosphor-react-native";
+} from 'react-native'
+import { useOnboardingStore } from '@/lib/useOnboardingStore'
+import { cn } from '@/lib/utils'
+import { trpc } from '@/utils/api'
 
-import { BranchCollegeSkeleton } from "./branch-college-skeleton";
-import { Button } from "./ui/button";
-import { Icon } from "./ui/icon";
-import { Input } from "./ui/input";
-import { Text } from "./ui/text";
+import { BranchCollegeSkeleton } from './branch-college-skeleton'
+import { Button } from './ui/button'
+import { Icon } from './ui/icon'
+import { Input } from './ui/input'
+import { Text } from './ui/text'
 
 export function CollegeSelectionForm() {
-  const theme = useColorScheme();
-  const { setField, college } = useOnboardingStore();
-  const [query, setQuery] = useState("");
-  const debouncedQuery = useDebounce(query, 300);
+  const theme = useColorScheme()
+  const { setField, college } = useOnboardingStore()
+  const [query, setQuery] = useState('')
+  const debouncedQuery = useDebounce(query, 300)
 
   const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } =
     useInfiniteQuery(
@@ -34,20 +34,20 @@ export function CollegeSelectionForm() {
           getNextPageParam: (lastPage) => lastPage.nextCursor,
         },
       ),
-    );
+    )
 
-  const branches = data?.pages.flatMap((d) => d.items);
+  const branches = data?.pages.flatMap((d) => d.items)
 
   React.useEffect(() => {
-    setField("isCoursesLoading", isLoading);
-  }, [isLoading]);
+    setField('isCoursesLoading', isLoading)
+  }, [isLoading, setField])
 
   return (
     <View className="relative gap-3.5">
-      <Text variant={"h3"} className="text-left">
+      <Text variant={'h3'} className="text-left">
         Tell us which is your college
       </Text>
-      <Text variant={"muted"}>
+      <Text variant={'muted'}>
         Select college which you prefer it's yours, and will show more content
         related to that
       </Text>
@@ -71,8 +71,8 @@ export function CollegeSelectionForm() {
             onEndReached={() => hasNextPage && fetchNextPage()}
             ListEmptyComponent={
               <View className="flex-1 items-center justify-center p-6">
-                <Text variant={"large"}>No colleges</Text>
-                <Text variant={"muted"} className="text-center">
+                <Text variant={'large'}>No colleges</Text>
+                <Text variant={'muted'} className="text-center">
                   No colleges found. Try to clear the query from the input or no
                   data associated.
                 </Text>
@@ -82,8 +82,8 @@ export function CollegeSelectionForm() {
               <View className="items-center py-2">
                 {isFetchingNextPage && (
                   <ActivityIndicator
-                    size={"small"}
-                    color={theme == "dark" ? "white" : "black"}
+                    size={'small'}
+                    color={theme == 'dark' ? 'white' : 'black'}
                   />
                 )}
               </View>
@@ -91,16 +91,16 @@ export function CollegeSelectionForm() {
             renderItem={({ item: c }) => (
               <TouchableOpacity
                 onPress={() => {
-                  setField("college", c);
-                  setField("branch", undefined);
+                  setField('college', c)
+                  setField('branch', undefined)
                 }}
                 key={c.id}
                 activeOpacity={0.8}
               >
                 <View
                   className={cn(
-                    "border-border mt-3 w-full flex-row items-center justify-between rounded-lg border p-6",
-                    c.id === college?.id && "bg-primary/10 border-primary",
+                    'border-border mt-3 w-full flex-row items-center justify-between rounded-lg border p-6',
+                    c.id === college?.id && 'bg-primary/10 border-primary',
                   )}
                 >
                   <View>
@@ -113,8 +113,8 @@ export function CollegeSelectionForm() {
                   <Icon
                     as={CheckCircleIcon}
                     className={cn(
-                      "text-primary opacity-0",
-                      c.id === college?.id && "opacity-100",
+                      'text-primary opacity-0',
+                      c.id === college?.id && 'opacity-100',
                     )}
                     size={24}
                   />
@@ -125,18 +125,18 @@ export function CollegeSelectionForm() {
         </View>
       )}
     </View>
-  );
+  )
 }
 
 export function CollegeSelectionFormFooter() {
-  const router = useRouter();
-  const { college, isCoursesLoading } = useOnboardingStore();
+  const router = useRouter()
+  const { college, isCoursesLoading } = useOnboardingStore()
 
   return (
     <Button
       disabled={!college || isCoursesLoading}
       onPress={() => router.push(`/(protected)/(onboarding)/step-three`)}
-      size={"lg"}
+      size={'lg'}
     >
       <Text>Continue</Text>
       <Icon
@@ -144,5 +144,5 @@ export function CollegeSelectionFormFooter() {
         className="text-primary-foreground size-5"
       />
     </Button>
-  );
+  )
 }

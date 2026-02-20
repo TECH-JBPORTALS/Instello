@@ -1,5 +1,4 @@
-import { HydrateClient, prefetch, trpc } from "@/trpc/server";
-import { currentUser } from "@clerk/nextjs/server";
+import { currentUser } from '@clerk/nextjs/server'
 import {
   Sidebar,
   SidebarContent,
@@ -8,21 +7,22 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@instello/ui/components/sidebar";
+} from '@instello/ui/components/sidebar'
+import { HydrateClient, prefetch, trpc } from '@/trpc/server'
 
-import { OrganizationSwitcher } from "../organization-switcher";
-import { NavBranches } from "./nav-branches";
-import { NavMain } from "./nav-main";
-import { NavUser } from "./nav-user";
+import { OrganizationSwitcher } from '../organization-switcher'
+import { NavBranches } from './nav-branches'
+import { NavMain } from './nav-main'
+import { NavUser } from './nav-user'
 
 export async function AppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
-  const user = await currentUser();
+  const user = await currentUser()
 
-  if (!user) return null;
+  if (!user) return null
 
-  prefetch(trpc.erp.branch.list.queryOptions());
+  prefetch(trpc.erp.branch.list.queryOptions())
 
   return (
     <HydrateClient>
@@ -54,5 +54,5 @@ export async function AppSidebar({
         </SidebarFooter>
       </Sidebar>
     </HydrateClient>
-  );
+  )
 }

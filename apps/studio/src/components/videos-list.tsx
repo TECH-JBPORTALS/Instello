@@ -1,94 +1,91 @@
-"use client";
+'use client'
 
-import type { UnifiedVideo } from "@/hooks/useUnifiedVideoList";
-import type { DragEndEvent } from "@dnd-kit/core";
-import type { ChangeEvent } from "react";
-import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
-import { env } from "@/env";
-import {
-  formatFileSize,
-  formatTimeRemaining,
-  formatUploadSpeed,
-  useUnifiedVideoList,
-} from "@/hooks/useUnifiedVideoList";
-import { useUploadManager } from "@/hooks/useUploadManager";
-import { useTRPC } from "@/trpc/react";
-import { closestCenter, DndContext } from "@dnd-kit/core";
+import type { DragEndEvent } from '@dnd-kit/core'
+import { closestCenter, DndContext } from '@dnd-kit/core'
 import {
   restrictToParentElement,
   restrictToVerticalAxis,
-} from "@dnd-kit/modifiers";
+} from '@dnd-kit/modifiers'
 import {
   arrayMove,
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import { Button } from "@instello/ui/components/button";
-import { Progress } from "@instello/ui/components/progress";
-import { Skeleton } from "@instello/ui/components/skeleton";
-import { cn } from "@instello/ui/lib/utils";
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import { Button } from '@instello/ui/components/button'
+import { Progress } from '@instello/ui/components/progress'
+import { Skeleton } from '@instello/ui/components/skeleton'
+import { cn } from '@instello/ui/lib/utils'
 import {
   DotsSixIcon,
   GlobeHemisphereEastIcon,
   LockLaminatedIcon,
   PenNibIcon,
   TrashIcon,
-} from "@phosphor-icons/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+} from '@phosphor-icons/react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import Image from 'next/image'
+import { useParams, useRouter } from 'next/navigation'
+import type { ChangeEvent } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { toast } from 'sonner'
+import { env } from '@/env'
+import type { UnifiedVideo } from '@/hooks/useUnifiedVideoList'
+import {
+  formatFileSize,
+  formatTimeRemaining,
+  formatUploadSpeed,
+  useUnifiedVideoList,
+} from '@/hooks/useUnifiedVideoList'
+import { useUploadManager } from '@/hooks/useUploadManager'
+import { useTRPC } from '@/trpc/react'
 
-
-
-import { ChangeVisibilityVideoDropdown } from "./change-visibility-video-dropdown";
-import { DeleteVideoDialog } from "./dialogs/delete-video-dialog";
-
+import { ChangeVisibilityVideoDropdown } from './change-visibility-video-dropdown'
+import { DeleteVideoDialog } from './dialogs/delete-video-dialog'
 
 export function VideosList({ chapterId }: { chapterId: string }) {
-  const { data, isLoading, isError } = useUnifiedVideoList(chapterId);
-  const [videos, setVideos] = useState<UnifiedVideo[]>(data);
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
+  const { data, isLoading, isError } = useUnifiedVideoList(chapterId)
+  const [videos, setVideos] = useState<UnifiedVideo[]>(data)
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
   const reorderMutation = useMutation(
     trpc.lms.video.reorder.mutationOptions({
       async onSettled() {
-        await queryClient.invalidateQueries(trpc.lms.video.list.pathFilter());
+        await queryClient.invalidateQueries(trpc.lms.video.list.pathFilter())
       },
     }),
-  );
+  )
 
   useEffect(() => {
-    setVideos(data);
-  }, [data]);
+    setVideos(data)
+  }, [data])
 
   const handleDragEnd = (e: DragEndEvent) => {
-    const { active, over } = e;
+    const { active, over } = e
 
     // 1. Dropped outside list
-    if (!over) return;
+    if (!over) return
 
     // 2. Dropped on itself
-    if (active.id === over.id) return;
+    if (active.id === over.id) return
 
     setVideos((items) => {
-      const oldIndex = items.findIndex((i) => i.id === active.id);
-      const newIndex = items.findIndex((i) => i.id === over.id);
+      const oldIndex = items.findIndex((i) => i.id === active.id)
+      const newIndex = items.findIndex((i) => i.id === over.id)
 
-      const reordered = arrayMove(items, oldIndex, newIndex);
+      const reordered = arrayMove(items, oldIndex, newIndex)
 
       reorderMutation.mutate({
         reorderedVideos: reordered.map((video, index) => ({
           videoId: video.id,
           orderIndex: index,
         })),
-      });
+      })
 
-      return reordered;
-    });
-  };
+      return reordered
+    })
+  }
 
   if (isLoading)
     return (
@@ -99,10 +96,10 @@ export function VideosList({ chapterId }: { chapterId: string }) {
             <Skeleton className="h-16 w-full" key={i} />
           ))}
       </div>
-    );
+    )
 
   if (isError)
-    return <div>Couldn't able to fetch the lesson videos of this chapter</div>;
+    return <div>Couldn't able to fetch the lesson videos of this chapter</div>
 
   if (data.length === 0)
     return (
@@ -110,7 +107,7 @@ export function VideosList({ chapterId }: { chapterId: string }) {
         No videos, this chapter won't be able to publish until it contains
         videos.
       </div>
-    );
+    )
 
   return (
     <div className="w-full space-y-2">
@@ -129,11 +126,11 @@ export function VideosList({ chapterId }: { chapterId: string }) {
         </SortableContext>
       </DndContext>
     </div>
-  );
+  )
 }
 
 function VideoItem({ video }: { video: UnifiedVideo }) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const {
     listeners,
     transition,
@@ -146,63 +143,63 @@ function VideoItem({ video }: { video: UnifiedVideo }) {
     id: video.id,
     strategy: verticalListSortingStrategy,
     getNewIndex: (arg) => arg.items.indexOf(arg.id),
-    transition: { duration: 200, easing: "linear" },
-  });
+    transition: { duration: 200, easing: 'linear' },
+  })
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-  };
+  }
 
-  const { retryUpload, getUpload } = useUploadManager();
-  const router = useRouter();
-  const { channelId } = useParams<{ channelId: string }>();
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
+  const { retryUpload, getUpload } = useUploadManager()
+  const router = useRouter()
+  const { channelId } = useParams<{ channelId: string }>()
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
   const { mutate: deleteVideo, isPending } = useMutation(
     trpc.lms.video.delete.mutationOptions({
       async onSuccess() {
-        toast.info(`Removed successfuly`);
-        await queryClient.invalidateQueries(trpc.lms.video.list.pathFilter());
+        toast.info(`Removed successfuly`)
+        await queryClient.invalidateQueries(trpc.lms.video.list.pathFilter())
       },
       onError(error) {
-        toast.error(error.message);
+        toast.error(error.message)
       },
     }),
-  );
+  )
 
   function handleReselectFile(e: ChangeEvent<HTMLInputElement>) {
-    const selectedFile = e.target.files?.[0];
-    const upload = getUpload(video.id);
+    const selectedFile = e.target.files?.[0]
+    const upload = getUpload(video.id)
 
     if (selectedFile) {
       if (upload?.fileName !== selectedFile.name) {
-        toast.error("Invalid file selected", {
-          description: "Select same file to continue upload",
-        });
-        return;
+        toast.error('Invalid file selected', {
+          description: 'Select same file to continue upload',
+        })
+        return
       }
-      const endpoint = upload.endpoint;
+      const endpoint = upload.endpoint
 
       if (!endpoint) {
-        toast.error("Can't upload the file, remove and reupload");
-        return;
+        toast.error("Can't upload the file, remove and reupload")
+        return
       }
 
       retryUpload(upload.videoId, {
         endpoint,
         file: selectedFile,
-      });
+      })
     }
   }
 
   return (
     <div
       className={cn(
-        "group relative flex h-16 max-h-16 w-full items-center gap-2.5 overflow-hidden rounded-md px-2",
+        'group relative flex h-16 max-h-16 w-full items-center gap-2.5 overflow-hidden rounded-md px-2',
         video.isUploading
-          ? "bg-transparent"
-          : "hover:bg-accent/25 hover:text-accent-foreground",
-        isDragging && "bg-accent!",
+          ? 'bg-transparent'
+          : 'hover:bg-accent/25 hover:text-accent-foreground',
+        isDragging && 'bg-accent!',
       )}
       key={video.id}
       style={style}
@@ -213,9 +210,9 @@ function VideoItem({ video }: { video: UnifiedVideo }) {
       {/* Sortable Handle */}
       <Button
         ref={setDraggableNodeRef}
-        variant={"ghost"}
+        variant={'ghost'}
         className="cursor-grab"
-        size={"icon-sm"}
+        size={'icon-sm'}
       >
         <DotsSixIcon />
       </Button>
@@ -223,7 +220,7 @@ function VideoItem({ video }: { video: UnifiedVideo }) {
       {/* Status Icon */}
       <div className="shrink-0">
         <div className="bg-accent relative aspect-video h-full w-20 overflow-hidden rounded-sm">
-          {video.status === "ready" && (
+          {video.status === 'ready' && (
             <Image
               src={
                 video.thumbnailId
@@ -243,9 +240,9 @@ function VideoItem({ video }: { video: UnifiedVideo }) {
         <div className="flex justify-between">
           <div className="flex h-full flex-col gap-1.5">
             <span className="max-w-xl truncate text-sm">{video.title}</span>
-            {video.status === "ready" && (
+            {video.status === 'ready' && (
               <p className="text-muted-foreground max-w-xl truncate text-xs">
-                {video.description ?? "Add description..."}
+                {video.description ?? 'Add description...'}
               </p>
             )}
           </div>
@@ -253,7 +250,7 @@ function VideoItem({ video }: { video: UnifiedVideo }) {
             {/** Local Uploading status */}
             {video.isUploading && !video.interrupted ? (
               <span className="text-accent-foreground">
-                {video.uploadStatus === "uploading" && (
+                {video.uploadStatus === 'uploading' && (
                   <div className="flex items-center gap-1.5">
                     <Progress
                       className="h-1.5 min-w-32"
@@ -262,18 +259,18 @@ function VideoItem({ video }: { video: UnifiedVideo }) {
                     <span className="min-w-fit">{video.uploadProgress}%</span>
                   </div>
                 )}
-                {video.uploadStatus === "paused" && "Paused"}
-                {video.uploadStatus === "error" && "Failed"}
-                {video.uploadStatus === "cancelled" && "Cancelled"}
-                {video.uploadStatus === "pending" && "Preparing..."}
+                {video.uploadStatus === 'paused' && 'Paused'}
+                {video.uploadStatus === 'error' && 'Failed'}
+                {video.uploadStatus === 'cancelled' && 'Cancelled'}
+                {video.uploadStatus === 'pending' && 'Preparing...'}
               </span>
             ) : !video.isUploading && !video.interrupted ? (
               <>
-                {video.status === "waiting" && `Processing...`}
-                {video.status === "asset_created" && "Processing asset..."}
-                {video.status === "errored" && "Failed"}
-                {video.status === "cancelled" && "Cancelled"}
-                {video.status === "ready" &&
+                {video.status === 'waiting' && `Processing...`}
+                {video.status === 'asset_created' && 'Processing asset...'}
+                {video.status === 'errored' && 'Failed'}
+                {video.status === 'cancelled' && 'Cancelled'}
+                {video.status === 'ready' &&
                   (video.isPublished ? (
                     <>
                       <GlobeHemisphereEastIcon weight="duotone" /> Public
@@ -291,12 +288,12 @@ function VideoItem({ video }: { video: UnifiedVideo }) {
         {/* Upload Progress Bar and Details */}
         {video.isUploading &&
           !video.uploadError &&
-          video.uploadStatus !== "success" && (
+          video.uploadStatus !== 'success' && (
             <div className="text-muted-foreground flex gap-1.5 text-xs">
               <span>
                 {video.uploadedBytes && video.fileSize ? (
                   <>
-                    {formatFileSize(video.uploadedBytes)} /{" "}
+                    {formatFileSize(video.uploadedBytes)} /{' '}
                     {formatFileSize(video.fileSize)}
                   </>
                 ) : (
@@ -334,39 +331,39 @@ function VideoItem({ video }: { video: UnifiedVideo }) {
               ref={fileInputRef}
               onChange={(e) => {
                 if (fileInputRef.current) {
-                  handleReselectFile(e);
+                  handleReselectFile(e)
                   // Remove the selected file from input
-                  fileInputRef.current.value = "";
+                  fileInputRef.current.value = ''
                 }
               }}
             />
             <Button
               onClick={() => fileInputRef.current?.click()}
-              size={"sm"}
-              variant={"secondary"}
+              size={'sm'}
+              variant={'secondary'}
               className="rounded-full"
             >
               Select
             </Button>
             <Button
-              size={"sm"}
-              variant={"secondary"}
+              size={'sm'}
+              variant={'secondary'}
               disabled={isPending}
               className="text-destructive bg-destructive/20 rounded-full"
               onClick={() => deleteVideo({ videoId: video.id })}
             >
-              {isPending ? "Removing..." : "Remove"}
+              {isPending ? 'Removing...' : 'Remove'}
             </Button>
           </>
         ) : null}
 
-        {video.status == "ready" && (
+        {video.status == 'ready' && (
           <div className="from-accent/50 to-accent/0 bg-linear-to-l absolute bottom-0 right-0 top-0 flex h-16 items-center gap-1.5 px-2 opacity-0 group-hover:opacity-100 has-[button[data-loading=true]]:opacity-100 has-[button[data-state=open]]:opacity-100">
             <ChangeVisibilityVideoDropdown videoId={video.id} />
             <Button
               onClick={() => router.push(`/c/${channelId}/v/${video.id}`)}
-              size={"sm"}
-              variant={"secondary"}
+              size={'sm'}
+              variant={'secondary'}
               className="rounded-full"
             >
               <PenNibIcon weight="duotone" />
@@ -374,8 +371,8 @@ function VideoItem({ video }: { video: UnifiedVideo }) {
             </Button>
             <DeleteVideoDialog videoId={video.id} chapterId={video.chapterId}>
               <Button
-                size={"sm"}
-                variant={"secondary"}
+                size={'sm'}
+                variant={'secondary'}
                 className="text-destructive rounded-full"
               >
                 <TrashIcon weight="duotone" />
@@ -386,5 +383,5 @@ function VideoItem({ video }: { video: UnifiedVideo }) {
         )}
       </div>
     </div>
-  );
+  )
 }

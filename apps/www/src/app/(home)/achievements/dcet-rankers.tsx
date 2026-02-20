@@ -1,10 +1,10 @@
-import type { SanityDocument } from "next-sanity";
-import { client } from "@/sanity/client";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@instello/ui/components/avatar";
+} from '@instello/ui/components/avatar'
+import type { SanityDocument } from 'next-sanity'
+import { client } from '@/sanity/client'
 
 const ACADEMIC_YEARS_QUERY = `*[_type == "academicYear"] | order(year desc){
   _id,
@@ -20,23 +20,23 @@ const ACADEMIC_YEARS_QUERY = `*[_type == "academicYear"] | order(year desc){
     college,
     "avatar": avatar.asset->url
   }
-}`;
+}`
 
-const options = { next: {} };
+const options = { next: {} }
 
 export async function DCETRankers() {
   const academicYears = await client.fetch<
     SanityDocument<{
-      title: string;
-      year: number;
+      title: string
+      year: number
       dcetRankers: SanityDocument<{
-        name: string;
-        rank: number;
-        college: string;
-        avatar: string;
-      }>[];
+        name: string
+        rank: number
+        college: string
+        avatar: string
+      }>[]
     }>[]
-  >(ACADEMIC_YEARS_QUERY, {}, options);
+  >(ACADEMIC_YEARS_QUERY, {}, options)
 
   return (
     <section className="flex flex-col items-center gap-24">
@@ -58,16 +58,16 @@ export async function DCETRankers() {
           {/* Rankers Grid */}
           <div className="grid w-full grid-cols-2 gap-6 lg:grid-cols-5">
             {year.dcetRankers.map((mem, index) => {
-              const rank = index + 1;
+              const rank = index + 1
 
               const rankBadgeStyle =
                 rank === 1
-                  ? "bg-gradient-to-r from-amber-600 to-orange-700 text-white"
+                  ? 'bg-gradient-to-r from-amber-600 to-orange-700 text-white'
                   : rank === 2
-                    ? "bg-gradient-to-r from-yellow-400 to-amber-500 text-black"
+                    ? 'bg-gradient-to-r from-yellow-400 to-amber-500 text-black'
                     : rank === 3
-                      ? "bg-gradient-to-r from-gray-300 to-gray-400 text-black"
-                      : "bg-muted text-muted-foreground border-2";
+                      ? 'bg-gradient-to-r from-gray-300 to-gray-400 text-black'
+                      : 'bg-muted text-muted-foreground border-2'
 
               return (
                 <div
@@ -100,11 +100,11 @@ export async function DCETRankers() {
                     </span>
                   </div>
                 </div>
-              );
+              )
             })}
           </div>
         </div>
       ))}
     </section>
-  );
+  )
 }

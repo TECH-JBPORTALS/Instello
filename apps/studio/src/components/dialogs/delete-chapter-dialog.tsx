@@ -1,8 +1,5 @@
-"use client";
+'use client'
 
-import React from "react";
-import { useParams } from "next/navigation";
-import { useTRPC } from "@/trpc/react";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -12,22 +9,25 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@instello/ui/components/alert-dialog";
-import { Button } from "@instello/ui/components/button";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+} from '@instello/ui/components/alert-dialog'
+import { Button } from '@instello/ui/components/button'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useParams } from 'next/navigation'
+import React from 'react'
+import { toast } from 'sonner'
+import { useTRPC } from '@/trpc/react'
 
 export function DeleteChapterDialog({
   children,
   chapterId,
 }: {
-  children: React.ReactNode;
-  chapterId: string;
+  children: React.ReactNode
+  chapterId: string
 }) {
-  const [open, setOpen] = React.useState(false);
-  const trpc = useTRPC();
-  const { channelId } = useParams<{ channelId: string }>();
-  const queryClient = useQueryClient();
+  const [open, setOpen] = React.useState(false)
+  const trpc = useTRPC()
+  const { channelId } = useParams<{ channelId: string }>()
+  const queryClient = useQueryClient()
   const { mutate: deleteVideo, isPending } = useMutation(
     trpc.lms.chapter.delete.mutationOptions({
       async onSuccess(data) {
@@ -35,17 +35,17 @@ export function DeleteChapterDialog({
           <span>
             Chapter <b>{data.title}</b> deleted
           </span>,
-        );
+        )
         await queryClient.invalidateQueries(
           trpc.lms.chapter.list.queryOptions({ channelId }),
-        );
-        setOpen(false);
+        )
+        setOpen(false)
       },
       onError(error) {
-        toast.error(error.message);
+        toast.error(error.message)
       },
     }),
-  );
+  )
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -60,17 +60,17 @@ export function DeleteChapterDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel asChild>
-            <Button variant={"secondary"}>Cancel</Button>
+            <Button variant={'secondary'}>Cancel</Button>
           </AlertDialogCancel>
           <Button
             loading={isPending}
             onClick={() => deleteVideo({ chapterId })}
-            variant={"destructive"}
+            variant={'destructive'}
           >
             Delete Forever
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  );
+  )
 }

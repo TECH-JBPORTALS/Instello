@@ -1,15 +1,15 @@
-import Container from "@/components/container";
-import { HydrateClient, prefetch, trpc } from "@/trpc/server";
+import Container from '@/components/container'
+import { HydrateClient, prefetch, trpc } from '@/trpc/server'
 
-import { TimetableClient } from "./timetable.client";
+import { TimetableClient } from './timetable.client'
 
 export default async function Page({
   params,
 }: {
-  params: Promise<{ branchId: string }>;
+  params: Promise<{ branchId: string }>
 }) {
-  const { branchId } = await params;
-  prefetch(trpc.erp.timetable.findByActiveSemester.queryOptions({ branchId }));
+  const { branchId } = await params
+  prefetch(trpc.erp.timetable.findByActiveSemester.queryOptions({ branchId }))
 
   return (
     <HydrateClient>
@@ -17,5 +17,5 @@ export default async function Page({
         <TimetableClient />
       </Container>
     </HydrateClient>
-  );
+  )
 }

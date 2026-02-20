@@ -1,33 +1,48 @@
-import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
-import React, { useCallback, useRef } from "react";
-import { ActivityIndicator, RefreshControl, StyleSheet, TouchableOpacity, useColorScheme, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Image, ImageBackground } from "expo-image";
-import { LinearGradient } from "expo-linear-gradient";
-import { Link, useLocalSearchParams, useRouter } from "expo-router";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import ExapandableText from "@/components/ui/expandable-text";
-import { Icon } from "@/components/ui/icon";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Text } from "@/components/ui/text";
-import { useVideoPrefetch } from "@/hooks/useVideoPrefetch";
-import { THEME } from "@/lib/theme";
-import { formatDuration, formatNumber } from "@/lib/utils";
-import { trpc } from "@/utils/api";
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
-import { FlashList } from "@shopify/flash-list";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { ArrowLeftIcon, CardsThreeIcon, CaretDownIcon, ClockIcon, CrownIcon, LockLaminatedIcon } from "phosphor-react-native";
+import type { BottomSheetBackdropProps } from '@gorhom/bottom-sheet'
+import {
+  BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetView,
+} from '@gorhom/bottom-sheet'
+import { FlashList } from '@shopify/flash-list'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import { format } from 'date-fns'
+import { Image, ImageBackground } from 'expo-image'
+import { LinearGradient } from 'expo-linear-gradient'
+import { Link, useLocalSearchParams, useRouter } from 'expo-router'
+import {
+  ArrowLeftIcon,
+  CardsThreeIcon,
+  CaretDownIcon,
+  ClockIcon,
+  CrownIcon,
+  LockLaminatedIcon,
+} from 'phosphor-react-native'
+import React, { useCallback, useRef } from 'react'
+import {
+  ActivityIndicator,
+  RefreshControl,
+  StyleSheet,
+  TouchableOpacity,
+  useColorScheme,
+  View,
+} from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import ExapandableText from '@/components/ui/expandable-text'
+import { Icon } from '@/components/ui/icon'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Text } from '@/components/ui/text'
+import { useVideoPrefetch } from '@/hooks/useVideoPrefetch'
+import { THEME } from '@/lib/theme'
+import { formatDuration, formatNumber } from '@/lib/utils'
+import { trpc } from '@/utils/api'
 
-
-
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card";
-
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card'
 
 export function ChannelLessonsList() {
-  const chapterId = useLocalSearchParams().chapterId as string;
+  const chapterId = useLocalSearchParams().chapterId as string
   const {
     data,
     isLoading,
@@ -41,12 +56,12 @@ export function ChannelLessonsList() {
       { chapterId },
       { getNextPageParam: (p) => p.nextCursor },
     ),
-  );
+  )
 
-  const videos = data?.pages.flatMap((p) => p.items);
-  const theme = useColorScheme();
+  const videos = data?.pages.flatMap((p) => p.items)
+  const theme = useColorScheme()
 
-  const { prefetchVideo, prefetchVideos } = useVideoPrefetch();
+  const { prefetchVideo, prefetchVideos } = useVideoPrefetch()
 
   // Prefetch all video details when the channel videos are loaded
   React.useEffect(() => {
@@ -54,15 +69,15 @@ export function ChannelLessonsList() {
       const videoIds = videos
         .filter(
           (item): item is NonNullable<typeof item> & { id: string } =>
-            "id" in item && item.canWatch,
+            'id' in item && item.canWatch,
         )
-        .map((item) => item.id);
+        .map((item) => item.id)
 
       if (videoIds.length > 0) {
-        prefetchVideos(videoIds).catch((e) => console.error(e));
+        prefetchVideos(videoIds).catch((e) => console.error(e))
       }
     }
-  }, [videos, prefetchVideos]);
+  }, [videos, prefetchVideos])
 
   return (
     <FlashList
@@ -76,7 +91,7 @@ export function ChannelLessonsList() {
         isLoading ? (
           <View className="px-4">
             {Array.from({ length: 6 }).map((_, index) => (
-              <View key={index} className="mb-2.5">
+              <View key={`skeleton-${index + 1}`} className="mb-2.5">
                 <View className="bg-accent/40 flex-row gap-2 rounded-md p-2">
                   <Skeleton
                     className="h-14 w-[120px] rounded-md"
@@ -110,9 +125,9 @@ export function ChannelLessonsList() {
       ListFooterComponent={
         <View className="items-center justify-center py-8">
           {isFetchingNextPage && (
-            <ActivityIndicator style={{ marginBottom: 16 }} size={"small"} />
+            <ActivityIndicator style={{ marginBottom: 16 }} size={'small'} />
           )}
-          <Text variant={"muted"} className="text-xs">
+          <Text variant={'muted'} className="text-xs">
             © All rights reserved to this channel
           </Text>
         </View>
@@ -128,7 +143,7 @@ export function ChannelLessonsList() {
             <TouchableOpacity
               onPress={() => {
                 if (item.canWatch && item.id) {
-                  prefetchVideo(item.id);
+                  prefetchVideo(item.id)
                 }
               }}
               style={{ paddingHorizontal: 16 }}
@@ -144,11 +159,11 @@ export function ChannelLessonsList() {
                     className="bg-accent h-14 w-auto rounded-sm p-0"
                     style={{
                       height: 64,
-                      width: "auto",
+                      width: 'auto',
                       aspectRatio: 16 / 11,
                       borderRadius: 8,
                       borderWidth: 1,
-                      borderColor: THEME[theme ?? "light"].border,
+                      borderColor: THEME[theme ?? 'light'].border,
                     }}
                   />
                 </CardContent>
@@ -167,14 +182,14 @@ export function ChannelLessonsList() {
                     />
 
                     <Text
-                      variant={"muted"}
+                      variant={'muted'}
                       className="text-muted-foreground text-xs"
                     >
                       {formatDuration(item.duration ?? 0)}
                     </Text>
-                    <Text variant={"muted"}>·</Text>
+                    <Text variant={'muted'}>·</Text>
                     <Text
-                      variant={"muted"}
+                      variant={'muted'}
                       className="text-muted-foreground text-xs"
                     >
                       {formatNumber(item.overallValues.data.total_views)} Views
@@ -193,33 +208,33 @@ export function ChannelLessonsList() {
               </Card>
             </TouchableOpacity>
           </Link>
-        );
+        )
       }}
     />
-  );
+  )
 }
 
 function ChannelDetailsSection() {
-  const router = useRouter();
-  const { top } = useSafeAreaInsets();
-  const { channelId } = useLocalSearchParams<{ channelId: string }>();
+  const router = useRouter()
+  const { top } = useSafeAreaInsets()
+  const { channelId } = useLocalSearchParams<{ channelId: string }>()
   const {
     data: channel,
     isLoading,
     isError,
     error,
-  } = useQuery(trpc.lms.channel.getById.queryOptions({ channelId }));
+  } = useQuery(trpc.lms.channel.getById.queryOptions({ channelId }))
+  const theme = useColorScheme()
 
   if (isError)
     return (
       <View>
-        <Text variant={"lead"}>Something went wrong!</Text>
-        <Text variant={"muted"}>{error.message}</Text>
+        <Text variant={'lead'}>Something went wrong!</Text>
+        <Text variant={'muted'}>{error.message}</Text>
       </View>
-    );
+    )
 
-  const thumbnailUri = `https://${process.env.EXPO_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${channel?.thumbneilId}`;
-  const theme = useColorScheme();
+  const thumbnailUri = `https://${process.env.EXPO_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${channel?.thumbneilId}`
 
   return (
     <>
@@ -228,26 +243,26 @@ function ChannelDetailsSection() {
           uri: thumbnailUri,
         }}
         style={{
-          height: "auto",
-          width: "auto",
+          height: 'auto',
+          width: 'auto',
           aspectRatio: 16 / 10,
-          backgroundColor: THEME[theme ?? "light"].muted,
+          backgroundColor: THEME[theme ?? 'light'].muted,
         }}
         contentFit="cover"
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-require-imports
-        placeholder={require("assets/images/thumbnail-placeholder.png")}
+        placeholder={require('assets/images/thumbnail-placeholder.png')}
       >
         <LinearGradient
           colors={[
-            "rgba(0,0,0,0.4)",
-            "rgba(0,0,0,0.4)",
-            "rgba(0,0,0,0.2)",
-            "rgba(0,0,0,0)",
-            "rgba(0,0,0,0)",
+            'rgba(0,0,0,0.4)',
+            'rgba(0,0,0,0.4)',
+            'rgba(0,0,0,0.2)',
+            'rgba(0,0,0,0)',
+            'rgba(0,0,0,0)',
           ]}
           style={{
-            width: "auto",
-            height: "100%",
+            width: 'auto',
+            height: '100%',
           }}
         >
           <View className="flex-1">
@@ -255,8 +270,8 @@ function ChannelDetailsSection() {
               <View style={{ marginTop: top - 22 }}>
                 <Button
                   onPress={() => router.back()}
-                  size={"icon"}
-                  variant={"outline"}
+                  size={'icon'}
+                  variant={'outline'}
                   className="size-11 rounded-full bg-transparent"
                 >
                   <Icon
@@ -273,7 +288,7 @@ function ChannelDetailsSection() {
 
       {isLoading ? (
         <View style={{ paddingVertical: 12, paddingHorizontal: 16, gap: 10 }}>
-          <Skeleton className={"h-4 w-[90%]"} />
+          <Skeleton className={'h-4 w-[90%]'} />
           <View className="flex-row items-center gap-1">
             <Icon
               as={ClockIcon}
@@ -281,40 +296,40 @@ function ChannelDetailsSection() {
               className="text-muted-foreground"
             />
 
-            <Skeleton className={"h-2 w-8"} />
-            <Text variant={"muted"}>·</Text>
+            <Skeleton className={'h-2 w-8'} />
+            <Text variant={'muted'}>·</Text>
             <Icon
               as={CardsThreeIcon}
               weight="duotone"
               className="text-muted-foreground"
             />
 
-            <Skeleton className={"h-2 w-8"} />
-            <Text variant={"muted"}>·</Text>
+            <Skeleton className={'h-2 w-8'} />
+            <Text variant={'muted'}>·</Text>
             <Icon
               as={CrownIcon}
               weight="duotone"
               className="text-muted-foreground"
             />
 
-            <Skeleton className={"h-2 w-8"} />
-            <Text variant={"muted"}>·</Text>
-            <Skeleton className={"h-2 w-8"} />
+            <Skeleton className={'h-2 w-8'} />
+            <Text variant={'muted'}>·</Text>
+            <Skeleton className={'h-2 w-8'} />
           </View>
 
           <View className="gap-1.5">
-            <Skeleton className={"h-2.5 w-full"} />
-            <Skeleton className={"h-2.5 w-3/4"} />
+            <Skeleton className={'h-2.5 w-full'} />
+            <Skeleton className={'h-2.5 w-3/4'} />
           </View>
 
           <View className="flex-row items-center gap-2.5 py-1.5">
-            <Skeleton className={"size-6 rounded-full"} />
-            <Skeleton className={"h-3 w-20"} />
+            <Skeleton className={'size-6 rounded-full'} />
+            <Skeleton className={'h-3 w-20'} />
           </View>
         </View>
       ) : (
         <View style={{ paddingVertical: 12, paddingHorizontal: 16, gap: 10 }}>
-          <Text variant={"h4"} className="font-medium tracking-wide">
+          <Text variant={'h4'} className="font-medium tracking-wide">
             {channel?.title}
           </Text>
           <View className="flex-row items-center gap-1">
@@ -324,36 +339,36 @@ function ChannelDetailsSection() {
               className="text-muted-foreground"
             />
 
-            <Text variant={"muted"} className="text-xs">
+            <Text variant={'muted'} className="text-xs">
               {channel && formatDuration(channel.totalDuration)}
             </Text>
-            <Text variant={"muted"}>·</Text>
+            <Text variant={'muted'}>·</Text>
             <Icon
               as={CardsThreeIcon}
               weight="duotone"
               className="text-muted-foreground"
             />
 
-            <Text variant={"muted"} className="text-xs">
+            <Text variant={'muted'} className="text-xs">
               {channel && formatNumber(channel.numberOfChapters)} Chapters
             </Text>
-            <Text variant={"muted"}>·</Text>
+            <Text variant={'muted'}>·</Text>
             <Icon
               as={CrownIcon}
               weight="duotone"
               className="text-muted-foreground"
             />
-            <Text variant={"muted"} className="text-xs">
+            <Text variant={'muted'} className="text-xs">
               {channel && formatNumber(channel.totalSubscribers)} Subscribers
             </Text>
-            <Text variant={"muted"}>·</Text>
-            <Text variant={"muted"} className="text-xs">
-              {channel && format(channel.createdAt, "MMM yyyy")}
+            <Text variant={'muted'}>·</Text>
+            <Text variant={'muted'} className="text-xs">
+              {channel && format(channel.createdAt, 'MMM yyyy')}
             </Text>
           </View>
 
           {channel?.description && channel.description.length !== 0 && (
-            <ExapandableText variant={"muted"}>
+            <ExapandableText variant={'muted'}>
               {channel.description}
             </ExapandableText>
           )}
@@ -370,8 +385,8 @@ function ChannelDetailsSection() {
                   </Text>
                 </AvatarFallback>
               </Avatar>
-              <Text variant={"small"}>
-                {channel?.createdByClerkUser.firstName}{" "}
+              <Text variant={'small'}>
+                {channel?.createdByClerkUser.firstName}{' '}
                 {channel?.createdByClerkUser.lastName}
               </Text>
             </View>
@@ -381,45 +396,45 @@ function ChannelDetailsSection() {
         </View>
       )}
     </>
-  );
+  )
 }
 
 function SubscribeButton() {
-  const { channelId } = useLocalSearchParams<{ channelId: string }>();
+  const { channelId } = useLocalSearchParams<{ channelId: string }>()
   const { data, isLoading } = useQuery(
     trpc.lms.subscription.getByChannelId.queryOptions({ channelId }),
-  );
-  const router = useRouter();
+  )
+  const router = useRouter()
 
-  if (isLoading) return <Skeleton className={"h-[38px] w-28 rounded-full"} />;
+  if (isLoading) return <Skeleton className={'h-[38px] w-28 rounded-full'} />
 
   const renderSubscriptionButotn = () => {
     switch (data?.status) {
-      case "expired":
+      case 'expired':
         return (
           <Button
-            size={"sm"}
+            size={'sm'}
             onPress={() =>
               router.push(`/(protected)/(subscribe)?channelId=${channelId}`)
             }
-            variant={"outline"}
+            variant={'outline'}
             className="rounded-full"
           >
             <Text className="text-xs">Renew Subscription</Text>
           </Button>
-        );
+        )
 
-      case "subscribed":
+      case 'subscribed':
         return (
-          <Button size={"sm"} variant={"secondary"} className="rounded-full">
+          <Button size={'sm'} variant={'secondary'} className="rounded-full">
             <Text className="text-xs">Subscribed</Text>
           </Button>
-        );
+        )
 
       default:
         return (
           <Button
-            size={"sm"}
+            size={'sm'}
             onPress={() =>
               router.push(`/(protected)/(subscribe)?channelId=${channelId}`)
             }
@@ -432,49 +447,49 @@ function SubscribeButton() {
             />
             <Text className="text-xs">Subscribe to Watch</Text>
           </Button>
-        );
+        )
     }
-  };
+  }
 
-  return <>{renderSubscriptionButotn()}</>;
+  return <>{renderSubscriptionButotn()}</>
 }
 
 function ChapterButton() {
   const { chapterId, channelId } = useLocalSearchParams<{
-    chapterId: string;
-    channelId: string;
-  }>();
+    chapterId: string
+    channelId: string
+  }>()
   const { data, isLoading } = useQuery(
     trpc.lms.chapter.list.queryOptions({ channelId, published: true }),
-  );
-  const router = useRouter();
+  )
+  const router = useRouter()
 
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const theme = useColorScheme();
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null)
+  const theme = useColorScheme()
 
   // callbacks
   const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
-  }, []);
+    bottomSheetModalRef.current?.present()
+  }, [])
 
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
       <BottomSheetBackdrop {...props} appearsOnIndex={1} />
     ),
     [],
-  );
+  )
 
-  if (isLoading) return <Skeleton className={"h-10 w-40"} />;
+  if (isLoading) return <Skeleton className={'h-10 w-40'} />
 
-  const selectedChapter = data?.find((chapter) => chapter.id == chapterId);
+  const selectedChapter = data?.find((chapter) => chapter.id == chapterId)
 
-  if (!selectedChapter) return null;
+  if (!selectedChapter) return null
 
   return (
     <>
       <View className="flex-row">
         <Button
-          variant={"secondary"}
+          variant={'secondary'}
           onPress={handlePresentModalPress}
           className="justify-between"
         >
@@ -487,9 +502,9 @@ function ChapterButton() {
       <BottomSheetModal
         ref={bottomSheetModalRef}
         backgroundStyle={{
-          backgroundColor: THEME[theme ?? "light"].popover,
+          backgroundColor: THEME[theme ?? 'light'].popover,
           borderWidth: 1,
-          borderColor: THEME[theme ?? "light"].border,
+          borderColor: THEME[theme ?? 'light'].border,
         }}
         backdropComponent={renderBackdrop}
         enableDynamicSizing={false}
@@ -499,9 +514,9 @@ function ChapterButton() {
           paddingVertical: 10,
         }}
         handleIndicatorStyle={{
-          backgroundColor: THEME[theme ?? "light"].mutedForeground,
+          backgroundColor: THEME[theme ?? 'light'].mutedForeground,
         }}
-        snapPoints={["60%", "60%"]}
+        snapPoints={['60%', '60%']}
         $modal={false}
         style={{
           minHeight: 320,
@@ -513,7 +528,7 @@ function ChapterButton() {
           }}
         >
           <View className="pb-4">
-            <Text variant={"muted"} className="text-xs">
+            <Text variant={'muted'} className="text-xs">
               CHAPTERS
             </Text>
           </View>
@@ -521,16 +536,16 @@ function ChapterButton() {
             data={data}
             renderItem={({ item: chapter }) => (
               <Button
-                size={"lg"}
-                variant={chapter.id == chapterId ? "secondary" : "ghost"}
+                size={'lg'}
+                variant={chapter.id == chapterId ? 'secondary' : 'ghost'}
                 key={chapter.id}
                 className="w-full justify-start"
                 onPress={() => {
                   if (chapter.id !== chapterId) {
                     router.setParams({
                       chapterId: chapter.id,
-                    });
-                    bottomSheetModalRef.current?.close();
+                    })
+                    bottomSheetModalRef.current?.close()
                   }
                 }}
               >
@@ -541,7 +556,7 @@ function ChapterButton() {
         </BottomSheetView>
       </BottomSheetModal>
     </>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -550,4 +565,4 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
     paddingHorizontal: 16,
   },
-});
+})

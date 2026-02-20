@@ -1,26 +1,26 @@
-import { and, asc, eq, not } from "@instello/db";
-import { branch, CreateBranchSchema, semester } from "@instello/db/erp";
-import { TRPCError } from "@trpc/server";
-import { z } from "zod/v4";
+import { and, asc, eq, not } from '@instello/db'
+import { branch, CreateBranchSchema, semester } from '@instello/db/erp'
+import { TRPCError } from '@trpc/server'
+import { z } from 'zod/v4'
 
-import { hasPermission, organizationProcedure } from "../trpc";
+import { hasPermission, organizationProcedure } from '../trpc'
 
 export const branchRouter = {
   create: organizationProcedure
-    .use(hasPermission({ permission: "org:branches:create" }))
+    .use(hasPermission({ permission: 'org:branches:create' }))
     .input(CreateBranchSchema)
     .mutation(async ({ ctx, input }) => {
       return ctx.db.transaction(async (tx) => {
         const [newBranch] = await tx
           .insert(branch)
           .values({ ...input, clerkOrgId: ctx.auth.orgId })
-          .returning();
+          .returning()
 
         if (!newBranch)
           throw new TRPCError({
             message: "Couldn't able to create branch",
-            code: "INTERNAL_SERVER_ERROR",
-          });
+            code: 'INTERNAL_SERVER_ERROR',
+          })
 
         const semesterValues = Array.from(
           { length: input.totalSemesters },
@@ -28,13 +28,13 @@ export const branchRouter = {
         )
           // Filter down to based on the mode
           .filter((n) =>
-            input.currentSemesterMode == "odd" ? n % 2 === 1 : n % 2 === 0,
+            input.currentSemesterMode == 'odd' ? n % 2 === 1 : n % 2 === 0,
           )
           // Map it to shape of semester values
-          .map((value) => ({ value, branchId: newBranch.id }));
+          .map((value) => ({ value, branchId: newBranch.id }))
 
-        await tx.insert(semester).values(semesterValues);
-      });
+        await tx.insert(semester).values(semesterValues)
+      })
     }),
 
   getByBranchId: organizationProcedure
@@ -45,13 +45,13 @@ export const branchRouter = {
           eq(branch.id, input.branchId),
           eq(branch.clerkOrgId, ctx.auth.orgId),
         ),
-      });
+      })
     }),
 
   list: organizationProcedure.query(({ ctx }) => {
     return ctx.db.query.branch.findMany({
       where: eq(branch.clerkOrgId, ctx.auth.orgId),
-    });
+    })
   }),
 
   getSemesterList: organizationProcedure
@@ -62,7 +62,7 @@ export const branchRouter = {
           eq(semester.branchId, input.branchId),
           not(semester.isArchived),
         ),
-      });
+      })
     }),
 
   getFirstSemester: organizationProcedure
@@ -74,6 +74,6 @@ export const branchRouter = {
           not(semester.isArchived),
         ),
         orderBy: asc(semester.value),
-      });
+      })
     }),
-};
+}

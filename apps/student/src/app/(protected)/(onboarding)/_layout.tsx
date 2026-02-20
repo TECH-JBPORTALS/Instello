@@ -1,5 +1,5 @@
-import { Stack } from "expo-router";
+import { Stack } from 'expo-router'
 
 export default function AuthLayout() {
-  return <Stack screenOptions={{ headerShadowVisible: false }} />;
+  return <Stack screenOptions={{ headerShadowVisible: false }} />
 }

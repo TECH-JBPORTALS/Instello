@@ -1,7 +1,6 @@
-"use client";
+'use client'
 
-import { useTRPC } from "@/trpc/react";
-import { Button } from "@instello/ui/components/button";
+import { Button } from '@instello/ui/components/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,47 +9,48 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@instello/ui/components/dropdown-menu";
-import { cn } from "@instello/ui/lib/utils";
+} from '@instello/ui/components/dropdown-menu'
+import { cn } from '@instello/ui/lib/utils'
 import {
   CaretDownIcon,
   GlobeHemisphereEastIcon,
   LockLaminatedIcon,
-} from "@phosphor-icons/react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+} from '@phosphor-icons/react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { useTRPC } from '@/trpc/react'
 
 export function ChangeVisibilityVideoDropdown({
   videoId,
 }: {
-  videoId: string;
+  videoId: string
 }) {
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
   const { data: chapter, isLoading } = useQuery(
     trpc.lms.video.getById.queryOptions({ videoId }),
-  );
+  )
 
   const { mutate: updateVideo, isPending } = useMutation(
     trpc.lms.video.update.mutationOptions({
       async onSuccess(_, v) {
-        await queryClient.invalidateQueries(trpc.lms.video.pathFilter());
+        await queryClient.invalidateQueries(trpc.lms.video.pathFilter())
         toast.info(
-          `Visibility changed to ${v.isPublished ? "Published" : "Private"}`,
-        );
+          `Visibility changed to ${v.isPublished ? 'Published' : 'Private'}`,
+        )
       },
       onError() {
-        toast.error(`Couldn't able to change the visibility of video`);
+        toast.error(`Couldn't able to change the visibility of video`)
       },
     }),
-  );
+  )
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           variant="secondary"
-          size={"sm"}
+          size={'sm'}
           className="rounded-full"
           disabled={isLoading}
           loading={isPending}
@@ -58,17 +58,17 @@ export function ChangeVisibilityVideoDropdown({
           {chapter?.isPublished ? (
             <span className="inline-flex items-center gap-1.5">
               <GlobeHemisphereEastIcon
-                className={cn("size-3.5", isPending && "hidden")}
+                className={cn('size-3.5', isPending && 'hidden')}
                 weight="duotone"
-              />{" "}
+              />{' '}
               Public
             </span>
           ) : (
             <span className="inline-flex items-center gap-1.5">
               <LockLaminatedIcon
-                className={cn("size-3.5", isPending && "hidden")}
+                className={cn('size-3.5', isPending && 'hidden')}
                 weight="duotone"
-              />{" "}
+              />{' '}
               Private
             </span>
           )}
@@ -80,9 +80,9 @@ export function ChangeVisibilityVideoDropdown({
         <DropdownMenuLabel>Chapter Visibility</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuRadioGroup
-          value={chapter?.isPublished ? "published" : "private"}
+          value={chapter?.isPublished ? 'published' : 'private'}
           onValueChange={(value) =>
-            updateVideo({ isPublished: value == "published", videoId })
+            updateVideo({ isPublished: value == 'published', videoId })
           }
         >
           <DropdownMenuRadioItem value="private">
@@ -96,5 +96,5 @@ export function ChangeVisibilityVideoDropdown({
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }

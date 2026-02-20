@@ -1,8 +1,8 @@
-"use client";
+'use client'
 
-import type * as React from "react";
-import { Toaster } from "@instello/ui/components/sonner";
-import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { Toaster } from '@instello/ui/components/sonner'
+import { ThemeProvider as NextThemesProvider } from 'next-themes'
+import type * as React from 'react'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -16,5 +16,5 @@ export function Providers({ children }: { children: React.ReactNode }) {
       {children}
       <Toaster richColors />
     </NextThemesProvider>
-  );
+  )
 }

@@ -1,13 +1,8 @@
-"use client";
+'use client'
 
-import type React from "react";
-import type { z } from "zod/v4";
-import { useState } from "react";
-import { useParams } from "next/navigation";
-import { useTRPC } from "@/trpc/react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { CreateSubjectSchema } from "@instello/db/erp";
-import { Button } from "@instello/ui/components/button";
+import { zodResolver } from '@hookform/resolvers/zod'
+import { CreateSubjectSchema } from '@instello/db/erp'
+import { Button } from '@instello/ui/components/button'
 import {
   Dialog,
   DialogBody,
@@ -16,51 +11,54 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@instello/ui/components/dialog";
+} from '@instello/ui/components/dialog'
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@instello/ui/components/form";
-import { Input } from "@instello/ui/components/input";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+} from '@instello/ui/components/form'
+import { Input } from '@instello/ui/components/input'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useParams } from 'next/navigation'
+import type React from 'react'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import type { z } from 'zod/v4'
+import { useTRPC } from '@/trpc/react'
 
 export function CreateSubjectDialog(
   props: React.ComponentProps<typeof DialogTrigger>,
 ) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
   const form = useForm({
     resolver: zodResolver(CreateSubjectSchema),
     defaultValues: {
-      name: "",
+      name: '',
     },
-  });
+  })
 
-  const { branchId } = useParams<{ branchId: string }>();
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
+  const { branchId } = useParams<{ branchId: string }>()
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
   const { mutateAsync: createBranch } = useMutation(
     trpc.erp.subject.create.mutationOptions({
       async onSuccess(_data, variables) {
-        await queryClient.invalidateQueries(
-          trpc.erp.subject.list.queryFilter(),
-        );
-        toast.success(`${variables.name} created.`);
-        setOpen(false);
-        form.reset();
+        await queryClient.invalidateQueries(trpc.erp.subject.list.queryFilter())
+        toast.success(`${variables.name} created.`)
+        setOpen(false)
+        form.reset()
       },
       onError(error) {
-        toast.error(error.message);
+        toast.error(error.message)
       },
     }),
-  );
+  )
 
   async function onSubmit(values: z.infer<typeof CreateSubjectSchema>) {
-    await createBranch({ ...values, branchId });
+    await createBranch({ ...values, branchId })
   }
 
   return (
@@ -97,5 +95,5 @@ export function CreateSubjectDialog(
         </Form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

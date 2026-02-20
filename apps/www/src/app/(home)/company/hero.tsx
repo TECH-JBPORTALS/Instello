@@ -1,4 +1,4 @@
-import { UsersFourIcon } from "@phosphor-icons/react/dist/ssr";
+import { UsersFourIcon } from '@phosphor-icons/react/dist/ssr'
 
 export function Hero() {
   return (
@@ -65,5 +65,5 @@ export function Hero() {
         <br /> education & software realm through our company.
       </p>
     </section>
-  );
+  )
 }

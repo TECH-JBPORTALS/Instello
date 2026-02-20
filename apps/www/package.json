@@ -3,15 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "pnpm with-env next build",
+    "build": "bun --bun --env-file=../../.env next build",
     "clean": "git clean -xdf .cache .next .turbo node_modules",
-    "dev": "pnpm with-env next dev --turbopack",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
+    "dev": "bun --bun --env-file=../../.env next dev --turbopack",
     "test": "vitest",
-    "start": "pnpm with-env next start",
-    "typecheck": "tsc --noEmit",
-    "with-env": "dotenv -e ../../.env --"
+    "start": "bun --bun --env-file=../../.env next start",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@clerk/nextjs": "catalog:",
@@ -30,8 +27,6 @@
   },
   "devDependencies": {
     "@clerk/types": "catalog:",
-    "@instello/eslint-config": "workspace:*",
-    "@instello/prettier-config": "workspace:*",
     "@instello/tsconfig": "workspace:*",
     "@types/node": "catalog:react19",
     "@types/nodemailer": "^7.0.4",

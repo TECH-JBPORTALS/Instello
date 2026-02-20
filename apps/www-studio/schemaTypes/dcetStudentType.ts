@@ -1,6 +1,6 @@
-import {defineField, defineType} from 'sanity'
-import {academicYearType} from './academicYearType'
-import {GraduationCapIcon} from '@phosphor-icons/react/dist/ssr'
+import { GraduationCapIcon } from '@phosphor-icons/react/dist/ssr'
+import { defineField, defineType } from 'sanity'
+import { academicYearType } from './academicYearType'
 
 export const dcetType = defineType({
   name: 'dcetStudent',

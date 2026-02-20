@@ -1,49 +1,50 @@
-"use client";
+'use client'
 
-import React, { useState } from "react";
-import { cn } from "@instello/ui/lib/utils";
-import { createId } from "@paralleldrive/cuid2";
-import { format } from "date-fns";
+import { cn } from '@instello/ui/lib/utils'
+import { createId } from '@paralleldrive/cuid2'
+import { format } from 'date-fns'
+import React, { useState } from 'react'
 
-import type { ReactTimetableContextProps } from "./context";
-import { ReactTimetableContext } from "./context";
-import { ReactTimetableSlot } from "./react-timetable-slot";
-import { SubjectPopover } from "./subject-popover";
-import { resizeSlot } from "./utils";
+import type { ReactTimetableContextProps } from './context'
+import { ReactTimetableContext } from './context'
+import { ReactTimetableSlot } from './react-timetable-slot'
+import { SubjectPopover } from './subject-popover'
+import { resizeSlot } from './utils'
 
 export interface TimetableData {
-  _id: string;
-  startOfPeriod: number;
-  endOfPeriod: number;
-  dayOfWeek: number;
-  subjectId: string;
-  subjectName: string;
+  _id: string
+  startOfPeriod: number
+  endOfPeriod: number
+  dayOfWeek: number
+  subjectId: string
+  subjectName: string
 }
 
-export type TimetableInput = Omit<TimetableData, "_id">;
+export type TimetableInput = Omit<TimetableData, '_id'>
 
 /** Utility to get weekday name from index */
 function getWeekdayName(dayIndex: number) {
-  const baseDate = new Date(2025, 5, 15 + dayIndex);
-  return format(baseDate, "EEEE");
+  const baseDate = new Date(2025, 5, 15 + dayIndex)
+  return format(baseDate, 'EEEE')
 }
 
 /** Day indices representing Monday to Saturday */
-const daysIndex = [1, 2, 3, 4, 5, 6];
+const daysIndex = [1, 2, 3, 4, 5, 6]
 
-interface ReactTimetableProps extends Omit<
-  ReactTimetableContextProps,
-  "timetableSlots" | "addSlot" | "removeSlot"
-> {
-  numberOfHours?: number;
-  timetableSlots: TimetableInput[];
-  onDataChange?: (data: TimetableData[]) => void;
+interface ReactTimetableProps
+  extends Omit<
+    ReactTimetableContextProps,
+    'timetableSlots' | 'addSlot' | 'removeSlot'
+  > {
+  numberOfHours?: number
+  timetableSlots: TimetableInput[]
+  onDataChange?: (data: TimetableData[]) => void
 }
 
 export interface PopoverState {
-  dayIdx: number;
-  period: number;
-  position: { x: number; y: number };
+  dayIdx: number
+  period: number
+  position: { x: number; y: number }
 }
 
 export function ReactTimetable({
@@ -52,9 +53,9 @@ export function ReactTimetable({
   timetableSlots = [],
   onDataChange,
 }: ReactTimetableProps) {
-  const inputSlots = timetableSlots.map((s) => ({ ...s, _id: createId() }));
-  const [slots, setSlots] = React.useState<TimetableData[]>(inputSlots);
-  const [popoverState, setPopoverState] = useState<PopoverState | null>(null);
+  const inputSlots = timetableSlots.map((s) => ({ ...s, _id: createId() }))
+  const [slots, setSlots] = React.useState<TimetableData[]>(inputSlots)
+  const [popoverState, setPopoverState] = useState<PopoverState | null>(null)
 
   const handleEmptyClick = (
     dayIdx: number,
@@ -65,13 +66,13 @@ export function ReactTimetable({
       dayIdx,
       period,
       position: { x: e.clientX, y: e.clientY },
-    });
-  };
+    })
+  }
 
   const handleResize = (
     _id: string,
     delta: number,
-    direction: "left" | "right",
+    direction: 'left' | 'right',
   ) => {
     setSlots((prev) =>
       prev.map((slot) =>
@@ -79,20 +80,20 @@ export function ReactTimetable({
           ? resizeSlot(slot, delta, direction, numberOfHours)
           : slot,
       ),
-    );
-  };
+    )
+  }
 
-  const addSlot = React.useCallback((data: Omit<TimetableData, "_id">) => {
-    setSlots((prev) => [...prev, { ...data, _id: createId() }]);
-  }, []);
+  const addSlot = React.useCallback((data: Omit<TimetableData, '_id'>) => {
+    setSlots((prev) => [...prev, { ...data, _id: createId() }])
+  }, [])
 
   const removeSlot = React.useCallback((_id: string) => {
-    setSlots((prev) => prev.filter((s) => s._id === _id));
-  }, []);
+    setSlots((prev) => prev.filter((s) => s._id === _id))
+  }, [])
 
   React.useEffect(() => {
-    onDataChange?.(slots);
-  }, [slots, onDataChange]);
+    onDataChange?.(slots)
+  }, [slots, onDataChange])
 
   return (
     <ReactTimetableContext.Provider
@@ -103,12 +104,12 @@ export function ReactTimetable({
         style={{
           gridTemplateColumns: `repeat(${numberOfHours + 1}, minmax(0, 1fr))`,
         }}
-        className={"grid gap-0 overflow-hidden rounded-lg border"}
+        className={'grid gap-0 overflow-hidden rounded-lg border'}
       >
         <div className="bg-accent col-span-1 h-12 border" />
         {Array.from({ length: numberOfHours }).map((_, i) => (
           <div
-            key={`h-${i}`}
+            key={`h-${i + 1}`}
             className="bg-accent/20 col-span-1 flex h-12 items-center justify-center border"
           >
             H{i + 1}
@@ -129,7 +130,7 @@ export function ReactTimetable({
               }}
             >
               <div
-                data-row={"empty-slot-row"}
+                data-row={'empty-slot-row'}
                 className="absolute z-10 col-span-full h-full w-full"
               >
                 {/* Empty Clickable Cells */}
@@ -139,30 +140,30 @@ export function ReactTimetable({
                       slot.dayOfWeek === dayIdx &&
                       i + 1 >= slot.startOfPeriod &&
                       i + 1 <= slot.endOfPeriod, // <-- fixed condition
-                  );
+                  )
 
-                  const left = `${(i / numberOfHours) * 100}%`;
-                  const width = `${100 / numberOfHours}%`;
+                  const left = `${(i / numberOfHours) * 100}%`
+                  const width = `${100 / numberOfHours}%`
 
                   return (
                     <div
                       data-slot="empty"
-                      key={`empty-${dayIdx}-${i}`}
+                      key={`empty-${dayIdx}-${i + 1}`}
                       className={cn(
-                        "hover:bg-muted bg-muted/10 absolute top-0 bottom-0 cursor-pointer transition-colors",
+                        'hover:bg-muted bg-muted/10 absolute top-0 bottom-0 cursor-pointer transition-colors',
                         occupied &&
-                          "pointer-events-none h-0 opacity-0 hover:bg-transparent",
-                        !editable && "hover:bg-muted/10 hover:cursor-auto",
+                          'pointer-events-none h-0 opacity-0 hover:bg-transparent',
+                        !editable && 'hover:bg-muted/10 hover:cursor-auto',
                       )}
                       style={{
                         left,
                         width,
                       }}
                       onClick={(e) => {
-                        if (!occupied) handleEmptyClick(dayIdx, i + 1, e);
+                        if (!occupied) handleEmptyClick(dayIdx, i + 1, e)
                       }}
                     />
-                  );
+                  )
                 })}
               </div>
 
@@ -188,5 +189,5 @@ export function ReactTimetable({
         />
       )}
     </ReactTimetableContext.Provider>
-  );
+  )
 }

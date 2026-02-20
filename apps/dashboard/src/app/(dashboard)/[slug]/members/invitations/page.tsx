@@ -1,12 +1,12 @@
-import Container from "@/components/container";
-import { SiteHeader } from "@/components/site-header";
-import { HydrateClient, prefetch, trpc } from "@/trpc/server";
+import Container from '@/components/container'
+import { SiteHeader } from '@/components/site-header'
+import { HydrateClient, prefetch, trpc } from '@/trpc/server'
 
-import { MembersTabs } from "../members-tabs";
-import DataTableClient from "./data-table.client";
+import { MembersTabs } from '../members-tabs'
+import DataTableClient from './data-table.client'
 
 export default function Page() {
-  prefetch(trpc.erp.organization.getInviationList.queryOptions());
+  prefetch(trpc.erp.organization.getInviationList.queryOptions())
   return (
     <HydrateClient>
       <SiteHeader startElement={<MembersTabs />} />
@@ -18,5 +18,5 @@ export default function Page() {
         <DataTableClient />
       </Container>
     </HydrateClient>
-  );
+  )
 }

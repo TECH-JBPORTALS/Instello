@@ -1,9 +1,7 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useTRPC } from "@/trpc/react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@instello/ui/components/button";
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Button } from '@instello/ui/components/button'
 import {
   Dialog,
   DialogBody,
@@ -13,79 +11,81 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@instello/ui/components/dialog";
+} from '@instello/ui/components/dialog'
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@instello/ui/components/form";
-import { Textarea } from "@instello/ui/components/textarea";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod/v4";
+} from '@instello/ui/components/form'
+import { Textarea } from '@instello/ui/components/textarea'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import { z } from 'zod/v4'
+import { useTRPC } from '@/trpc/react'
 
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export const InviteFacultySchema = z.object({
   emails: z
     .string()
-    .min(1, "Required")
+    .min(1, 'Required')
     .check((ctx) => {
-      const invalidEmails: string[] = [];
+      const invalidEmails: string[] = []
 
-      ctx.value.split(",").forEach((email) => {
-        if (!emailRegex.test(email.trim())) invalidEmails.push(email.trim());
-      });
+      ctx.value.split(',').forEach((email) => {
+        if (!emailRegex.test(email.trim())) invalidEmails.push(email.trim())
+      })
 
       if (invalidEmails.length > 0)
         ctx.issues.push({
-          code: "invalid_value",
+          code: 'invalid_value',
           input: ctx.value,
           values: [],
-          message: `${invalidEmails.join(", ")} invalid`,
-        });
+          message: `${invalidEmails.join(', ')} invalid`,
+        })
     }),
-});
+})
 
 export function InviteMemberButton() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
   const form = useForm({
     resolver: zodResolver(InviteFacultySchema),
     defaultValues: {
-      emails: "",
+      emails: '',
     },
-    mode: "onChange",
-  });
+    mode: 'onChange',
+  })
 
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
   const { mutateAsync: createInvitationBulk } = useMutation(
     trpc.erp.organization.createInvitationBulk.mutationOptions({
       async onSuccess(data) {
-        await queryClient.invalidateQueries(trpc.erp.organization.pathFilter());
-        toast.success(`${data.length} members invited`);
-        form.reset();
-        setOpen(false);
+        await queryClient.invalidateQueries(trpc.erp.organization.pathFilter())
+        toast.success(`${data.length} members invited`)
+        form.reset()
+        setOpen(false)
       },
       onError(error) {
-        toast.error(error.message);
+        toast.error(error.message)
       },
     }),
-  );
+  )
 
   async function onSubmit(values: z.infer<typeof InviteFacultySchema>) {
     const invitationsBulkInput = values.emails
-      .split(",")
+      .split(',')
       .map((e) => e.trim())
       .map((emailAddress) => ({
         emailAddress,
-        role: "org:staff",
-      }));
+        role: 'org:staff',
+      }))
 
-    await createInvitationBulk(invitationsBulkInput);
+    await createInvitationBulk(invitationsBulkInput)
   }
 
   return (
@@ -122,7 +122,7 @@ export function InviteMemberButton() {
             </DialogBody>
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant={"outline"}>Cancel</Button>
+                <Button variant={'outline'}>Cancel</Button>
               </DialogClose>
               <Button loading={form.formState.isSubmitting}>
                 Send invites...
@@ -132,5 +132,5 @@ export function InviteMemberButton() {
         </Form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

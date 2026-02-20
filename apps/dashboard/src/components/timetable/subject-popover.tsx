@@ -1,5 +1,3 @@
-import { useParams } from "next/navigation";
-import { useTRPC } from "@/trpc/react";
 import {
   Command,
   CommandEmpty,
@@ -7,13 +5,15 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@instello/ui/components/command";
-import { Popover, PopoverContent } from "@instello/ui/components/popover";
-import { Spinner } from "@instello/ui/components/spinner";
-import { useQuery } from "@tanstack/react-query";
+} from '@instello/ui/components/command'
+import { Popover, PopoverContent } from '@instello/ui/components/popover'
+import { Spinner } from '@instello/ui/components/spinner'
+import { useQuery } from '@tanstack/react-query'
+import { useParams } from 'next/navigation'
+import { useTRPC } from '@/trpc/react'
 
-import type { PopoverState } from ".";
-import { useReactTimetable } from "./context";
+import type { PopoverState } from '.'
+import { useReactTimetable } from './context'
 
 export function SubjectPopover({
   position,
@@ -21,19 +21,19 @@ export function SubjectPopover({
   period,
   onOpenChange,
 }: PopoverState & { onOpenChange: (open: boolean) => void }) {
-  const trpc = useTRPC();
-  const { branchId } = useParams<{ branchId: string }>();
+  const trpc = useTRPC()
+  const { branchId } = useParams<{ branchId: string }>()
   const { data, isLoading } = useQuery(
     trpc.erp.subject.list.queryOptions({ branchId }),
-  );
-  const { addSlot } = useReactTimetable();
+  )
+  const { addSlot } = useReactTimetable()
 
   return (
     <Popover open onOpenChange={onOpenChange}>
       <PopoverContent
         style={{
           left: position.x,
-          position: "fixed",
+          position: 'fixed',
           top: position.y,
           zIndex: 50,
         }}
@@ -59,8 +59,8 @@ export function SubjectPopover({
                           endOfPeriod: period,
                           subjectId: v,
                           subjectName: sub.name,
-                        });
-                        onOpenChange(false);
+                        })
+                        onOpenChange(false)
                       }}
                       key={sub.id}
                       value={sub.id}
@@ -75,5 +75,5 @@ export function SubjectPopover({
         </Command>
       </PopoverContent>
     </Popover>
-  );
+  )
 }

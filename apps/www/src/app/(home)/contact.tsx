@@ -1,8 +1,7 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@instello/ui/components/button";
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Button } from '@instello/ui/components/button'
 import {
   Form,
   FormControl,
@@ -10,59 +9,60 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@instello/ui/components/form";
-import { Input } from "@instello/ui/components/input";
+} from '@instello/ui/components/form'
+import { Input } from '@instello/ui/components/input'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@instello/ui/components/select";
-import { Textarea } from "@instello/ui/components/textarea";
-import { HandsPrayingIcon } from "@phosphor-icons/react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod/v4";
+} from '@instello/ui/components/select'
+import { Textarea } from '@instello/ui/components/textarea'
+import { HandsPrayingIcon } from '@phosphor-icons/react'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import { z } from 'zod/v4'
 
 const schema = z.object({
-  name: z.string().min(1, "Name is required").trim(),
-  role: z.string().min(1, "Role is required").trim(),
-  email: z.email().min(1, "Email is required").trim(),
+  name: z.string().min(1, 'Name is required').trim(),
+  role: z.string().min(1, 'Role is required').trim(),
+  email: z.email().min(1, 'Email is required').trim(),
   contact: z
     .string()
-    .min(10, "Contact number is less than 10 digits")
-    .max(10, "Contact number is more than 10 digits"),
+    .min(10, 'Contact number is less than 10 digits')
+    .max(10, 'Contact number is more than 10 digits'),
   message: z
     .string()
-    .min(3, "Message is required")
+    .min(3, 'Message is required')
     .max(526, "Message can't exceed more than 526 characters"),
-});
+})
 
 export function ContactSection() {
-  const [success, setSuccess] = useState(false);
+  const [success, setSuccess] = useState(false)
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
-      name: "",
-      role: "",
-      email: "",
-      contact: "",
-      message: "",
+      name: '',
+      role: '',
+      email: '',
+      contact: '',
+      message: '',
     },
-  });
+  })
 
   async function onSubmit(params: z.infer<typeof schema>) {
-    const res = await fetch("/api/contact", {
+    const res = await fetch('/api/contact', {
       body: JSON.stringify(params),
-      method: "POST",
-    });
+      method: 'POST',
+    })
 
-    if (res.ok) setSuccess(true);
+    if (res.ok) setSuccess(true)
 
     if (res.status !== 200) {
-      const error = (await res.json()) as { message: string };
-      toast.error(error.message);
+      const error = (await res.json()) as { message: string }
+      toast.error(error.message)
     }
   }
 
@@ -82,16 +82,16 @@ export function ContactSection() {
         </div>
         <Button
           onClick={() => {
-            setSuccess(false);
-            form.reset();
+            setSuccess(false)
+            form.reset()
           }}
-          variant={"outline"}
-          size={"sm"}
+          variant={'outline'}
+          size={'sm'}
         >
           Ok, Thanks
         </Button>
       </section>
-    );
+    )
 
   return (
     <section id="contact" className=" relative w-full py-24">
@@ -210,5 +210,5 @@ export function ContactSection() {
         </Form>
       </div>
     </section>
-  );
+  )
 }

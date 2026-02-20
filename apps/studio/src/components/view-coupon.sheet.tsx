@@ -1,19 +1,15 @@
-"use client";
+'use client'
 
-import type { RouterOutputs } from "@instello/api";
-import type { z } from "zod/v4";
-import React, { useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
-import { useTRPC } from "@/trpc/react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { CouponTargetEmailSchema, UpdateCouponSchema } from "@instello/db/lms";
+import { zodResolver } from '@hookform/resolvers/zod'
+import type { RouterOutputs } from '@instello/api'
+import { CouponTargetEmailSchema, UpdateCouponSchema } from '@instello/db/lms'
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@instello/ui/components/avatar";
-import { Button } from "@instello/ui/components/button";
-import { Calendar } from "@instello/ui/components/calendar";
+} from '@instello/ui/components/avatar'
+import { Button } from '@instello/ui/components/button'
+import { Calendar } from '@instello/ui/components/calendar'
 import {
   Form,
   FormControl,
@@ -22,15 +18,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@instello/ui/components/form";
-import { Input } from "@instello/ui/components/input";
+} from '@instello/ui/components/form'
+import { Input } from '@instello/ui/components/input'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@instello/ui/components/popover";
-import { ScrollArea } from "@instello/ui/components/scroll-area";
-import { Separator } from "@instello/ui/components/separator";
+} from '@instello/ui/components/popover'
+import { ScrollArea } from '@instello/ui/components/scroll-area'
+import { Separator } from '@instello/ui/components/separator'
 import {
   Sheet,
   SheetContent,
@@ -38,41 +34,45 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@instello/ui/components/sheet";
-import { Spinner } from "@instello/ui/components/spinner";
-import { Textarea } from "@instello/ui/components/textarea";
-import { cn } from "@instello/ui/lib/utils";
+} from '@instello/ui/components/sheet'
+import { Spinner } from '@instello/ui/components/spinner'
+import { Textarea } from '@instello/ui/components/textarea'
+import { cn } from '@instello/ui/lib/utils'
 import {
   ArrowRightIcon,
   CalendarIcon,
   PlusIcon,
   UsersFourIcon,
-} from "@phosphor-icons/react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { format, formatDistanceToNowStrict, subDays } from "date-fns";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+} from '@phosphor-icons/react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { format, formatDistanceToNowStrict, subDays } from 'date-fns'
+import { useRouter } from 'next/navigation'
+import React, { useEffect, useMemo } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import type { z } from 'zod/v4'
+import { useTRPC } from '@/trpc/react'
 
 export function ViewCouponSheet({
   children,
   couponId,
 }: {
-  children: React.ReactNode;
-  couponId: string;
+  children: React.ReactNode
+  couponId: string
 }) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
 
-  const [openPopover, onChangeOpenPopover] = React.useState(false);
+  const [openPopover, onChangeOpenPopover] = React.useState(false)
   const addEmailform = useForm({
     resolver: zodResolver(CouponTargetEmailSchema),
-    mode: "onChange",
+    mode: 'onChange',
     defaultValues: {
-      targetEmails: "",
+      targetEmails: '',
     },
-  });
+  })
 
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
   const { data: coupon, isLoading } = useQuery(
     trpc.lms.coupon.getById.queryOptions(
       { couponId },
@@ -80,114 +80,114 @@ export function ViewCouponSheet({
         enabled: !!couponId,
       },
     ),
-  );
+  )
   const couponForm = useForm({
     resolver: zodResolver(UpdateCouponSchema),
-    mode: "onChange",
+    mode: 'onChange',
     defaultValues: {
       id: couponId,
-      code: coupon?.code ?? "",
-      channelId: coupon?.channelId ?? "",
+      code: coupon?.code ?? '',
+      channelId: coupon?.channelId ?? '',
       maxRedemptions: coupon?.maxRedemptions ?? undefined,
       subscriptionDurationDays: coupon?.subscriptionDurationDays ?? 30,
-      type: coupon?.type ?? "general",
+      type: coupon?.type ?? 'general',
       valid: coupon?.valid ?? { from: new Date(), to: new Date() },
     },
-  });
+  })
 
   const { mutateAsync: updateCoupon, isPending: isUpdating } = useMutation(
     trpc.lms.coupon.update.mutationOptions({
       async onSuccess(data) {
         toast.info(`Coupon changes saved`, {
-          position: "bottom-center",
-        });
-        await queryClient.invalidateQueries(trpc.lms.coupon.pathFilter());
+          position: 'bottom-center',
+        })
+        await queryClient.invalidateQueries(trpc.lms.coupon.pathFilter())
         couponForm.reset({
           ...data,
           maxRedemptions: data?.maxRedemptions ?? undefined,
-        });
+        })
       },
 
       onError() {
         toast.error(`Something went wrong`, {
           description: `when saving the code`,
-          position: "bottom-center",
-        });
+          position: 'bottom-center',
+        })
       },
     }),
-  );
+  )
 
   const { mutateAsync: addEmail } = useMutation(
     trpc.lms.coupon.addTarget.mutationOptions({
       onSuccess(data, variables) {
-        toast.success(`${variables.email} is added`);
+        toast.success(`${variables.email} is added`)
       },
       async onSettled() {
-        await queryClient.invalidateQueries(trpc.lms.coupon.pathFilter());
-        router.refresh();
-        onChangeOpenPopover(false);
+        await queryClient.invalidateQueries(trpc.lms.coupon.pathFilter())
+        router.refresh()
+        onChangeOpenPopover(false)
       },
       onError(error, variables) {
         if (error.shape?.code === -32603)
-          toast.error(`${variables.email} is already exists`);
+          toast.error(`${variables.email} is already exists`)
         else
           toast.error(`Something went wrong`, {
             description: `When adding the ${variables.email}`,
-          });
+          })
       },
     }),
-  );
+  )
 
   const { mutateAsync: deleteCoupon, isPending } = useMutation(
     trpc.lms.coupon.delete.mutationOptions({
       async onSuccess(data) {
         toast.info(`${data?.code} is deleted`, {
-          position: "bottom-center",
-        });
-        await queryClient.invalidateQueries(trpc.lms.coupon.pathFilter());
-        router.refresh();
+          position: 'bottom-center',
+        })
+        await queryClient.invalidateQueries(trpc.lms.coupon.pathFilter())
+        router.refresh()
       },
 
       onError() {
         toast.error(`Something went wrong`, {
           description: `When deleting the code`,
-          position: "bottom-center",
-        });
+          position: 'bottom-center',
+        })
       },
     }),
-  );
+  )
 
-  const router = useRouter();
-  const couponFormValues = useMemo(() => couponForm.watch(), [couponForm]);
+  const router = useRouter()
+  const couponFormValues = useMemo(() => couponForm.watch(), [couponForm])
 
   useEffect(() => {
     couponForm.reset({
       id: couponId,
-      code: coupon?.code ?? "",
-      channelId: coupon?.channelId ?? "",
+      code: coupon?.code ?? '',
+      channelId: coupon?.channelId ?? '',
       maxRedemptions: coupon?.maxRedemptions ?? 10,
       subscriptionDurationDays: coupon?.subscriptionDurationDays ?? 30,
-      type: coupon?.type ?? "general",
+      type: coupon?.type ?? 'general',
       valid: coupon?.valid ?? { from: new Date(), to: new Date() },
-    });
-  }, [couponForm, coupon, couponId]);
+    })
+  }, [couponForm, coupon, couponId])
 
   async function onSubmit(values: z.infer<typeof CouponTargetEmailSchema>) {
-    if (!values.targetEmails) return;
+    if (!values.targetEmails) return
 
     await Promise.all(
-      values.targetEmails.split(",").map((email) =>
+      values.targetEmails.split(',').map((email) =>
         addEmail({
           email: email.trim().toLowerCase(),
           couponId,
         }),
       ),
-    );
-    addEmailform.reset();
+    )
+    addEmailform.reset()
   }
 
   async function onSave(values: z.infer<typeof UpdateCouponSchema>) {
-    await updateCoupon(values);
+    await updateCoupon(values)
   }
 
   return (
@@ -214,7 +214,7 @@ export function ViewCouponSheet({
                 </small>
               </div>
               <Button
-                variant={"link"}
+                variant={'link'}
                 className="text-destructive w-fit self-end"
                 loading={isPending}
                 onClick={() => deleteCoupon({ couponId })}
@@ -226,10 +226,10 @@ export function ViewCouponSheet({
             <ScrollArea className="h-full max-h-full pr-5">
               <div className="space-y-6 overflow-visible px-5 pb-20">
                 <Separator />
-                <Form key={"Custom form"} {...couponForm}>
+                <Form key={'Custom form'} {...couponForm}>
                   <form
                     onSubmit={couponForm.handleSubmit(onSave)}
-                    key={"custom form"}
+                    key={'custom form'}
                     className="space-y-8"
                   >
                     <FormField
@@ -259,18 +259,18 @@ export function ViewCouponSheet({
                             <PopoverTrigger asChild>
                               <FormControl>
                                 <Button
-                                  variant={"outline"}
+                                  variant={'outline'}
                                   className={cn(
-                                    "w-full pl-3 text-left font-normal",
+                                    'w-full pl-3 text-left font-normal',
                                   )}
                                 >
                                   <span className="inline-flex items-center gap-1.5">
-                                    {format(field.value.from, "PP")}
+                                    {format(field.value.from, 'PP')}
                                     <ArrowRightIcon
                                       weight="duotone"
                                       className="text-muted-foreground"
                                     />
-                                    {format(field.value.to, "PP")}
+                                    {format(field.value.to, 'PP')}
                                   </span>
                                   <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                 </Button>
@@ -299,7 +299,7 @@ export function ViewCouponSheet({
                       )}
                     />
 
-                    {couponFormValues.type == "general" && (
+                    {couponFormValues.type == 'general' && (
                       <FormField
                         control={couponForm.control}
                         name="maxRedemptions"
@@ -364,7 +364,7 @@ export function ViewCouponSheet({
                     <SheetFooter className="absolute bottom-0 w-[90%]">
                       {couponForm.formState.isDirty && (
                         <Button
-                          size={"lg"}
+                          size={'lg'}
                           loading={isUpdating}
                           className="animate-in w-full"
                         >
@@ -375,7 +375,7 @@ export function ViewCouponSheet({
                   </form>
                 </Form>
 
-                {coupon?.type === "targeted" && (
+                {coupon?.type === 'targeted' && (
                   <>
                     <Separator />
                     {/* Customer Header */}
@@ -391,7 +391,7 @@ export function ViewCouponSheet({
                         onOpenChange={onChangeOpenPopover}
                       >
                         <PopoverTrigger asChild>
-                          <Button variant={"outline"} className="w-20">
+                          <Button variant={'outline'} className="w-20">
                             Add
                             <PlusIcon className="size-4" strokeWidth={1.25} />
                           </Button>
@@ -464,34 +464,34 @@ export function ViewCouponSheet({
         )}
       </SheetContent>
     </Sheet>
-  );
+  )
 }
 
 export function CouponTargetListItem({
   target,
 }: {
-  target: RouterOutputs["lms"]["coupon"]["getById"]["couponTargets"][number];
+  target: RouterOutputs['lms']['coupon']['getById']['couponTargets'][number]
 }) {
-  const queryClient = useQueryClient();
-  const router = useRouter();
-  const trpc = useTRPC();
+  const queryClient = useQueryClient()
+  const router = useRouter()
+  const trpc = useTRPC()
   const { mutateAsync: deleteTarget, isPending } = useMutation(
     trpc.lms.coupon.deleteTarget.mutationOptions({
       async onSuccess(data) {
-        toast.info(`${data?.email} is removed`);
+        toast.info(`${data?.email} is removed`)
         await queryClient.invalidateQueries(
           trpc.lms.coupon.getById.queryFilter(),
-        );
-        router.refresh();
+        )
+        router.refresh()
       },
 
       onError() {
         toast.error(`Something went wrong`, {
-          description: "Try again later!",
-        });
+          description: 'Try again later!',
+        })
       },
     }),
-  );
+  )
 
   return (
     <div className="flex items-center justify-between gap-1" key={target.id}>
@@ -517,7 +517,7 @@ export function CouponTargetListItem({
           onClick={() => deleteTarget({ couponTargetId: target.id })}
           loading={isPending}
           loadingText=""
-          variant={"link"}
+          variant={'link'}
           className="px-0"
         >
           Remove
@@ -529,5 +529,5 @@ export function CouponTargetListItem({
         </p>
       </div>
     </div>
-  );
+  )
 }

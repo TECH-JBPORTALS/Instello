@@ -1,26 +1,26 @@
-import type { FileRouter } from "uploadthing/next";
-import { getAuth } from "@clerk/nextjs/server";
-import { eq } from "@instello/db";
-import { db } from "@instello/db/client";
-import { author, channel, video } from "@instello/db/lms";
-import { createUploadthing } from "uploadthing/next";
-import { UploadThingError, UTApi, UTFiles } from "uploadthing/server";
-import { z } from "zod/v4";
+import { getAuth } from '@clerk/nextjs/server'
+import { eq } from '@instello/db'
+import { db } from '@instello/db/client'
+import { author, channel, video } from '@instello/db/lms'
+import type { FileRouter } from 'uploadthing/next'
+import { createUploadthing } from 'uploadthing/next'
+import { UploadThingError, UTApi, UTFiles } from 'uploadthing/server'
+import { z } from 'zod/v4'
 
-const f = createUploadthing();
+const f = createUploadthing()
 
-const ut = new UTApi();
+const ut = new UTApi()
 
 // FileRouter for your app, can contain multiple FileRoutes
 export const studioFileRouter = {
   // Define as many FileRoutes as you like, each with a unique routeSlug
   channelThumbneilUploader: f({
-    "image/jpeg": {
+    'image/jpeg': {
       /**
        * For full list of options and defaults, see the File Route API reference
        * @see https://docs.uploadthing.com/file-routes#route-config
        */
-      maxFileSize: "4MB",
+      maxFileSize: '4MB',
       maxFileCount: 1,
       minFileCount: 1,
       additionalProperties: {
@@ -28,12 +28,12 @@ export const studioFileRouter = {
         width: 1280,
       },
     },
-    "image/png": {
+    'image/png': {
       /**
        * For full list of options and defaults, see the File Route API reference
        * @see https://docs.uploadthing.com/file-routes#route-config
        */
-      maxFileSize: "4MB",
+      maxFileSize: '4MB',
       maxFileCount: 1,
       minFileCount: 1,
       additionalProperties: {
@@ -41,12 +41,12 @@ export const studioFileRouter = {
         width: 1280,
       },
     },
-    "image/avif": {
+    'image/avif': {
       /**
        * For full list of options and defaults, see the File Route API reference
        * @see https://docs.uploadthing.com/file-routes#route-config
        */
-      maxFileSize: "4MB",
+      maxFileSize: '4MB',
       maxFileCount: 1,
       minFileCount: 1,
       additionalProperties: {
@@ -54,12 +54,12 @@ export const studioFileRouter = {
         width: 1280,
       },
     },
-    "image/webp": {
+    'image/webp': {
       /**
        * For full list of options and defaults, see the File Route API reference
        * @see https://docs.uploadthing.com/file-routes#route-config
        */
-      maxFileSize: "4MB",
+      maxFileSize: '4MB',
       maxFileCount: 1,
       minFileCount: 1,
       additionalProperties: {
@@ -68,41 +68,41 @@ export const studioFileRouter = {
       },
     },
   })
-    .input(z.object({ channelId: z.string().min(1, "Channel Id is required") }))
+    .input(z.object({ channelId: z.string().min(1, 'Channel Id is required') }))
     // Set permissions and file types for this FileRoute
     .middleware(async ({ req, input, files }) => {
       // This code runs on your server before upload
-      const { userId } = getAuth(req);
+      const { userId } = getAuth(req)
 
       // If you throw, the user will not be able to upload
       if (!userId)
         throw new UploadThingError({
-          message: "Unauthorized",
-          code: "BAD_REQUEST",
-        }) as Error;
+          message: 'Unauthorized',
+          code: 'BAD_REQUEST',
+        }) as Error
 
       const singleChannel = await db.query.channel.findFirst({
         where: eq(channel.id, input.channelId),
-      });
+      })
 
       if (!singleChannel)
         throw new UploadThingError({
-          message: "No channel found",
-          code: "INTERNAL_SERVER_ERROR",
-        }) as Error;
+          message: 'No channel found',
+          code: 'INTERNAL_SERVER_ERROR',
+        }) as Error
 
       const fileOverrides = files.map((file) => {
-        const newName = `channel-${singleChannel.id}`;
-        return { ...file, name: newName };
-      });
+        const newName = `channel-${singleChannel.id}`
+        return { ...file, name: newName }
+      })
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId, channel: singleChannel, [UTFiles]: fileOverrides };
+      return { userId, channel: singleChannel, [UTFiles]: fileOverrides }
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // 1. If already there is uploaded file delete that
       if (metadata.channel.thumbneilId) {
-        await ut.deleteFiles(metadata.channel.thumbneilId);
+        await ut.deleteFiles(metadata.channel.thumbneilId)
       }
 
       // 2. Updae new file key to the channel row
@@ -111,14 +111,14 @@ export const studioFileRouter = {
         .set({ thumbneilId: file.key })
         .where(eq(channel.id, metadata.channel.id))
         .returning()
-        .then((r) => r[0]);
+        .then((r) => r[0])
 
       if (!updatedChannel) {
-        await ut.deleteFiles(file.key);
+        await ut.deleteFiles(file.key)
         throw new UploadThingError({
-          message: "DB not updated",
-          code: "INTERNAL_SERVER_ERROR",
-        }) as Error;
+          message: 'DB not updated',
+          code: 'INTERNAL_SERVER_ERROR',
+        }) as Error
       }
 
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
@@ -126,16 +126,16 @@ export const studioFileRouter = {
         uploadedBy: metadata.userId,
         channelId: updatedChannel.id,
         newThumbneilId: updatedChannel.thumbneilId,
-      };
+      }
     }),
 
   videoThumbneilUploader: f({
-    "image/jpeg": {
+    'image/jpeg': {
       /**
        * For full list of options and defaults, see the File Route API reference
        * @see https://docs.uploadthing.com/file-routes#route-config
        */
-      maxFileSize: "4MB",
+      maxFileSize: '4MB',
       maxFileCount: 1,
       minFileCount: 1,
       additionalProperties: {
@@ -143,12 +143,12 @@ export const studioFileRouter = {
         width: 1280,
       },
     },
-    "image/png": {
+    'image/png': {
       /**
        * For full list of options and defaults, see the File Route API reference
        * @see https://docs.uploadthing.com/file-routes#route-config
        */
-      maxFileSize: "4MB",
+      maxFileSize: '4MB',
       maxFileCount: 1,
       minFileCount: 1,
       additionalProperties: {
@@ -156,12 +156,12 @@ export const studioFileRouter = {
         width: 1280,
       },
     },
-    "image/avif": {
+    'image/avif': {
       /**
        * For full list of options and defaults, see the File Route API reference
        * @see https://docs.uploadthing.com/file-routes#route-config
        */
-      maxFileSize: "4MB",
+      maxFileSize: '4MB',
       maxFileCount: 1,
       minFileCount: 1,
       additionalProperties: {
@@ -169,12 +169,12 @@ export const studioFileRouter = {
         width: 1280,
       },
     },
-    "image/webp": {
+    'image/webp': {
       /**
        * For full list of options and defaults, see the File Route API reference
        * @see https://docs.uploadthing.com/file-routes#route-config
        */
-      maxFileSize: "4MB",
+      maxFileSize: '4MB',
       maxFileCount: 1,
       minFileCount: 1,
       additionalProperties: {
@@ -183,41 +183,41 @@ export const studioFileRouter = {
       },
     },
   })
-    .input(z.object({ videoId: z.string().min(1, "Video Id is required") }))
+    .input(z.object({ videoId: z.string().min(1, 'Video Id is required') }))
     // Set permissions and file types for this FileRoute
     .middleware(async ({ req, input, files }) => {
       // This code runs on your server before upload
-      const { userId } = getAuth(req);
+      const { userId } = getAuth(req)
 
       // If you throw, the user will not be able to upload
       if (!userId)
         throw new UploadThingError({
-          message: "Unauthorized",
-          code: "BAD_REQUEST",
-        }) as Error;
+          message: 'Unauthorized',
+          code: 'BAD_REQUEST',
+        }) as Error
 
       const singleVideo = await db.query.video.findFirst({
         where: eq(video.id, input.videoId),
-      });
+      })
 
       if (!singleVideo)
         throw new UploadThingError({
-          message: "No channel found",
-          code: "INTERNAL_SERVER_ERROR",
-        }) as Error;
+          message: 'No channel found',
+          code: 'INTERNAL_SERVER_ERROR',
+        }) as Error
 
       const fileOverrides = files.map((file) => {
-        const newName = `video-${singleVideo.id}`;
-        return { ...file, name: newName };
-      });
+        const newName = `video-${singleVideo.id}`
+        return { ...file, name: newName }
+      })
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId, video: singleVideo, [UTFiles]: fileOverrides };
+      return { userId, video: singleVideo, [UTFiles]: fileOverrides }
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // 1. If already there is uploaded file delete that
       if (metadata.video.thumbnailId) {
-        await ut.deleteFiles(metadata.video.thumbnailId);
+        await ut.deleteFiles(metadata.video.thumbnailId)
       }
 
       // 2. Updae new file key to the channel row
@@ -226,14 +226,14 @@ export const studioFileRouter = {
         .set({ thumbnailId: file.key })
         .where(eq(video.id, metadata.video.id))
         .returning()
-        .then((r) => r[0]);
+        .then((r) => r[0])
 
       if (!updatedChannel) {
-        await ut.deleteFiles(file.key);
+        await ut.deleteFiles(file.key)
         throw new UploadThingError({
-          message: "DB not updated",
-          code: "INTERNAL_SERVER_ERROR",
-        }) as Error;
+          message: 'DB not updated',
+          code: 'INTERNAL_SERVER_ERROR',
+        }) as Error
       }
 
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
@@ -241,16 +241,16 @@ export const studioFileRouter = {
         uploadedBy: metadata.userId,
         channelId: updatedChannel.id,
         newThumbnailId: updatedChannel.thumbnailId,
-      };
+      }
     }),
 
   authorProfileUploader: f({
-    "image/jpeg": {
+    'image/jpeg': {
       /**
        * For full list of options and defaults, see the File Route API reference
        * @see https://docs.uploadthing.com/file-routes#route-config
        */
-      maxFileSize: "4MB",
+      maxFileSize: '4MB',
       maxFileCount: 1,
       minFileCount: 1,
       additionalProperties: {
@@ -258,12 +258,12 @@ export const studioFileRouter = {
         width: 1280,
       },
     },
-    "image/png": {
+    'image/png': {
       /**
        * For full list of options and defaults, see the File Route API reference
        * @see https://docs.uploadthing.com/file-routes#route-config
        */
-      maxFileSize: "4MB",
+      maxFileSize: '4MB',
       maxFileCount: 1,
       minFileCount: 1,
       additionalProperties: {
@@ -271,12 +271,12 @@ export const studioFileRouter = {
         width: 1280,
       },
     },
-    "image/avif": {
+    'image/avif': {
       /**
        * For full list of options and defaults, see the File Route API reference
        * @see https://docs.uploadthing.com/file-routes#route-config
        */
-      maxFileSize: "4MB",
+      maxFileSize: '4MB',
       maxFileCount: 1,
       minFileCount: 1,
       additionalProperties: {
@@ -284,12 +284,12 @@ export const studioFileRouter = {
         width: 1280,
       },
     },
-    "image/webp": {
+    'image/webp': {
       /**
        * For full list of options and defaults, see the File Route API reference
        * @see https://docs.uploadthing.com/file-routes#route-config
        */
-      maxFileSize: "4MB",
+      maxFileSize: '4MB',
       maxFileCount: 1,
       minFileCount: 1,
       additionalProperties: {
@@ -298,41 +298,41 @@ export const studioFileRouter = {
       },
     },
   })
-    .input(z.object({ authorId: z.string().min(1, "Author Id is required") }))
+    .input(z.object({ authorId: z.string().min(1, 'Author Id is required') }))
     // Set permissions and file types for this FileRoute
     .middleware(async ({ req, input, files }) => {
       // This code runs on your server before upload
-      const { userId } = getAuth(req);
+      const { userId } = getAuth(req)
 
       // If you throw, the user will not be able to upload
       if (!userId)
         throw new UploadThingError({
-          message: "Unauthorized",
-          code: "BAD_REQUEST",
-        }) as Error;
+          message: 'Unauthorized',
+          code: 'BAD_REQUEST',
+        }) as Error
 
       const singleAuthor = await db.query.author.findFirst({
         where: eq(author.id, input.authorId),
-      });
+      })
 
       if (!singleAuthor)
         throw new UploadThingError({
-          message: "No author found",
-          code: "INTERNAL_SERVER_ERROR",
-        }) as Error;
+          message: 'No author found',
+          code: 'INTERNAL_SERVER_ERROR',
+        }) as Error
 
       const fileOverrides = files.map((file) => {
-        const newName = `author-${singleAuthor.id}`;
-        return { ...file, name: newName };
-      });
+        const newName = `author-${singleAuthor.id}`
+        return { ...file, name: newName }
+      })
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId, author: singleAuthor, [UTFiles]: fileOverrides };
+      return { userId, author: singleAuthor, [UTFiles]: fileOverrides }
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // 1. If already there is uploaded file delete that
       if (metadata.author.imageUTFileId) {
-        await ut.deleteFiles(metadata.author.imageUTFileId);
+        await ut.deleteFiles(metadata.author.imageUTFileId)
       }
 
       // 2. Updae new file key to the author row
@@ -341,14 +341,14 @@ export const studioFileRouter = {
         .set({ imageUTFileId: file.key })
         .where(eq(author.id, metadata.author.id))
         .returning()
-        .then((r) => r[0]);
+        .then((r) => r[0])
 
       if (!updatedChannel) {
-        await ut.deleteFiles(file.key);
+        await ut.deleteFiles(file.key)
         throw new UploadThingError({
-          message: "DB not updated",
-          code: "INTERNAL_SERVER_ERROR",
-        }) as Error;
+          message: 'DB not updated',
+          code: 'INTERNAL_SERVER_ERROR',
+        }) as Error
       }
 
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
@@ -356,8 +356,8 @@ export const studioFileRouter = {
         uploadedBy: metadata.userId,
         channelId: updatedChannel.id,
         newimageUTFileId: updatedChannel.imageUTFileId,
-      };
+      }
     }),
-} satisfies FileRouter;
+} satisfies FileRouter
 
-export type StudioFileRouter = typeof studioFileRouter;
+export type StudioFileRouter = typeof studioFileRouter

@@ -1,6 +1,4 @@
-import Image from "next/image";
-import { HydrateClient, prefetch, trpc } from "@/trpc/server";
-import { Button } from "@instello/ui/components/button";
+import { Button } from '@instello/ui/components/button'
 import {
   Sidebar,
   SidebarContent,
@@ -10,15 +8,17 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
-} from "@instello/ui/components/sidebar";
-import { PlusIcon } from "@phosphor-icons/react/ssr";
+} from '@instello/ui/components/sidebar'
+import { PlusIcon } from '@phosphor-icons/react/ssr'
+import Image from 'next/image'
+import { HydrateClient, prefetch, trpc } from '@/trpc/server'
 
-import { CreateChannelDialog } from "../dialogs/create-channel-dialog";
-import { NavChannels } from "./nav-channels";
-import { NavMain } from "./nav-main";
+import { CreateChannelDialog } from '../dialogs/create-channel-dialog'
+import { NavChannels } from './nav-channels'
+import { NavMain } from './nav-main'
 
 export function AppSidebar() {
-  prefetch(trpc.lms.channel.list.queryOptions());
+  prefetch(trpc.lms.channel.list.queryOptions())
 
   return (
     <HydrateClient>
@@ -30,7 +30,7 @@ export function AppSidebar() {
               width={100}
               height={48}
               alt="Instello Logo"
-            />{" "}
+            />{' '}
             <span className="text-xl">·</span>
             <span className="mt-1 text-lg font-bold text-[#F2B900]">
               STUDIO
@@ -47,9 +47,9 @@ export function AppSidebar() {
               <CreateChannelDialog>
                 <SidebarGroupAction asChild>
                   <Button
-                    size={"icon"}
+                    size={'icon'}
                     className="size-5 [&>svg]:size-4"
-                    variant={"outline"}
+                    variant={'outline'}
                   >
                     <PlusIcon />
                   </Button>
@@ -64,5 +64,5 @@ export function AppSidebar() {
         <SidebarFooter></SidebarFooter>
       </Sidebar>
     </HydrateClient>
-  );
+  )
 }

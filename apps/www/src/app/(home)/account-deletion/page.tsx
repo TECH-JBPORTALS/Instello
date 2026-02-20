@@ -3,15 +3,15 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@instello/ui/components/card";
-import { Separator } from "@instello/ui/components/separator";
-import { Mail } from "lucide-react";
+} from '@instello/ui/components/card'
+import { Separator } from '@instello/ui/components/separator'
+import { Mail } from 'lucide-react'
 
 export const metadata = {
-  title: "Account Deletion | Instello",
+  title: 'Account Deletion | Instello',
   description:
-    "Learn how to request deletion of your Instello account and associated data.",
-};
+    'Learn how to request deletion of your Instello account and associated data.',
+}
 
 export default function AccountDeletionPage() {
   return (
@@ -47,7 +47,7 @@ export default function AccountDeletionPage() {
 
           <p>
             Once we receive your verified request, your account and related data
-            will be permanently removed from our systems within{" "}
+            will be permanently removed from our systems within{' '}
             <strong>7 days</strong>.
           </p>
 
@@ -57,5 +57,5 @@ export default function AccountDeletionPage() {
         </CardContent>
       </Card>
     </main>
-  );
+  )
 }

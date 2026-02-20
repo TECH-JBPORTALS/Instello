@@ -2,45 +2,45 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@instello/ui/components/avatar";
-import { Quote } from "lucide-react";
+} from '@instello/ui/components/avatar'
+import { Quote } from 'lucide-react'
 
 const reviews = [
   {
-    name: "Ms. Bhavani T V",
-    designation: "HOD, CSE, SJES Polytechnic",
+    name: 'Ms. Bhavani T V',
+    designation: 'HOD, CSE, SJES Polytechnic',
     review:
-      "We are very happy to get collobrated with the Instello which is one stop solution for the academic needs of pathway subject like Full Stack Development. Here the learning is facilitated with a comprehensive teaching of both theory and practicals integrated with the real time projects. Instello ensures the skill development of every student and hence get a break through in their career.",
-    avatar: "/avatars/bhavani.jpg",
+      'We are very happy to get collobrated with the Instello which is one stop solution for the academic needs of pathway subject like Full Stack Development. Here the learning is facilitated with a comprehensive teaching of both theory and practicals integrated with the real time projects. Instello ensures the skill development of every student and hence get a break through in their career.',
+    avatar: '/avatars/bhavani.jpg',
   },
   {
-    name: "Mr. Suresh K",
-    designation: "Principal, K S Polytechnic",
+    name: 'Mr. Suresh K',
+    designation: 'Principal, K S Polytechnic',
     review:
-      "I am truly proud of you, Narayan...... INSTELLO is an excellent platform for learning Full Stack Development (FSD). The concepts are explained clearly through your videos, making them easy for students to understand. The application is highly user-friendly, and I am confident that it will deliver outstanding outcomes.",
-    avatar: "/avatars/suresh.jpg",
+      'I am truly proud of you, Narayan...... INSTELLO is an excellent platform for learning Full Stack Development (FSD). The concepts are explained clearly through your videos, making them easy for students to understand. The application is highly user-friendly, and I am confident that it will deliver outstanding outcomes.',
+    avatar: '/avatars/suresh.jpg',
   },
   {
-    name: "Shreeja S Kumar",
-    designation: "Student, Dayananda Sagar Institute Of Technology ",
+    name: 'Shreeja S Kumar',
+    designation: 'Student, Dayananda Sagar Institute Of Technology ',
     review: `Really helped a lot in managing the time while writing our exam and learnt to develop answers using technical words. Explanations were done using slides which was even more better to understand  Overall was a helpful sessions which helped writing the exam good  and even slides and explanation videos for each important topic was very helpful at the last moment of the exam to understand topics which was difficult Thank you Instello!!`,
-    avatar: "/avatars/shreeja.png",
+    avatar: '/avatars/shreeja.png',
   },
   {
-    name: "Nikita T H",
-    designation: "Student, Dayananda sagar institute of technology ",
+    name: 'Nikita T H',
+    designation: 'Student, Dayananda sagar institute of technology ',
     review:
-      "One the best coaching centres great quality education with clear teaching methods supportive and knowledgeable teachers who explain concepts well definitely worth it to recommend to others!!!!",
-    avatar: "/avatars/nikita.jpg",
+      'One the best coaching centres great quality education with clear teaching methods supportive and knowledgeable teachers who explain concepts well definitely worth it to recommend to others!!!!',
+    avatar: '/avatars/nikita.jpg',
   },
   {
-    name: "Bindu",
-    designation: "Student, KS Polytechnic",
+    name: 'Bindu',
+    designation: 'Student, KS Polytechnic',
     review:
-      "I have completed the Full Stack Development course at Instello. The course was well-structured and easy to understand. The trainers explained concepts clearly with practical examples, which helped me gain confidence in coding. Overall, it was a good learning experience and helpful for building a strong foundation.",
-    avatar: "/avatars/bindu.jpg",
+      'I have completed the Full Stack Development course at Instello. The course was well-structured and easy to understand. The trainers explained concepts clearly with practical examples, which helped me gain confidence in coding. Overall, it was a good learning experience and helpful for building a strong foundation.',
+    avatar: '/avatars/bindu.jpg',
   },
-];
+]
 
 export function ReviewsSection() {
   return (
@@ -81,9 +81,9 @@ export function ReviewsSection() {
                     />
                     <AvatarFallback>
                       {item.name
-                        .split(" ")
+                        .split(' ')
                         .map((n) => n[0])
-                        .join("")}
+                        .join('')}
                     </AvatarFallback>
                   </Avatar>
 
@@ -100,5 +100,5 @@ export function ReviewsSection() {
         </div>
       </div>
     </section>
-  );
+  )
 }

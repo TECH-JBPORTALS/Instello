@@ -1,19 +1,19 @@
-import Container from "@/components/container";
-import { CreateSubjectDialog } from "@/components/dialogs/create-subject.dialog";
-import { HydrateClient, prefetch, trpc } from "@/trpc/server";
-import { Protect } from "@clerk/nextjs";
-import { Button } from "@instello/ui/components/button";
-import { PlusIcon } from "@phosphor-icons/react/ssr";
+import { Protect } from '@clerk/nextjs'
+import { Button } from '@instello/ui/components/button'
+import { PlusIcon } from '@phosphor-icons/react/ssr'
+import Container from '@/components/container'
+import { CreateSubjectDialog } from '@/components/dialogs/create-subject.dialog'
+import { HydrateClient, prefetch, trpc } from '@/trpc/server'
 
-import DataTableClient from "./data-table.client";
+import DataTableClient from './data-table.client'
 
 export default async function Page({
   params,
 }: {
-  params: Promise<{ branchId: string }>;
+  params: Promise<{ branchId: string }>
 }) {
-  const { branchId } = await params;
-  prefetch(trpc.erp.subject.list.queryOptions({ branchId }));
+  const { branchId } = await params
+  prefetch(trpc.erp.subject.list.queryOptions({ branchId }))
 
   return (
     <HydrateClient>
@@ -33,5 +33,5 @@ export default async function Page({
         <DataTableClient />
       </Container>
     </HydrateClient>
-  );
+  )
 }

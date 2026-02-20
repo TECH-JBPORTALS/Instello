@@ -1,7 +1,5 @@
-"use client";
+'use client'
 
-import { useCallback, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import {
   SignedIn,
   SignedOut,
@@ -10,54 +8,56 @@ import {
   useAuth,
   useOrganizationList,
   useUser,
-} from "@clerk/nextjs";
-import { Spinner } from "@instello/ui/components/spinner";
-import { jwtDecode } from "jwt-decode";
-import { toast } from "sonner";
+} from '@clerk/nextjs'
+import { Spinner } from '@instello/ui/components/spinner'
+import { jwtDecode } from 'jwt-decode'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useCallback, useEffect } from 'react'
+import { toast } from 'sonner'
 
 export default function Page() {
-  const params = useSearchParams();
-  const clerk_status = params.get("__clerk_status") as
-    | "sign_in"
-    | "sign_up"
-    | "complete";
-  const clerk_ticket = params.get("__clerk_ticket");
-  const { user, isLoaded } = useUser();
-  const { isSignedIn } = useAuth();
-  const router = useRouter();
-  const { setActive, isLoaded: organizationLoaded } = useOrganizationList();
+  const params = useSearchParams()
+  const clerk_status = params.get('__clerk_status') as
+    | 'sign_in'
+    | 'sign_up'
+    | 'complete'
+  const clerk_ticket = params.get('__clerk_ticket')
+  const { user, isLoaded } = useUser()
+  const { isSignedIn } = useAuth()
+  const router = useRouter()
+  const { setActive, isLoaded: organizationLoaded } = useOrganizationList()
 
   const getInvitation = useCallback(async () => {
     if (isLoaded || organizationLoaded) {
-      const invitations = await user?.getOrganizationInvitations();
+      const invitations = await user?.getOrganizationInvitations()
 
       try {
         // TODO:
-        const jwt_token = jwtDecode<{ sid?: string }>(clerk_ticket ?? "");
+        const jwt_token = jwtDecode<{ sid?: string }>(clerk_ticket ?? '')
 
         if (!jwt_token.sid) {
-          toast.error("Invalid invitation token.");
-          return;
+          toast.error('Invalid invitation token.')
+          return
         }
 
         const invitation = invitations?.data.find(
           (inv) => inv.id === jwt_token.sid,
-        );
+        )
 
-        if (invitation?.status === "accepted") {
+        if (invitation?.status === 'accepted') {
           await setActive?.({
             organization: invitation.publicOrganizationData.id,
-          });
-          toast.info("Already accepted");
-          router.push(`/${invitation.publicOrganizationData.slug}`);
-        } else if (invitation?.status === "pending" && isSignedIn) {
-          await invitation.accept();
-          router.push(`/${invitation.publicOrganizationData.slug}`);
-        } else if (invitation?.status === "revoked") {
-          toast.error("Invitation has been revoked by admin");
+          })
+          toast.info('Already accepted')
+          router.push(`/${invitation.publicOrganizationData.slug}`)
+        } else if (invitation?.status === 'pending' && isSignedIn) {
+          await invitation.accept()
+          router.push(`/${invitation.publicOrganizationData.slug}`)
+        } else if (invitation?.status === 'revoked') {
+          toast.error('Invitation has been revoked by admin')
         }
       } catch (e) {
-        console.log(e);
+        console.log(e)
       }
     }
   }, [
@@ -68,17 +68,18 @@ export default function Page() {
     user,
     organizationLoaded,
     setActive,
-  ]);
+  ])
 
   useEffect(() => {
-    getInvitation()
-      .then(() => {
-        router.refresh();
-      })
-      .catch((e) => console.log(e));
-  }, [isLoaded, getInvitation, router]);
+    if (isLoaded)
+      getInvitation()
+        .then(() => {
+          router.refresh()
+        })
+        .catch((e) => console.log(e))
+  }, [isLoaded, getInvitation, router])
 
-  if (clerk_status === "sign_in")
+  if (clerk_status === 'sign_in')
     return (
       <>
         <SignedIn>
@@ -90,14 +91,14 @@ export default function Page() {
           </div>
         </SignedIn>
         <SignedOut>
-          <SignIn path="/accept-invitation" fallbackRedirectUrl={"/"} />
+          <SignIn path="/accept-invitation" fallbackRedirectUrl={'/'} />
         </SignedOut>
       </>
-    );
+    )
 
   return (
     <SignedOut>
-      <SignUp path="/accept-invitatoin" fallbackRedirectUrl={"/"} />
+      <SignUp path="/accept-invitatoin" fallbackRedirectUrl={'/'} />
     </SignedOut>
-  );
+  )
 }

@@ -3,29 +3,29 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@instello/ui/components/card";
-import { Cpu, Layers, University } from "lucide-react";
+} from '@instello/ui/components/card'
+import { Cpu, Layers, University } from 'lucide-react'
 
 const courses = [
   {
-    title: "Diploma",
+    title: 'Diploma',
     description:
-      "Industry-oriented diploma programs focused on practical skills, foundational engineering concepts, and job readiness.",
+      'Industry-oriented diploma programs focused on practical skills, foundational engineering concepts, and job readiness.',
     icon: Layers,
   },
   {
-    title: "Engineering",
+    title: 'Engineering',
     description:
-      "Comprehensive engineering programs with structured curriculum, semester-wise tracking, assessments, and outcomes management.",
+      'Comprehensive engineering programs with structured curriculum, semester-wise tracking, assessments, and outcomes management.',
     icon: Cpu,
   },
   {
-    title: "Degree",
+    title: 'Degree',
     description:
-      "Undergraduate degree programs designed for academic depth, career alignment, and higher education preparedness.",
+      'Undergraduate degree programs designed for academic depth, career alignment, and higher education preparedness.',
     icon: University,
   },
-];
+]
 
 export function Courses() {
   return (
@@ -73,5 +73,5 @@ export function Courses() {
         </div>
       </div>
     </section>
-  );
+  )
 }

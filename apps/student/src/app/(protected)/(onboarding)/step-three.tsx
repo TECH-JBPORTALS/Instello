@@ -1,9 +1,9 @@
-import { ScrollView, View } from "react-native";
-import { Stack } from "expo-router";
+import { Stack } from 'expo-router'
+import { ScrollView, View } from 'react-native'
 import {
   BranchSelectionForm,
   BranchSelectionFormFooter,
-} from "@/components/branch-selection-form";
+} from '@/components/branch-selection-form'
 
 export default function OnboardingStepThree() {
   return (
@@ -17,7 +17,7 @@ export default function OnboardingStepThree() {
         <Stack.Screen
           options={{
             headerShown: true,
-            headerTitle: "",
+            headerTitle: '',
           }}
         />
         <BranchSelectionForm />
@@ -26,5 +26,5 @@ export default function OnboardingStepThree() {
         <BranchSelectionFormFooter />
       </View>
     </View>
-  );
+  )
 }

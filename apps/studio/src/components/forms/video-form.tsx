@@ -1,17 +1,13 @@
-"use client";
+'use client'
 
-import type { z } from "zod/v4";
-import { useParams } from "next/navigation";
-import { env } from "@/env";
-import { useTRPC } from "@/trpc/react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { UpdateVideoSchema } from "@instello/db/lms";
+import { zodResolver } from '@hookform/resolvers/zod'
+import { UpdateVideoSchema } from '@instello/db/lms'
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@instello/ui/components/avatar";
-import { Button } from "@instello/ui/components/button";
+} from '@instello/ui/components/avatar'
+import { Button } from '@instello/ui/components/button'
 import {
   Form,
   FormControl,
@@ -20,48 +16,52 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@instello/ui/components/form";
+} from '@instello/ui/components/form'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@instello/ui/components/select";
-import { Textarea } from "@instello/ui/components/textarea";
-import MuxPlayer from "@mux/mux-player-react/lazy";
+} from '@instello/ui/components/select'
+import { Textarea } from '@instello/ui/components/textarea'
+import MuxPlayer from '@mux/mux-player-react/lazy'
 import {
   GlobeHemisphereEastIcon,
   LockLaminatedIcon,
-} from "@phosphor-icons/react";
+} from '@phosphor-icons/react'
 import {
   useMutation,
   useQueryClient,
   useSuspenseQuery,
-} from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+} from '@tanstack/react-query'
+import { useParams } from 'next/navigation'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import type { z } from 'zod/v4'
+import { env } from '@/env'
+import { useTRPC } from '@/trpc/react'
 
 export function VideoForm() {
-  const { videoId } = useParams<{ videoId: string }>();
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
+  const { videoId } = useParams<{ videoId: string }>()
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
   const { data, isError } = useSuspenseQuery(
     trpc.lms.video.getById.queryOptions({ videoId }),
-  );
+  )
   const { data: authors } = useSuspenseQuery(
     trpc.lms.author.list.queryOptions(),
-  );
+  )
 
   const form = useForm({
     resolver: zodResolver(UpdateVideoSchema),
     defaultValues: {
       title: data.title,
-      description: data.description ?? "",
+      description: data.description ?? '',
       isPublished: data.isPublished ?? false,
       authorId: data.authorId,
     },
-  });
+  })
 
   const { mutateAsync: updateVideo } = useMutation(
     trpc.lms.video.update.mutationOptions({
@@ -71,30 +71,30 @@ export function VideoForm() {
             trpc.lms.video.getById.queryOptions({ videoId }),
           ),
           queryClient.invalidateQueries(trpc.lms.video.list.queryFilter()),
-        ]);
+        ])
         if (data)
           form.reset({
             title: data.title,
-            description: data.description ?? "",
+            description: data.description ?? '',
             isPublished: data.isPublished ?? false,
-            authorId: data.authorId ?? "",
-          });
-        toast.info("Details updated");
+            authorId: data.authorId ?? '',
+          })
+        toast.info('Details updated')
       },
     }),
-  );
+  )
 
   async function onSubmit(values: z.infer<typeof UpdateVideoSchema>) {
     await updateVideo({
       ...values,
       videoId,
-    });
+    })
   }
 
   if (isError)
     return (
       <div className="flex h-full w-full items-center justify-center"></div>
-    );
+    )
 
   return (
     <Form {...form}>
@@ -107,11 +107,11 @@ export function VideoForm() {
           <div className="space-x-3">
             <Button
               disabled={!form.formState.isDirty || form.formState.isSubmitting}
-              variant={"secondary"}
+              variant={'secondary'}
               className="rounded-full"
               onClick={() => form.reset()}
               type="button"
-              size={"lg"}
+              size={'lg'}
             >
               Discard changes
             </Button>
@@ -120,7 +120,7 @@ export function VideoForm() {
               loading={form.formState.isSubmitting}
               disabled={!form.formState.isDirty}
               className="rounded-full"
-              size={"lg"}
+              size={'lg'}
             >
               Save
             </Button>
@@ -134,7 +134,7 @@ export function VideoForm() {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{"Title (required)"}</FormLabel>
+                  <FormLabel>{'Title (required)'}</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Title of the video"
@@ -152,7 +152,7 @@ export function VideoForm() {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{"Description"}</FormLabel>
+                  <FormLabel>{'Description'}</FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
@@ -182,7 +182,7 @@ export function VideoForm() {
                       onValueChange={field.onChange}
                     >
                       <SelectTrigger className="min-w-sm">
-                        <SelectValue placeholder={"Select..."} />
+                        <SelectValue placeholder={'Select...'} />
                       </SelectTrigger>
                       <SelectContent>
                         {authors.map((author, i) => (
@@ -221,12 +221,12 @@ export function VideoForm() {
                     <Select
                       {...field}
                       onValueChange={(value) =>
-                        field.onChange(value == "public")
+                        field.onChange(value == 'public')
                       }
-                      value={field.value ? "public" : "private"}
+                      value={field.value ? 'public' : 'private'}
                     >
                       <SelectTrigger className="min-w-sm">
-                        <SelectValue placeholder={"Select..."} />
+                        <SelectValue placeholder={'Select...'} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="private">
@@ -261,5 +261,5 @@ export function VideoForm() {
         </div>
       </form>
     </Form>
-  );
+  )
 }

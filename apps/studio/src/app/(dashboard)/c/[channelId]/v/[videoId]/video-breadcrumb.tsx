@@ -1,8 +1,5 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import { useParams } from "next/navigation";
-import { useTRPC } from "@/trpc/react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,22 +7,25 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@instello/ui/components/breadcrumb";
-import { CircleIcon } from "@phosphor-icons/react";
-import { useSuspenseQuery } from "@tanstack/react-query";
+} from '@instello/ui/components/breadcrumb'
+import { CircleIcon } from '@phosphor-icons/react'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import Link from 'next/link'
+import { useParams } from 'next/navigation'
+import { useTRPC } from '@/trpc/react'
 
 export function VideoPageBreadcrumb() {
-  const trpc = useTRPC();
+  const trpc = useTRPC()
   const { channelId, videoId } = useParams<{
-    channelId: string;
-    videoId: string;
-  }>();
+    channelId: string
+    videoId: string
+  }>()
   const { data: channel } = useSuspenseQuery(
     trpc.lms.channel.getById.queryOptions({ channelId }),
-  );
+  )
   const { data: video } = useSuspenseQuery(
     trpc.lms.video.getById.queryOptions({ videoId }),
-  );
+  )
 
   return (
     <Breadcrumb>
@@ -47,5 +47,5 @@ export function VideoPageBreadcrumb() {
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>
-  );
+  )
 }

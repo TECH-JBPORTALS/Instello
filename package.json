@@ -3,8 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "engines": {
-    "node": ">=22.21.0",
-    "pnpm": ">=9.6.0"
+    "bun": ">=1.3.9"
   },
   "scripts": {
     "build": "turbo build",
@@ -20,36 +19,15 @@
     "db:studio": "turbo -F @instello/db studio",
     "clean": "git clean -xdf node_modules",
     "clean:workspaces": "turbo run clean",
-    "lint": "turbo run lint --continue -- --cache --cache-location .cache/.eslintcache",
-    "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location .cache/.eslintcache",
-    "lint:ws": "pnpm dlx sherif@latest",
-    "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",
-    "format:fix": "turbo run format --continue -- --write --cache --cache-location .cache/.prettiercache",
+    "check": "biome check .",
+    "check:fix": "biome check . --write",
     "typecheck": "turbo typecheck"
   },
   "devDependencies": {
-    "@instello/eslint-config": "workspace:*",
-    "@instello/prettier-config": "workspace:*",
+    "@biomejs/biome": "catalog:",
     "@instello/tsconfig": "workspace:*",
-    "prettier": "catalog:",
     "turbo": "^2.7.2",
     "typescript": "5.7.3"
-  },
-  "packageManager": "pnpm@10.24.0",
-  "pnpm": {
-    "ignoredBuiltDependencies": [
-      "core-js-pure"
-    ],
-    "onlyBuiltDependencies": [
-      "@clerk/shared",
-      "sharp"
-    ],
-    "overrides": {
-      "lightningcss": "1.30.1"
-    },
-    "patchedDependencies": {
-      "expo-screen-capture": "patches/expo-screen-capture.patch"
-    }
   },
   "dependencies": {
     "@turbo/gen": "^2.4.2"
@@ -57,5 +35,44 @@
   "resolutions": {
     "lightningcss": "1.30.1"
   },
-  "prettier": "@instello/prettier-config"
+  "packageManager": "bun@1.3.9",
+  "overrides": {
+    "lightningcss": "1.30.1"
+  },
+  "workspaces": {
+    "packages": ["apps/*", "packages/*", "tooling/*"],
+    "catalog": {
+      "@clerk/nextjs": "^6.36.5",
+      "@clerk/types": "^4.101.9",
+      "@hookform/resolvers": "^5.1.1",
+      "@phosphor-icons/react": "2.1.10",
+      "@tanstack/react-query": "^5.83.0",
+      "@tanstack/react-table": "^8.21.3",
+      "@trpc/client": "^11.4.3",
+      "@trpc/tanstack-react-query": "^11.4.3",
+      "@biomejs/biome": "2.4.3",
+      "recharts": "2.15.4",
+      "react-hook-form": "^7.60.0",
+      "sonner": "^2.0.6",
+      "superjson": "^2.2.2",
+      "tailwindcss": "^4.1.14",
+      "typescript": "~5.9.2",
+      "zod": "^3.25.49"
+    },
+    "catalogs": {
+      "react19": {
+        "@types/node": "^24.10.1",
+        "@types/react": "~19.1.10",
+        "@types/react-dom": "~19.1.10",
+        "react": "19.1.0",
+        "react-dom": "19.1.0"
+      }
+    }
+  },
+  "patchedDependencies": {
+    "expo-screen-capture@8.0.9": "patches/expo-screen-capture@8.0.9.patch"
+  },
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  }
 }

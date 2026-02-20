@@ -1,17 +1,17 @@
-import { ChapterList } from "@/components/chapters-list";
-import { CreateChapterDialog } from "@/components/dialogs/create-chapter-dialog";
-import { HydrateClient, prefetch, trpc } from "@/trpc/server";
-import { Button } from "@instello/ui/components/button";
-import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
+import { Button } from '@instello/ui/components/button'
+import { PlusIcon } from '@phosphor-icons/react/dist/ssr'
+import { ChapterList } from '@/components/chapters-list'
+import { CreateChapterDialog } from '@/components/dialogs/create-chapter-dialog'
+import { HydrateClient, prefetch, trpc } from '@/trpc/server'
 
 export default async function Page({
   params,
 }: {
-  params: Promise<{ channelId: string }>;
+  params: Promise<{ channelId: string }>
 }) {
-  const { channelId } = await params;
+  const { channelId } = await params
 
-  prefetch(trpc.lms.chapter.list.queryOptions({ channelId }));
+  prefetch(trpc.lms.chapter.list.queryOptions({ channelId }))
 
   return (
     <HydrateClient>
@@ -29,5 +29,5 @@ export default async function Page({
         <ChapterList />
       </div>
     </HydrateClient>
-  );
+  )
 }

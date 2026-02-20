@@ -1,18 +1,13 @@
-"use client";
+'use client'
 
-import type React from "react";
-import { useRef, useState } from "react";
-import Image from "next/image";
-import { uploadManager } from "@/store/UploadManager";
-import { useTRPC } from "@/trpc/react";
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@instello/ui/components/breadcrumb";
-import { Button } from "@instello/ui/components/button";
+} from '@instello/ui/components/breadcrumb'
+import { Button } from '@instello/ui/components/button'
 import {
   Dialog,
   DialogBody,
@@ -21,49 +16,54 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@instello/ui/components/dialog";
-import { cn } from "@instello/ui/lib/utils";
-import { FileArrowUpIcon } from "@phosphor-icons/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+} from '@instello/ui/components/dialog'
+import { cn } from '@instello/ui/lib/utils'
+import { FileArrowUpIcon } from '@phosphor-icons/react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import Image from 'next/image'
+import type React from 'react'
+import { useRef, useState } from 'react'
+import { uploadManager } from '@/store/UploadManager'
+import { useTRPC } from '@/trpc/react'
 
 export function UploadVideoDialog({
   children,
   chapterId,
   chapterName,
 }: {
-  children: React.ReactNode;
-  chapterId: string;
-  chapterName: string;
+  children: React.ReactNode
+  chapterId: string
+  chapterName: string
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const { mutateAsync: createUpload, isPending } = useMutation(
     trpc.lms.video.createUpload.mutationOptions({
       async onSuccess() {
         await queryClient.invalidateQueries(
           trpc.lms.video.list.queryOptions({ chapterId }),
-        );
-        setOpen(false);
+        )
+        setOpen(false)
       },
     }),
-  );
+  )
 
   async function handleFileSelect(event: React.ChangeEvent<HTMLInputElement>) {
-    const selectedFile = event.target.files?.[0];
+    const selectedFile = event.target.files?.[0]
     if (selectedFile) {
       try {
         // Create video in database first (this also creates the Mux upload)
         const { url, new_asset_settings } = await createUpload({
           title: selectedFile.name,
           chapterId,
-        });
+        })
 
         if (!new_asset_settings?.passthrough)
-          throw new Error("No passthrough id recieved");
+          throw new Error('No passthrough id recieved')
 
         // Start the upload using UploadManager with the database video ID
         uploadManager.startUpload({
@@ -73,17 +73,17 @@ export function UploadVideoDialog({
           onProgress: (progress, uploadedBytes) => {
             console.log(
               `Upload progress: ${progress}% (${uploadedBytes} bytes)`,
-            );
+            )
           },
           onSuccess: (response) => {
-            console.log("Upload completed successfully:", response);
+            console.log('Upload completed successfully:', response)
           },
           onError: (error) => {
-            console.error("Upload failed:", error);
+            console.error('Upload failed:', error)
           },
-        });
+        })
       } catch (error) {
-        console.error("Failed to start upload:", error);
+        console.error('Failed to start upload:', error)
       }
     }
   }
@@ -122,7 +122,7 @@ export function UploadVideoDialog({
           <div className="bg-muted relative flex size-30 items-center justify-center rounded-full">
             {isPending ? (
               <Image
-                src={"/loading-rocket.gif"}
+                src={'/loading-rocket.gif'}
                 className="scale-150"
                 alt="Loading Rocket"
                 fill
@@ -136,8 +136,8 @@ export function UploadVideoDialog({
           </div>
           <p
             className={cn(
-              "text-muted-foreground max-w-xs text-center text-sm",
-              isPending && "opacity-90",
+              'text-muted-foreground max-w-xs text-center text-sm',
+              isPending && 'opacity-90',
             )}
           >
             Select a file to start uploading. Your video will be private until
@@ -160,5 +160,5 @@ export function UploadVideoDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

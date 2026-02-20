@@ -1,5 +1,5 @@
-import { DCETRankers } from "./dcet-rankers";
-import { Hero } from "./hero";
+import { DCETRankers } from './dcet-rankers'
+import { Hero } from './hero'
 
 export default function Page() {
   return (
@@ -7,5 +7,5 @@ export default function Page() {
       <Hero />
       <DCETRankers />
     </>
-  );
+  )
 }

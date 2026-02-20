@@ -1,13 +1,8 @@
-"use client";
+'use client'
 
-import type React from "react";
-import type { z } from "zod/v4";
-import { useState } from "react";
-import { useParams } from "next/navigation";
-import { useTRPC } from "@/trpc/react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { CreateChapterSchema } from "@instello/db/lms";
-import { Button } from "@instello/ui/components/button";
+import { zodResolver } from '@hookform/resolvers/zod'
+import { CreateChapterSchema } from '@instello/db/lms'
+import { Button } from '@instello/ui/components/button'
 import {
   Dialog,
   DialogBody,
@@ -16,54 +11,57 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@instello/ui/components/dialog";
+} from '@instello/ui/components/dialog'
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@instello/ui/components/form";
-import { Input } from "@instello/ui/components/input";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+} from '@instello/ui/components/form'
+import { Input } from '@instello/ui/components/input'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useParams } from 'next/navigation'
+import type React from 'react'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import type { z } from 'zod/v4'
+import { useTRPC } from '@/trpc/react'
 
 export function CreateChapterDialog({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  const [open, setOpen] = useState(false);
-  const { channelId } = useParams<{ channelId: string }>();
+  const [open, setOpen] = useState(false)
+  const { channelId } = useParams<{ channelId: string }>()
   const form = useForm({
     resolver: zodResolver(CreateChapterSchema),
     defaultValues: {
-      title: "",
+      title: '',
       channelId,
     },
-  });
+  })
 
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
 
   const { mutateAsync: createChapter } = useMutation(
     trpc.lms.chapter.create.mutationOptions({
       async onSuccess() {
-        await queryClient.invalidateQueries(
-          trpc.lms.chapter.list.queryFilter(),
-        );
-        setOpen(false);
-        form.reset();
+        await queryClient.invalidateQueries(trpc.lms.chapter.list.queryFilter())
+        setOpen(false)
+        form.reset()
       },
       onError() {
-        toast.error("Failed to create chapter");
+        toast.error('Failed to create chapter')
       },
     }),
-  );
+  )
 
   async function onSubmit(values: z.infer<typeof CreateChapterSchema>) {
-    await createChapter(values);
+    await createChapter(values)
   }
 
   return (
@@ -100,5 +98,5 @@ export function CreateChapterDialog({
         </Form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
