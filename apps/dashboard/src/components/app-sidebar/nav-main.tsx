@@ -1,48 +1,48 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import { useParams, usePathname } from "next/navigation";
-import { Protect } from "@clerk/nextjs";
+import { Protect } from '@clerk/nextjs'
 import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@instello/ui/components/sidebar";
-import { HouseLineIcon, UsersIcon } from "@phosphor-icons/react";
+} from '@instello/ui/components/sidebar'
+import { HouseLineIcon, UsersIcon } from '@phosphor-icons/react'
+import Link from 'next/link'
+import { useParams, usePathname } from 'next/navigation'
 
 const items = [
   {
-    title: "Home",
-    url: "",
+    title: 'Home',
+    url: '',
     icon: HouseLineIcon,
     exact: true,
   },
   {
-    title: "Members",
-    url: "/members",
+    title: 'Members',
+    url: '/members',
     icon: UsersIcon,
-    permission: "sys_profile:manage",
+    permission: 'sys_profile:manage',
   },
-];
+]
 
 export function NavMain() {
-  const { slug } = useParams<{ slug: string }>();
-  const pathname = usePathname();
+  const { slug } = useParams<{ slug: string }>()
+  const pathname = usePathname()
 
   return (
     <SidebarGroup>
       <SidebarGroupContent>
         <SidebarMenu>
           {items.map((item) => {
-            const url = `/${slug}${item.url}`;
+            const url = `/${slug}${item.url}`
             const isActive = item.exact
               ? pathname == url
-              : pathname.startsWith(url);
+              : pathname.startsWith(url)
 
             return (
-              <Protect key={item.title} permission={item.permission ?? ""}>
+              <Protect key={item.title} permission={item.permission ?? ''}>
                 <SidebarMenuItem>
                   <SidebarMenuButton isActive={isActive} asChild>
                     <Link href={url}>
@@ -55,10 +55,10 @@ export function NavMain() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </Protect>
-            );
+            )
           })}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
-  );
+  )
 }

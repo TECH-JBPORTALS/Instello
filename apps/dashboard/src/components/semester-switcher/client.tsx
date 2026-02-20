@@ -1,33 +1,33 @@
-"use client";
+'use client'
 
-import React from "react";
-import { useParams, useRouter } from "next/navigation";
-import { useTRPC } from "@/trpc/react";
-import { Tabs, TabsList, TabsTrigger } from "@instello/ui/components/tabs";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { Tabs, TabsList, TabsTrigger } from '@instello/ui/components/tabs'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { useParams, useRouter } from 'next/navigation'
+import React from 'react'
+import { useTRPC } from '@/trpc/react'
 
-const SEMESTER_COOKIE_NAME = "semester";
-const SEMESTER_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
+const SEMESTER_COOKIE_NAME = 'semester'
+const SEMESTER_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 
 export function SemesterSwitcher({
   defaultSemesterCookie,
 }: {
-  defaultSemesterCookie: string;
+  defaultSemesterCookie: string
 }) {
-  const trpc = useTRPC();
+  const trpc = useTRPC()
   const { branchId, slug, semesterId } = useParams<{
-    branchId: string;
-    semesterId: string;
-    slug: string;
-  }>();
+    branchId: string
+    semesterId: string
+    slug: string
+  }>()
   const { data } = useSuspenseQuery(
     trpc.erp.branch.getSemesterList.queryOptions({ branchId }),
-  );
-  const router = useRouter();
+  )
+  const router = useRouter()
 
   React.useEffect(() => {
-    document.cookie = `${SEMESTER_COOKIE_NAME}=${JSON.stringify({ ...JSON.parse(defaultSemesterCookie), [branchId]: semesterId })}; path=/; max-age=${SEMESTER_COOKIE_MAX_AGE}`;
-  }, [semesterId, branchId, defaultSemesterCookie]);
+    document.cookie = `${SEMESTER_COOKIE_NAME}=${JSON.stringify({ ...JSON.parse(defaultSemesterCookie), [branchId]: semesterId })}; path=/; max-age=${SEMESTER_COOKIE_MAX_AGE}`
+  }, [semesterId, branchId, defaultSemesterCookie])
 
   return (
     <Tabs defaultValue={semesterId}>
@@ -46,5 +46,5 @@ export function SemesterSwitcher({
         ))}
       </TabsList>
     </Tabs>
-  );
+  )
 }

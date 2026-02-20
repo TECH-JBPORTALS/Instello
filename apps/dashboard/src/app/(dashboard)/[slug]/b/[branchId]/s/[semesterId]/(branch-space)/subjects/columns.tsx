@@ -1,56 +1,54 @@
-"use client";
+'use client'
 
-import type { RouterOutputs } from "@instello/api";
-import type { ColumnDef } from "@tanstack/react-table";
-import Link from "next/link";
-import { useParams } from "next/navigation";
-import { Protect } from "@clerk/nextjs";
-import { Button } from "@instello/ui/components/button";
-import { DotsThreeIcon } from "@phosphor-icons/react";
-import { formatDistanceToNowStrict } from "date-fns";
+import { Protect } from '@clerk/nextjs'
+import type { RouterOutputs } from '@instello/api'
+import { Button } from '@instello/ui/components/button'
+import { DotsThreeIcon } from '@phosphor-icons/react'
+import type { ColumnDef } from '@tanstack/react-table'
+import { formatDistanceToNowStrict } from 'date-fns'
+import Link from 'next/link'
+import { useParams } from 'next/navigation'
 
-import { SubjectStaffAssigner } from "./subject-staff-assigner";
+import { SubjectStaffAssigner } from './subject-staff-assigner'
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type Payment = RouterOutputs["erp"]["subject"]["list"][number];
+export type Payment = RouterOutputs['erp']['subject']['list'][number]
 
 function SubjectCell({
   subjectId,
   subjectName,
 }: {
-  subjectId: string;
-  subjectName: string;
+  subjectId: string
+  subjectName: string
 }) {
   const { branchId, semesterId, slug } = useParams<{
-    slug: string;
-    branchId: string;
-    semesterId: string;
-  }>();
+    slug: string
+    branchId: string
+    semesterId: string
+  }>()
   return (
     <div className="min-w-4xl">
-      <Button variant={"link"}>
+      <Button variant={'link'}>
         <Link href={`/${slug}/b/${branchId}/s/${semesterId}/sub/${subjectId}`}>
           {subjectName}
         </Link>
       </Button>
     </div>
-  );
+  )
 }
 
 export const columns: ColumnDef<Payment>[] = [
   {
-    accessorKey: "name",
-    header: "Name",
+    accessorKey: 'name',
+    header: 'Name',
     cell(props) {
-      const original = props.row.original;
-      return (
-        <SubjectCell subjectId={original.id} subjectName={original.name} />
-      );
+      const original = props.row.original
+      return <SubjectCell subjectId={original.id} subjectName={original.name} />
     },
   },
   {
-    id: "staff-assigned",
+    id: 'staff-assigned',
 
     enableHiding: true,
     cell(props) {
@@ -63,14 +61,14 @@ export const columns: ColumnDef<Payment>[] = [
             />
           </div>
         </Protect>
-      );
+      )
     },
   },
 
   {
-    accessorKey: "createdAt",
+    accessorKey: 'createdAt',
     maxSize: 90,
-    header: "Created",
+    header: 'Created',
     cell(props) {
       return (
         <div>
@@ -80,23 +78,23 @@ export const columns: ColumnDef<Payment>[] = [
             })}
           </time>
         </div>
-      );
+      )
     },
   },
   {
-    id: "more-action",
+    id: 'more-action',
     cell() {
       return (
         <div className="text-right">
           <Button
-            variant={"ghost"}
+            variant={'ghost'}
             className="opacity-0 group-hover:opacity-100"
-            size={"icon"}
+            size={'icon'}
           >
             <DotsThreeIcon weight="bold" />
           </Button>
         </div>
-      );
+      )
     },
   },
-];
+]

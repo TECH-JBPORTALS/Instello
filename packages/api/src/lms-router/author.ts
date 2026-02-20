@@ -1,12 +1,12 @@
-import { and, desc, eq, ilike, or } from "@instello/db";
+import { and, desc, eq, ilike, or } from '@instello/db'
 import {
   author,
   CreateAuthorSchema,
   UpdateAuthorSchema,
-} from "@instello/db/lms";
-import { z } from "zod/v4";
+} from '@instello/db/lms'
+import { z } from 'zod/v4'
 
-import { protectedProcedure } from "../trpc";
+import { protectedProcedure } from '../trpc'
 
 export const authorRouter = {
   create: protectedProcedure.input(CreateAuthorSchema).mutation(
@@ -68,7 +68,7 @@ export const authorRouter = {
             ilike(author.lastName, `%${input.q}%`),
             ilike(author.email, `%${input.q}%`),
           )
-        : undefined;
+        : undefined
 
       const authors = await ctx.db.query.author.findMany({
         where: and(
@@ -76,8 +76,8 @@ export const authorRouter = {
           queryClause,
         ),
         orderBy: desc(author.createdAt),
-      });
+      })
 
-      return authors;
+      return authors
     }),
-};
+}

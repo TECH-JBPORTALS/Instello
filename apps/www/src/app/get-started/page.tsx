@@ -1,49 +1,49 @@
-import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
-import { Button } from "@instello/ui/components/button";
+import { Button } from '@instello/ui/components/button'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@instello/ui/components/card";
+} from '@instello/ui/components/card'
 import {
   ArrowCircleLeftIcon,
   BuildingApartmentIcon,
   StudentIcon,
-} from "@phosphor-icons/react/ssr";
+} from '@phosphor-icons/react/ssr'
+import type { Metadata } from 'next'
+import Image from 'next/image'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: "Get Started",
+  title: 'Get Started',
   description:
     "Choose your role to get started with Instello. Whether you're a student looking to access your classes or an institution wanting to manage your educational programs, we have the right solution for you.",
   openGraph: {
-    title: "Get Started with Instello",
+    title: 'Get Started with Instello',
     description:
       "Choose your role to get started with Instello. Whether you're a student looking to access your classes or an institution wanting to manage your educational programs, we have the right solution for you.",
-    images: ["/banner.png"],
+    images: ['/banner.png'],
   },
   twitter: {
-    title: "Get Started with Instello",
+    title: 'Get Started with Instello',
     description:
       "Choose your role to get started with Instello. Whether you're a student looking to access your classes or an institution wanting to manage your educational programs, we have the right solution for you.",
-    images: ["/banner.png"],
+    images: ['/banner.png'],
   },
-};
+}
 
 export default function Page() {
   return (
     <main className="flex h-svh w-full flex-col items-center justify-center gap-16 px-4">
-      <Button variant={"outline"} asChild className="fixed top-4 left-4">
-        <Link href={"/"}>
+      <Button variant={'outline'} asChild className="fixed top-4 left-4">
+        <Link href={'/'}>
           <ArrowCircleLeftIcon weight="duotone" /> Back to Home
         </Link>
       </Button>
       <div className="flex flex-col items-center justify-center gap-3.5">
         <Image
-          src={"/instello.svg"}
+          src={'/instello.svg'}
           width={200}
           className="mb-8"
           height={26}
@@ -92,5 +92,5 @@ export default function Page() {
         </Link>
       </div>
     </main>
-  );
+  )
 }

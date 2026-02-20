@@ -1,11 +1,11 @@
-import type { AppRouter } from "@instello/api";
-import { getClerkInstance } from "@clerk/clerk-expo";
-import { QueryClient } from "@tanstack/react-query";
-import { createTRPCClient, httpBatchLink, loggerLink } from "@trpc/client";
-import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query";
-import superjson from "superjson";
+import { getClerkInstance } from '@clerk/clerk-expo'
+import type { AppRouter } from '@instello/api'
+import { QueryClient } from '@tanstack/react-query'
+import { createTRPCClient, httpBatchLink, loggerLink } from '@trpc/client'
+import { createTRPCOptionsProxy } from '@trpc/tanstack-react-query'
+import superjson from 'superjson'
 
-import { getBaseUrl } from "./base-url";
+import { getBaseUrl } from './base-url'
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -16,7 +16,7 @@ export const queryClient = new QueryClient({
       retry: 1, // Reduce retries for faster failure
     },
   },
-});
+})
 
 /**
  * A set of typesafe hooks for consuming your API.
@@ -26,30 +26,30 @@ export const trpc = createTRPCOptionsProxy<AppRouter>({
     links: [
       loggerLink({
         enabled: (opts) =>
-          process.env.NODE_ENV === "development" ||
-          (opts.direction === "down" && opts.result instanceof Error),
-        colorMode: "ansi",
+          process.env.NODE_ENV === 'development' ||
+          (opts.direction === 'down' && opts.result instanceof Error),
+        colorMode: 'ansi',
       }),
       httpBatchLink({
         transformer: superjson,
         url: `${getBaseUrl()}/api/trpc`,
         async headers() {
-          const headers = new Map<string, string>();
-          headers.set("x-trpc-source", "expo-react");
+          const headers = new Map<string, string>()
+          headers.set('x-trpc-source', 'expo-react')
 
-          const clerkInstance = getClerkInstance();
+          const clerkInstance = getClerkInstance()
 
-          const token = await clerkInstance.session?.getToken();
+          const token = await clerkInstance.session?.getToken()
 
           if (token) {
-            headers.set("Authorization", `Bearer ${token}`);
+            headers.set('Authorization', `Bearer ${token}`)
           }
-          return headers;
+          return headers
         },
       }),
     ],
   }),
   queryClient,
-});
+})
 
-export { type RouterInputs, type RouterOutputs } from "@instello/api";
+export { type RouterInputs, type RouterOutputs } from '@instello/api'

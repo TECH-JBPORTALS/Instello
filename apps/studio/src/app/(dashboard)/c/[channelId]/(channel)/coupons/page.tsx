@@ -1,17 +1,17 @@
-import { Suspense } from "react";
-import { CouponList } from "@/components/coupon-list";
-import { CreateCouponDialog } from "@/components/dialogs/create-coupon-dialog";
-import { HydrateClient, prefetch, trpc } from "@/trpc/server";
-import { Button } from "@instello/ui/components/button";
-import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
+import { Button } from '@instello/ui/components/button'
+import { PlusIcon } from '@phosphor-icons/react/dist/ssr'
+import { Suspense } from 'react'
+import { CouponList } from '@/components/coupon-list'
+import { CreateCouponDialog } from '@/components/dialogs/create-coupon-dialog'
+import { HydrateClient, prefetch, trpc } from '@/trpc/server'
 
 export default async function Page({
   params,
 }: {
-  params: Promise<{ channelId: string }>;
+  params: Promise<{ channelId: string }>
 }) {
-  const { channelId } = await params;
-  prefetch(trpc.lms.coupon.list.queryOptions({ channelId }));
+  const { channelId } = await params
+  prefetch(trpc.lms.coupon.list.queryOptions({ channelId }))
 
   return (
     <HydrateClient>
@@ -32,5 +32,5 @@ export default async function Page({
         </div>
       </div>
     </HydrateClient>
-  );
+  )
 }

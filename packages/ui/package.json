@@ -5,9 +5,9 @@
   "private": true,
   "scripts": {
     "clean": "git clean -xdf .cache .turbo dist node_modules",
-    "lint": "eslint",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
-    "format": "prettier --check . --ignore-path ../../.gitignore"
+    "format": "biome format .",
+    "lint": "biome lint ."
   },
   "dependencies": {
     "@hookform/resolvers": "catalog:",
@@ -48,8 +48,6 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@instello/eslint-config": "workspace:*",
-    "@instello/prettier-config": "workspace:*",
     "@instello/tsconfig": "workspace:*",
     "@storybook/nextjs": "^9.0.17",
     "@storybook/nextjs-vite": "^9.0.18",
@@ -60,7 +58,6 @@
     "@types/node": "catalog:react19",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
-    "prettier": "catalog:",
     "storybook": "^9.0.17",
     "tailwindcss": "catalog:",
     "typescript": "catalog:"
@@ -72,6 +69,5 @@
     "./lib/*": "./src/lib/*.ts",
     "./components/*": "./src/components/*.tsx",
     "./hooks/*": "./src/hooks/*.ts"
-  },
-  "prettier": "@instello/prettier-config"
+  }
 }

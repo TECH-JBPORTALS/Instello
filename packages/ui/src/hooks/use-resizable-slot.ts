@@ -1,20 +1,20 @@
-import { useCallback, useEffect, useRef } from "react";
-import { useDrag } from "@use-gesture/react";
-import { useMotionValue } from "framer-motion";
+import { useDrag } from '@use-gesture/react'
+import { useMotionValue } from 'framer-motion'
+import { useCallback, useEffect, useRef } from 'react'
 
 interface UseResizableSlotParams {
   slot: {
-    startOfPeriod: number;
-    endOfPeriod: number;
-    dayOfWeek: number;
-  };
-  onResize: (updated: { startOfPeriod: number; endOfPeriod: number }) => void;
-  containerRef: React.RefObject<HTMLDivElement | null>;
-  totalColumns: number;
-  defaultSlotWidth: number;
-  maxStartPeriod: number;
-  maxEndPeriod: number;
-  offset?: number;
+    startOfPeriod: number
+    endOfPeriod: number
+    dayOfWeek: number
+  }
+  onResize: (updated: { startOfPeriod: number; endOfPeriod: number }) => void
+  containerRef: React.RefObject<HTMLDivElement | null>
+  totalColumns: number
+  defaultSlotWidth: number
+  maxStartPeriod: number
+  maxEndPeriod: number
+  offset?: number
 }
 
 export function useResizableSlot({
@@ -26,24 +26,24 @@ export function useResizableSlot({
   maxEndPeriod,
   maxStartPeriod,
 }: UseResizableSlotParams) {
-  const calcInitialX = (slot.startOfPeriod - 1) * defaultSlotWidth + offset;
+  const calcInitialX = (slot.startOfPeriod - 1) * defaultSlotWidth + offset
   const calcInitialWidth =
-    (slot.endOfPeriod - slot.startOfPeriod + 1) * defaultSlotWidth - offset;
+    (slot.endOfPeriod - slot.startOfPeriod + 1) * defaultSlotWidth - offset
 
-  const x = useMotionValue(calcInitialX);
-  const width = useMotionValue(calcInitialWidth);
+  const x = useMotionValue(calcInitialX)
+  const width = useMotionValue(calcInitialWidth)
 
-  const startRef = useRef(slot.startOfPeriod);
-  const endRef = useRef(slot.endOfPeriod);
+  const startRef = useRef(slot.startOfPeriod)
+  const endRef = useRef(slot.endOfPeriod)
 
   useEffect(() => {
-    x.set(calcInitialX);
-    width.set(calcInitialWidth);
-  }, [slot, defaultSlotWidth, width, x, calcInitialX, calcInitialWidth]);
+    x.set(calcInitialX)
+    width.set(calcInitialWidth)
+  }, [slot, defaultSlotWidth, width, x, calcInitialX, calcInitialWidth])
 
   const updateStart = useCallback(
     (mx: number, last: boolean) => {
-      const snapCols = Math.round(mx / defaultSlotWidth);
+      const snapCols = Math.round(mx / defaultSlotWidth)
 
       /**
        * Get new start by adding snapped column to current start period value.
@@ -53,24 +53,24 @@ export function useResizableSlot({
       const newStart = Math.min(
         Math.max(1, maxStartPeriod, startRef.current + snapCols),
         endRef.current,
-      );
+      )
 
       // update x and width
-      const newX = (newStart - 1) * defaultSlotWidth;
-      const newWidth = (endRef.current - newStart + 1) * defaultSlotWidth;
+      const newX = (newStart - 1) * defaultSlotWidth
+      const newWidth = (endRef.current - newStart + 1) * defaultSlotWidth
 
-      x.set(newX + offset);
-      width.set(newWidth - offset);
+      x.set(newX + offset)
+      width.set(newWidth - offset)
 
       if (last)
-        onResize({ startOfPeriod: newStart, endOfPeriod: endRef.current });
+        onResize({ startOfPeriod: newStart, endOfPeriod: endRef.current })
     },
     [onResize, defaultSlotWidth, x, width, offset, maxStartPeriod],
-  );
+  )
 
   const updateEnd = useCallback(
     (mx: number, last: boolean) => {
-      const snapCols = Math.round(mx / defaultSlotWidth);
+      const snapCols = Math.round(mx / defaultSlotWidth)
 
       /**
        * Get new end by increasing the current end slot by adding snapped column value.
@@ -80,40 +80,40 @@ export function useResizableSlot({
       const newEnd = Math.max(
         Math.min(totalColumns, maxEndPeriod, endRef.current + snapCols),
         startRef.current,
-      );
+      )
 
       // update width only
-      const newWidth = (newEnd - startRef.current + 1) * defaultSlotWidth;
+      const newWidth = (newEnd - startRef.current + 1) * defaultSlotWidth
 
-      width.set(newWidth - offset);
+      width.set(newWidth - offset)
 
       if (last)
-        onResize({ startOfPeriod: startRef.current, endOfPeriod: newEnd });
+        onResize({ startOfPeriod: startRef.current, endOfPeriod: newEnd })
     },
     [onResize, defaultSlotWidth, totalColumns, width, offset, maxEndPeriod],
-  );
+  )
 
   const bindLeftResize = useDrag(
     ({ movement: [mx], first, last }) => {
       if (first) {
-        startRef.current = slot.startOfPeriod;
-        endRef.current = slot.endOfPeriod;
+        startRef.current = slot.startOfPeriod
+        endRef.current = slot.endOfPeriod
       }
-      updateStart(mx, last);
+      updateStart(mx, last)
     },
-    { axis: "x", preventDefault: true },
-  );
+    { axis: 'x', preventDefault: true },
+  )
 
   const bindRightResize = useDrag(
     ({ movement: [mx], first, last }) => {
       if (first) {
-        startRef.current = slot.startOfPeriod;
-        endRef.current = slot.endOfPeriod;
+        startRef.current = slot.startOfPeriod
+        endRef.current = slot.endOfPeriod
       }
-      updateEnd(mx, last);
+      updateEnd(mx, last)
     },
-    { axis: "x", preventDefault: true },
-  );
+    { axis: 'x', preventDefault: true },
+  )
 
   return {
     motionProps: {
@@ -125,5 +125,5 @@ export function useResizableSlot({
     bindLeftResize,
     bindRightResize,
     offset,
-  };
+  }
 }

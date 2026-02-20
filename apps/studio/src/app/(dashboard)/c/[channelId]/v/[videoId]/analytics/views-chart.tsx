@@ -1,40 +1,40 @@
-"use client";
+'use client'
 
-import type { ChartConfig } from "@instello/ui/components/chart";
-import { useParams } from "next/navigation";
-import { useTRPC } from "@/trpc/react";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@instello/ui/components/card";
+} from '@instello/ui/components/card'
+import type { ChartConfig } from '@instello/ui/components/chart'
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@instello/ui/components/chart";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
+} from '@instello/ui/components/chart'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { useParams } from 'next/navigation'
+import { CartesianGrid, Line, LineChart, XAxis } from 'recharts'
+import { useTRPC } from '@/trpc/react'
 
 const chartConfig = {
   views: {
-    label: "View",
-    color: "var(--chart-1)",
+    label: 'View',
+    color: 'var(--chart-1)',
   },
-} satisfies ChartConfig;
+} satisfies ChartConfig
 
 export function ViewsChart() {
-  const trpc = useTRPC();
-  const { videoId } = useParams<{ videoId: string }>();
+  const trpc = useTRPC()
+  const { videoId } = useParams<{ videoId: string }>()
   const { data } = useSuspenseQuery(
     trpc.lms.video.getMetrics.queryOptions({ videoId }),
-  );
+  )
 
-  const totalWatchTime = data.overallValues.data.total_watch_time ?? 0;
-  const inHoursWatchTime = new Date(totalWatchTime).getHours();
-  const remainingMinutes = new Date(totalWatchTime).getMinutes();
+  const totalWatchTime = data.overallValues.data.total_watch_time ?? 0
+  const inHoursWatchTime = new Date(totalWatchTime).getHours()
+  const remainingMinutes = new Date(totalWatchTime).getMinutes()
 
   return (
     <Card className="py-4 shadow-none sm:py-0">
@@ -57,7 +57,7 @@ export function ViewsChart() {
               Total Watchtime
             </span>
             <span className="text-nowrap text-lg font-bold leading-none sm:text-3xl">
-              {inHoursWatchTime}Hr{" "}
+              {inHoursWatchTime}Hr{' '}
               {remainingMinutes !== 0 && <>{remainingMinutes}Min</>}
             </span>
           </div>
@@ -84,11 +84,11 @@ export function ViewsChart() {
               tickMargin={8}
               minTickGap={32}
               tickFormatter={(value: Date) => {
-                const date = new Date(value);
-                return date.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                });
+                const date = new Date(value)
+                return date.toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                })
               }}
             />
             <ChartTooltip
@@ -97,17 +97,17 @@ export function ViewsChart() {
                   className="w-[150px]"
                   nameKey="views"
                   labelFormatter={(value: Date) => {
-                    return new Date(value).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    });
+                    return new Date(value).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })
                   }}
                 />
               }
             />
             <Line
-              dataKey={"views"}
+              dataKey={'views'}
               type="monotone"
               stroke={`var(--color-views)`}
               strokeWidth={2}
@@ -117,5 +117,5 @@ export function ViewsChart() {
         </ChartContainer>
       </CardContent>
     </Card>
-  );
+  )
 }

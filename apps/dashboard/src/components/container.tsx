@@ -1,5 +1,5 @@
-import type React from "react";
-import { cn } from "@instello/ui/lib/utils";
+import { cn } from '@instello/ui/lib/utils'
+import type React from 'react'
 
 export default function Container({
   className,
@@ -8,10 +8,10 @@ export default function Container({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("flex flex-col gap-4 py-4 md:gap-6 md:py-6", className)}
+      className={cn('flex flex-col gap-4 py-4 md:gap-6 md:py-6', className)}
       {...props}
     >
       {children}
     </div>
-  );
+  )
 }

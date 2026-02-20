@@ -1,12 +1,7 @@
-"use client";
+'use client'
 
-import type { RouterOutputs } from "@instello/api";
-import type { ColumnDef } from "@tanstack/react-table";
-import type React from "react";
-import { useState } from "react";
-import { env } from "@/env";
-import { useTRPC } from "@/trpc/react";
-import { AlertDescription } from "@instello/ui/components/alert";
+import type { RouterOutputs } from '@instello/api'
+import { AlertDescription } from '@instello/ui/components/alert'
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -15,41 +10,46 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@instello/ui/components/alert-dialog";
+} from '@instello/ui/components/alert-dialog'
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@instello/ui/components/avatar";
-import { Button } from "@instello/ui/components/button";
+} from '@instello/ui/components/avatar'
+import { Button } from '@instello/ui/components/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@instello/ui/components/dropdown-menu";
+} from '@instello/ui/components/dropdown-menu'
 import {
   DotsThreeIcon,
   PenNibIcon,
   TrashSimpleIcon,
-} from "@phosphor-icons/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { formatDistanceToNowStrict } from "date-fns";
-import { toast } from "sonner";
+} from '@phosphor-icons/react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import type { ColumnDef } from '@tanstack/react-table'
+import { formatDistanceToNowStrict } from 'date-fns'
+import type React from 'react'
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { env } from '@/env'
+import { useTRPC } from '@/trpc/react'
 
-import { AuthorEditSheet } from "./author-edit.sheet";
+import { AuthorEditSheet } from './author-edit.sheet'
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type Subscription = RouterOutputs["lms"]["author"]["list"][number];
+export type Subscription = RouterOutputs['lms']['author']['list'][number]
 
 export const columns: ColumnDef<Subscription>[] = [
   {
-    id: "author",
-    header: "Author",
+    id: 'author',
+    header: 'Author',
     cell(props) {
-      const original = props.row.original;
+      const original = props.row.original
       return (
         <div className="inline-flex items-center gap-2.5">
           <Avatar className="size-8 border">
@@ -63,11 +63,11 @@ export const columns: ColumnDef<Subscription>[] = [
             {original.firstName} {original.lastName}
           </p>
         </div>
-      );
+      )
     },
   },
   {
-    accessorKey: "email",
+    accessorKey: 'email',
     header: () => <div className="w-20">Email address</div>,
     cell(props) {
       return (
@@ -76,12 +76,12 @@ export const columns: ColumnDef<Subscription>[] = [
             {props.getValue() as string}
           </time>
         </div>
-      );
+      )
     },
   },
 
   {
-    accessorKey: "createdAt",
+    accessorKey: 'createdAt',
     header: () => <div className="ml-auto px-3 text-right">Created</div>,
     cell(props) {
       return (
@@ -92,17 +92,17 @@ export const columns: ColumnDef<Subscription>[] = [
             })}
           </time>
         </div>
-      );
+      )
     },
   },
   {
-    id: "more-action",
+    id: 'more-action',
     cell(props) {
       return (
         <div className=" ml-auto w-10 text-right">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant={"ghost"} size={"icon"}>
+              <Button variant={'ghost'} size={'icon'}>
                 <DotsThreeIcon weight="bold" />
               </Button>
             </DropdownMenuTrigger>
@@ -111,7 +111,7 @@ export const columns: ColumnDef<Subscription>[] = [
                 <AuthorEditSheet authorId={props.row.original.id}>
                   <DropdownMenuItem
                     onSelect={(e) => {
-                      e.preventDefault();
+                      e.preventDefault()
                     }}
                   >
                     <PenNibIcon weight="duotone" /> Edit
@@ -120,7 +120,7 @@ export const columns: ColumnDef<Subscription>[] = [
                 <DeleteAuthorAlertDialog authorId={props.row.original.id}>
                   <DropdownMenuItem
                     onSelect={(e) => {
-                      e.preventDefault();
+                      e.preventDefault()
                     }}
                     variant="destructive"
                   >
@@ -131,33 +131,33 @@ export const columns: ColumnDef<Subscription>[] = [
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      );
+      )
     },
   },
-];
+]
 
 function DeleteAuthorAlertDialog({
   children,
   authorId,
 }: {
-  children: React.ReactNode;
-  authorId: string;
+  children: React.ReactNode
+  authorId: string
 }) {
-  const [open, setOpen] = useState(false);
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false)
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
   const { mutate: deleteAuthor, isPending } = useMutation(
     trpc.lms.author.delete.mutationOptions({
       async onSuccess() {
-        await queryClient.invalidateQueries(trpc.lms.author.list.queryFilter());
-        setOpen(false);
-        toast.info("Author removed");
+        await queryClient.invalidateQueries(trpc.lms.author.list.queryFilter())
+        setOpen(false)
+        toast.info('Author removed')
       },
       onError(error) {
-        toast.error(error.message);
+        toast.error(error.message)
       },
     }),
-  );
+  )
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -172,11 +172,11 @@ function DeleteAuthorAlertDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel asChild>
-            <Button variant={"outline"}>Cancel</Button>
+            <Button variant={'outline'}>Cancel</Button>
           </AlertDialogCancel>
           <Button
             loading={isPending}
-            variant={"destructive"}
+            variant={'destructive'}
             onClick={() => deleteAuthor({ authorId })}
           >
             Remove
@@ -184,5 +184,5 @@ function DeleteAuthorAlertDialog({
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  );
+  )
 }

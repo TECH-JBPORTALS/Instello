@@ -1,9 +1,6 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import { useParams, usePathname } from "next/navigation";
-import { useTRPC } from "@/trpc/react";
-import { Protect } from "@clerk/nextjs";
+import { Protect } from '@clerk/nextjs'
 import {
   SidebarGroup,
   SidebarGroupAction,
@@ -11,24 +8,26 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@instello/ui/components/sidebar";
+} from '@instello/ui/components/sidebar'
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@instello/ui/components/tooltip";
-import { PlusIcon } from "@phosphor-icons/react";
-import { useSuspenseQuery } from "@tanstack/react-query";
-
-import type { IconPickerIcon } from "../icon-picker";
-import { CreateBranchDialog } from "../dialogs/create-branch.dialog";
-import { TablerReactIcon } from "../icon-picker";
+} from '@instello/ui/components/tooltip'
+import { PlusIcon } from '@phosphor-icons/react'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import Link from 'next/link'
+import { useParams, usePathname } from 'next/navigation'
+import { useTRPC } from '@/trpc/react'
+import { CreateBranchDialog } from '../dialogs/create-branch.dialog'
+import type { IconPickerIcon } from '../icon-picker'
+import { TablerReactIcon } from '../icon-picker'
 
 export function NavBranches() {
-  const { slug } = useParams<{ slug: string }>();
-  const pathname = usePathname();
-  const trpc = useTRPC();
-  const branches = useSuspenseQuery(trpc.erp.branch.list.queryOptions());
+  const { slug } = useParams<{ slug: string }>()
+  const pathname = usePathname()
+  const trpc = useTRPC()
+  const branches = useSuspenseQuery(trpc.erp.branch.list.queryOptions())
 
   return (
     <SidebarGroup>
@@ -49,8 +48,8 @@ export function NavBranches() {
       </Protect>
       <SidebarMenu>
         {branches.data.map((b) => {
-          const branchUrl = `/${slug}/b/${b.id}`;
-          const isActive = pathname.startsWith(branchUrl);
+          const branchUrl = `/${slug}/b/${b.id}`
+          const isActive = pathname.startsWith(branchUrl)
 
           return (
             <SidebarMenuItem key={b.id} className="items-center">
@@ -69,9 +68,9 @@ export function NavBranches() {
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-          );
+          )
         })}
       </SidebarMenu>
     </SidebarGroup>
-  );
+  )
 }

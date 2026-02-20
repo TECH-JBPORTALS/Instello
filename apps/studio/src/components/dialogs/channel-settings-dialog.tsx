@@ -1,14 +1,8 @@
-"use client";
+'use client'
 
-import type { z } from "zod/v4";
-import React, { useState } from "react";
-import Image from "next/image";
-import { env } from "@/env";
-import { useTRPC } from "@/trpc/react";
-import { UploadButton, UploadDropzone } from "@/utils/uploadthing";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { UpdateChannelSchema } from "@instello/db/lms";
-import { Button, buttonVariants } from "@instello/ui/components/button";
+import { zodResolver } from '@hookform/resolvers/zod'
+import { UpdateChannelSchema } from '@instello/db/lms'
+import { Button, buttonVariants } from '@instello/ui/components/button'
 import {
   Dialog,
   DialogBody,
@@ -16,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@instello/ui/components/dialog";
+} from '@instello/ui/components/dialog'
 import {
   Form,
   FormControl,
@@ -25,15 +19,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@instello/ui/components/form";
-import { Input } from "@instello/ui/components/input";
+} from '@instello/ui/components/form'
+import { Input } from '@instello/ui/components/input'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@instello/ui/components/select";
+} from '@instello/ui/components/select'
 import {
   Sidebar,
   SidebarContent,
@@ -44,48 +38,54 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-} from "@instello/ui/components/sidebar";
-import { Spinner } from "@instello/ui/components/spinner";
-import { Textarea } from "@instello/ui/components/textarea";
-import { cn } from "@instello/ui/lib/utils";
+} from '@instello/ui/components/sidebar'
+import { Spinner } from '@instello/ui/components/spinner'
+import { Textarea } from '@instello/ui/components/textarea'
+import { cn } from '@instello/ui/lib/utils'
 import {
   GearIcon,
   GlobeHemisphereEastIcon,
   LockLaminatedIcon,
-} from "@phosphor-icons/react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+} from '@phosphor-icons/react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import Image from 'next/image'
+import React, { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import type { z } from 'zod/v4'
+import { env } from '@/env'
+import { useTRPC } from '@/trpc/react'
+import { UploadButton, UploadDropzone } from '@/utils/uploadthing'
 
-import CollegeBranchCommand from "../college-branch.command";
+import CollegeBranchCommand from '../college-branch.command'
 
 const navigationItems: {
-  id: "general" | null;
-  label: string;
-  icon?: React.ReactNode;
-}[] = [{ id: "general", label: "General", icon: <GearIcon /> }];
+  id: 'general' | null
+  label: string
+  icon?: React.ReactNode
+}[] = [{ id: 'general', label: 'General', icon: <GearIcon /> }]
 
-type NavigationItem = (typeof navigationItems)[number]["id"];
+type NavigationItem = (typeof navigationItems)[number]['id']
 
 export function ChannelSettingsDialog({
   children,
   channelId,
 }: {
-  children: React.ReactNode;
-  channelId: string;
+  children: React.ReactNode
+  channelId: string
 }) {
-  const [activeTab, setActiveTab] = useState<NavigationItem>("general");
-  const [open, setOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<NavigationItem>('general')
+  const [open, setOpen] = useState(false)
 
   const renderContent = () => {
     switch (activeTab) {
-      case "general":
-        return <GeneralSettings open={open} channelId={channelId} />;
+      case 'general':
+        return <GeneralSettings open={open} channelId={channelId} />
 
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -96,7 +96,7 @@ export function ChannelSettingsDialog({
       >
         <SidebarProvider
           className="min-h-full"
-          style={{ "--sidebar-width": "14rem" } as React.CSSProperties}
+          style={{ '--sidebar-width': '14rem' } as React.CSSProperties}
         >
           <Sidebar className="h-full">
             <SidebarContent>
@@ -124,63 +124,63 @@ export function ChannelSettingsDialog({
         </SidebarProvider>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
 
 function GeneralSettings({
   channelId,
   open,
 }: {
-  channelId: string;
-  open: boolean;
+  channelId: string
+  open: boolean
 }) {
-  const queryClient = useQueryClient();
-  const trpc = useTRPC();
+  const queryClient = useQueryClient()
+  const trpc = useTRPC()
   const { data, isLoading } = useQuery(
     trpc.lms.channel.getById.queryOptions(
       { channelId },
       { gcTime: 0, enabled: open },
     ),
-  );
+  )
 
   const form = useForm({
     resolver: zodResolver(UpdateChannelSchema),
     defaultValues: {
-      subjectCode: data?.subjectCode ?? "",
-      thumbneilId: data?.thumbneilId ?? "",
-      title: data?.title ?? "",
+      subjectCode: data?.subjectCode ?? '',
+      thumbneilId: data?.thumbneilId ?? '',
+      title: data?.title ?? '',
       id: channelId,
-      description: data?.description ?? "",
+      description: data?.description ?? '',
       isPublic: data?.isPublic ?? false,
-      collegeId: data?.collegeId ?? "",
-      branchId: data?.branchId ?? "",
+      collegeId: data?.collegeId ?? '',
+      branchId: data?.branchId ?? '',
     },
-    reValidateMode: "onChange",
-    mode: "onChange",
-  });
+    reValidateMode: 'onChange',
+    mode: 'onChange',
+  })
 
   const { mutateAsync: updateChannel } = useMutation(
     trpc.lms.channel.update.mutationOptions({
       async onSuccess(_, variables) {
-        toast.info(`Channel info updated`);
+        toast.info(`Channel info updated`)
         form.reset(variables, {
           keepDirty: false,
           keepDirtyValues: true,
           keepSubmitCount: true,
-        });
-        await queryClient.invalidateQueries(trpc.lms.channel.pathFilter());
+        })
+        await queryClient.invalidateQueries(trpc.lms.channel.pathFilter())
       },
       onError(error) {
-        console.error(error);
-        toast.error(`Couldn't able to update the channel info`);
+        console.error(error)
+        toast.error(`Couldn't able to update the channel info`)
       },
     }),
-  );
+  )
 
-  const values = form.watch();
+  const values = form.watch()
 
   async function onSubmit(values: z.infer<typeof UpdateChannelSchema>) {
-    await updateChannel(values);
+    await updateChannel(values)
   }
 
   return (
@@ -193,7 +193,7 @@ function GeneralSettings({
             <Button
               disabled={!form.formState.isDirty || form.formState.isSubmitting}
               className="rounded-full"
-              variant={"secondary"}
+              variant={'secondary'}
               type="button"
               onClick={() => form.reset()}
             >
@@ -294,30 +294,30 @@ function GeneralSettings({
                               config={{ cn }}
                               appearance={{
                                 button: buttonVariants({
-                                  className: "rounded-full",
-                                  size: "lg",
+                                  className: 'rounded-full',
+                                  size: 'lg',
                                 }),
                               }}
                               input={{ channelId }}
-                              endpoint={"channelThumbneilUploader"}
+                              endpoint={'channelThumbneilUploader'}
                               onClientUploadComplete={async (res) => {
                                 form.reset(
                                   {
                                     thumbneilId:
                                       res.at(0)?.serverData.newThumbneilId ??
-                                      "",
+                                      '',
                                   },
                                   { keepDirty: false },
-                                );
+                                )
                                 await queryClient.invalidateQueries(
                                   trpc.lms.channel.getById.queryOptions({
                                     channelId,
                                   }),
-                                );
-                                toast.info(`Channel thumbneil image changed.`);
+                                )
+                                toast.info(`Channel thumbneil image changed.`)
                               }}
                               onUploadError={(e) => {
-                                toast.error(e.message);
+                                toast.error(e.message)
                               }}
                             />
                           </div>
@@ -326,22 +326,22 @@ function GeneralSettings({
                         <UploadDropzone
                           input={{ channelId }}
                           className="h-full w-full"
-                          endpoint={"channelThumbneilUploader"}
-                          config={{ mode: "auto" }}
+                          endpoint={'channelThumbneilUploader'}
+                          config={{ mode: 'auto' }}
                           onClientUploadComplete={async (res) => {
                             form.reset(
                               {
                                 thumbneilId:
-                                  res.at(0)?.serverData.newThumbneilId ?? "",
+                                  res.at(0)?.serverData.newThumbneilId ?? '',
                               },
                               { keepDirty: false },
-                            );
+                            )
                             await queryClient.invalidateQueries(
                               trpc.lms.channel.getById.queryOptions({
                                 channelId,
                               }),
-                            );
-                            toast.info(`Added channel thumbneil image.`);
+                            )
+                            toast.info(`Added channel thumbneil image.`)
                           }}
                         />
                       )}
@@ -365,12 +365,12 @@ function GeneralSettings({
                       <Select
                         {...field}
                         onValueChange={(value) =>
-                          field.onChange(value == "public")
+                          field.onChange(value == 'public')
                         }
-                        value={field.value ? "public" : "private"}
+                        value={field.value ? 'public' : 'private'}
                       >
                         <SelectTrigger className="min-w-sm">
-                          <SelectValue placeholder={"Select..."} />
+                          <SelectValue placeholder={'Select...'} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="private">
@@ -394,13 +394,13 @@ function GeneralSettings({
                     name="collegeId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{"College (Optional)"}</FormLabel>
+                        <FormLabel>{'College (Optional)'}</FormLabel>
                         <FormControl className="h-full">
                           <CollegeBranchCommand
                             value={field.value}
                             onChange={(value) => {
-                              field.onChange(value);
-                              form.setValue("collegeId", value);
+                              field.onChange(value)
+                              form.setValue('collegeId', value)
                             }}
                           />
                         </FormControl>
@@ -414,7 +414,7 @@ function GeneralSettings({
                     name="branchId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{"Branch (Optional)"}</FormLabel>
+                        <FormLabel>{'Branch (Optional)'}</FormLabel>
                         <FormControl className="h-full">
                           <CollegeBranchCommand
                             value={field.value}
@@ -433,5 +433,5 @@ function GeneralSettings({
         </DialogBody>
       </form>
     </Form>
-  );
+  )
 }

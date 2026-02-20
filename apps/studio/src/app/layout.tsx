@@ -1,36 +1,36 @@
-import type { Metadata } from "next";
-import { Geist_Mono, Montserrat } from "next/font/google";
+import type { Metadata } from 'next'
+import { Geist_Mono, Montserrat } from 'next/font/google'
 
-import "@instello/ui/globals.css";
+import '@instello/ui/globals.css'
 
-import { Providers } from "@/components/providers";
-import { ClerkProvider } from "@clerk/nextjs";
-import { buttonVariants } from "@instello/ui/components/button";
-import { cn } from "@instello/ui/lib/utils";
-import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
-import { extractRouterConfig } from "uploadthing/server";
+import { ClerkProvider } from '@clerk/nextjs'
+import { buttonVariants } from '@instello/ui/components/button'
+import { cn } from '@instello/ui/lib/utils'
+import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
+import { extractRouterConfig } from 'uploadthing/server'
+import { Providers } from '@/components/providers'
 
-import { studioFileRouter } from "./api/uploadthing/core";
+import { studioFileRouter } from './api/uploadthing/core'
 
 const geistMono = Geist_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-});
+  variable: '--font-mono',
+  subsets: ['latin'],
+})
 
 const montserrat = Montserrat({
-  variable: "--font-sans",
-  subsets: ["latin"],
-});
+  variable: '--font-sans',
+  subsets: ['latin'],
+})
 
 export const metadata: Metadata = {
-  title: "Instello · STUDIO",
-  description: "One Platform. Every Possibility.",
-};
+  title: 'Instello · STUDIO',
+  description: 'One Platform. Every Possibility.',
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <ClerkProvider
@@ -38,27 +38,27 @@ export default function RootLayout({
         elements: {
           button: buttonVariants(),
           input: cn(
-            "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input shadow-xs flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base outline-none transition-[color,box-shadow] file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-            "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-            "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+            'file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input shadow-xs flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base outline-none transition-[color,box-shadow] file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
+            'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
+            'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
           ),
         },
         variables: {
-          colorBackground: "var(--color-card)",
-          borderRadius: "var(--radius-sm)",
-          colorDanger: "var(--color-destructive)",
-          colorForeground: "var(--color-card-foreground)",
-          colorInput: "var(--color-background)",
-          colorMuted: "var(--color-muted)",
-          colorMutedForeground: "var(--color-muted-foreground)",
-          colorInputForeground: "var(--color-foreground)",
-          colorPrimary: "var(--color-primary)",
-          colorPrimaryForeground: "var(--color-primary-foreground)",
-          colorNeutral: "var(--color-accent-foreground)",
-          colorRing: "var(--color-ring)",
-          fontFamily: "var(--font-sans)",
-          fontSize: "0.878rem",
-          colorShadow: "rgba(0,0,0,0)",
+          colorBackground: 'var(--color-card)',
+          borderRadius: 'var(--radius-sm)',
+          colorDanger: 'var(--color-destructive)',
+          colorForeground: 'var(--color-card-foreground)',
+          colorInput: 'var(--color-background)',
+          colorMuted: 'var(--color-muted)',
+          colorMutedForeground: 'var(--color-muted-foreground)',
+          colorInputForeground: 'var(--color-foreground)',
+          colorPrimary: 'var(--color-primary)',
+          colorPrimaryForeground: 'var(--color-primary-foreground)',
+          colorNeutral: 'var(--color-accent-foreground)',
+          colorRing: 'var(--color-ring)',
+          fontFamily: 'var(--font-sans)',
+          fontSize: '0.878rem',
+          colorShadow: 'rgba(0,0,0,0)',
         },
       }}
     >
@@ -79,5 +79,5 @@ export default function RootLayout({
         </body>
       </html>
     </ClerkProvider>
-  );
+  )
 }

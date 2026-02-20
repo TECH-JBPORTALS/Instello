@@ -1,19 +1,16 @@
-import { relations } from "drizzle-orm";
-import { index } from "drizzle-orm/pg-core";
-import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
-import { z } from "zod/v4";
+import { relations } from 'drizzle-orm'
+import { index } from 'drizzle-orm/pg-core'
+import { createInsertSchema, createUpdateSchema } from 'drizzle-zod'
+import { z } from 'zod/v4'
 
-
-
-import { initialColumns } from "../columns.helpers";
-import { lmsPgTable } from "../table.helpers";
-import { chapter } from "./chapter";
-import { collegeOrBranch } from "./college-or-branch";
-import { subscription } from "./subscription";
-
+import { initialColumns } from '../columns.helpers'
+import { lmsPgTable } from '../table.helpers'
+import { chapter } from './chapter'
+import { collegeOrBranch } from './college-or-branch'
+import { subscription } from './subscription'
 
 export const channel = lmsPgTable(
-  "channel",
+  'channel',
   (d) => ({
     ...initialColumns,
     createdByClerkUserId: d.text().notNull(),
@@ -26,20 +23,20 @@ export const channel = lmsPgTable(
     subjectCode: d.text(),
   }),
   (t) => [index().on(t.isPublic), index().on(t.createdAt)],
-);
+)
 
 export const channelRelations = relations(channel, ({ many }) => ({
   chapters: many(chapter),
   subscriptions: many(subscription),
-}));
+}))
 
 export const CreateChannelSchema = createInsertSchema(channel, {
   title: z
-    .string({ error: "Required" })
-    .min(3, "Title of the channel must be atleast 3 characters long"),
+    .string({ error: 'Required' })
+    .min(3, 'Title of the channel must be atleast 3 characters long'),
   subjectCode: z
-    .string({ error: "Required" })
-    .min(3, "Subject code is required"),
+    .string({ error: 'Required' })
+    .min(3, 'Subject code is required'),
   description: z.string().optional(),
   collegeId: z.string().optional(),
   branchId: z.string().optional(),
@@ -48,18 +45,18 @@ export const CreateChannelSchema = createInsertSchema(channel, {
   createdAt: true,
   createdByClerkUserId: true,
   updatedAt: true,
-});
+})
 
 export const UpdateChannelSchema = createUpdateSchema(channel, {
-  id: z.string().min(1, "Channel ID is required for updation"),
+  id: z.string().min(1, 'Channel ID is required for updation'),
   subjectCode: z
-    .string({ error: "Required" })
-    .min(3, "Subject code is required"),
+    .string({ error: 'Required' })
+    .min(3, 'Subject code is required'),
   title: z
     .string()
-    .min(3, "Title of the channel must be atlease 3 characters long"),
+    .min(3, 'Title of the channel must be atlease 3 characters long'),
   description: z.string().optional(),
-  thumbneilId: z.string().min(1, "Thumbneil required"),
+  thumbneilId: z.string().min(1, 'Thumbneil required'),
   collegeId: z.string().optional(),
   branchId: z.string().optional(),
   isPublic: z.boolean().optional(),
@@ -67,4 +64,4 @@ export const UpdateChannelSchema = createUpdateSchema(channel, {
   createdAt: true,
   createdByClerkUserId: true,
   updatedAt: true,
-});
+})

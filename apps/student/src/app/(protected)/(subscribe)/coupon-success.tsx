@@ -1,43 +1,43 @@
-import { View } from "react-native";
-import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
-import { Image } from "expo-image";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { Button } from "@/components/ui/button";
+import { useQuery } from '@tanstack/react-query'
+import CrownJSON from 'assets/animations/shine-crown.json'
+import { format } from 'date-fns'
+import { Image } from 'expo-image'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import LottieView from 'lottie-react-native'
+import { View } from 'react-native'
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Text } from "@/components/ui/text";
-import { trpc } from "@/utils/api";
-import { useQuery } from "@tanstack/react-query";
-import CrownJSON from "assets/animations/shine-crown.json";
-import { format } from "date-fns";
-import LottieView from "lottie-react-native";
+} from '@/components/ui/card'
+import { Text } from '@/components/ui/text'
+import { trpc } from '@/utils/api'
 
 export default function CouponSuccessScreen() {
   const { errorMessage, subscriptionId } = useLocalSearchParams<{
-    errorMessage?: string;
-    subscriptionId: string;
-  }>();
+    errorMessage?: string
+    subscriptionId: string
+  }>()
 
-  const router = useRouter();
+  const router = useRouter()
 
   const { data, isError, error } = useQuery(
     trpc.lms.subscription.getById.queryOptions(
       { subscriptionId },
       { enabled: !!subscriptionId },
     ),
-  );
+  )
 
   if (errorMessage || isError || !data)
     return (
       <View>
-        <Text variant={"large"}>{errorMessage ?? error?.message}</Text>
+        <Text variant={'large'}>{errorMessage ?? error?.message}</Text>
       </View>
-    );
+    )
 
   return (
     <View className="flex-1 items-center">
@@ -54,8 +54,8 @@ export default function CouponSuccessScreen() {
           />
         </Animated.View>
         <View className="items-center">
-          <Text variant={"h4"}>Subscribed Successful</Text>
-          <Text variant={"muted"}>Happy learning</Text>
+          <Text variant={'h4'}>Subscribed Successful</Text>
+          <Text variant={'muted'}>Happy learning</Text>
         </View>
 
         <Card className="bg-accent/40 flex-row gap-0 p-2">
@@ -66,7 +66,7 @@ export default function CouponSuccessScreen() {
               }}
               style={{
                 height: 64,
-                width: "auto",
+                width: 'auto',
                 aspectRatio: 16 / 11,
                 borderRadius: 8,
               }}
@@ -77,13 +77,13 @@ export default function CouponSuccessScreen() {
               {data.channel?.title}
             </CardTitle>
             <CardDescription>
-              Expires on {format(data.endDate, "PP")}
+              Expires on {format(data.endDate, 'PP')}
             </CardDescription>
           </CardHeader>
         </Card>
 
         <Button
-          variant={"secondary"}
+          variant={'secondary'}
           onPress={() => router.back()}
           className="w-full"
         >
@@ -91,5 +91,5 @@ export default function CouponSuccessScreen() {
         </Button>
       </View>
     </View>
-  );
+  )
 }

@@ -1,28 +1,28 @@
-import * as React from "react";
-import { Platform, StyleSheet } from "react-native";
-import { FadeIn, FadeOut } from "react-native-reanimated";
-import { FullWindowOverlay as RNFullWindowOverlay } from "react-native-screens";
-import { NativeOnlyAnimatedView } from "@/components/ui/native-only-animated-view";
-import { TextClassContext } from "@/components/ui/text";
-import { cn } from "@/lib/utils";
-import * as PopoverPrimitive from "@rn-primitives/popover";
+import * as PopoverPrimitive from '@rn-primitives/popover'
+import * as React from 'react'
+import { Platform, StyleSheet } from 'react-native'
+import { FadeIn, FadeOut } from 'react-native-reanimated'
+import { FullWindowOverlay as RNFullWindowOverlay } from 'react-native-screens'
+import { NativeOnlyAnimatedView } from '@/components/ui/native-only-animated-view'
+import { TextClassContext } from '@/components/ui/text'
+import { cn } from '@/lib/utils'
 
-const Popover = PopoverPrimitive.Root;
+const Popover = PopoverPrimitive.Root
 
-const PopoverTrigger = PopoverPrimitive.Trigger;
+const PopoverTrigger = PopoverPrimitive.Trigger
 
 const FullWindowOverlay =
-  Platform.OS === "ios" ? RNFullWindowOverlay : React.Fragment;
+  Platform.OS === 'ios' ? RNFullWindowOverlay : React.Fragment
 
 function PopoverContent({
   className,
-  align = "center",
+  align = 'center',
   sideOffset = 4,
   portalHost,
   ...props
 }: PopoverPrimitive.ContentProps &
   React.RefAttributes<PopoverPrimitive.ContentRef> & {
-    portalHost?: string;
+    portalHost?: string
   }) {
   return (
     <PopoverPrimitive.Portal hostName={portalHost}>
@@ -39,12 +39,12 @@ function PopoverContent({
                 align={align}
                 sideOffset={sideOffset}
                 className={cn(
-                  "outline-hidden border-border bg-popover z-50 w-72 rounded-md border p-4 shadow-md shadow-black/5",
+                  'outline-hidden border-border bg-popover z-50 w-72 rounded-md border p-4 shadow-md shadow-black/5',
                   Platform.select({
                     web: cn(
-                      "origin-(--radix-popover-content-transform-origin) animate-in fade-in-0 zoom-in-95 cursor-auto",
-                      props.side === "bottom" && "slide-in-from-top-2",
-                      props.side === "top" && "slide-in-from-bottom-2",
+                      'origin-(--radix-popover-content-transform-origin) animate-in fade-in-0 zoom-in-95 cursor-auto',
+                      props.side === 'bottom' && 'slide-in-from-top-2',
+                      props.side === 'top' && 'slide-in-from-bottom-2',
                     ),
                   }),
                   className,
@@ -56,7 +56,7 @@ function PopoverContent({
         </PopoverPrimitive.Overlay>
       </FullWindowOverlay>
     </PopoverPrimitive.Portal>
-  );
+  )
 }
 
-export { Popover, PopoverContent, PopoverTrigger };
+export { Popover, PopoverContent, PopoverTrigger }

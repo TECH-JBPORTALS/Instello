@@ -1,7 +1,7 @@
-import Container from "@/components/container";
-import { HydrateClient } from "@/trpc/server";
+import Container from '@/components/container'
+import { HydrateClient } from '@/trpc/server'
 
-import { BranchInfoRow } from "./branch-info-row";
+import { BranchInfoRow } from './branch-info-row'
 
 export default function Page() {
   return (
@@ -13,5 +13,5 @@ export default function Page() {
         <BranchInfoRow />
       </Container>
     </HydrateClient>
-  );
+  )
 }

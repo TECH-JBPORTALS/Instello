@@ -1,59 +1,59 @@
-import * as React from "react";
-import { View } from "react-native";
-import { router } from "expo-router";
-import { useLocalSearchParams } from "expo-router/build/hooks";
-import { Button } from "@/components/ui/button";
+import { useSignIn } from '@clerk/clerk-expo'
+import { router } from 'expo-router'
+import { useLocalSearchParams } from 'expo-router/build/hooks'
+import * as React from 'react'
+import { View } from 'react-native'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Text } from "@/components/ui/text";
-import { useSignIn } from "@clerk/clerk-expo";
+} from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Text } from '@/components/ui/text'
 
 export function ForgotPasswordForm() {
-  const { email: emailParam = "" } = useLocalSearchParams<{ email?: string }>();
-  const [email, setEmail] = React.useState(emailParam);
-  const { signIn, isLoaded } = useSignIn();
+  const { email: emailParam = '' } = useLocalSearchParams<{ email?: string }>()
+  const [email, setEmail] = React.useState(emailParam)
+  const { signIn, isLoaded } = useSignIn()
   const [error, setError] = React.useState<{
-    email?: string;
-    password?: string;
-  }>({});
-  const [isLoading, setIsLoading] = React.useState(false);
+    email?: string
+    password?: string
+  }>({})
+  const [isLoading, setIsLoading] = React.useState(false)
 
   const onSubmit = async () => {
     if (!email) {
-      setError({ email: "Email is required" });
-      return;
+      setError({ email: 'Email is required' })
+      return
     }
     if (!isLoaded) {
-      return;
+      return
     }
 
-    setIsLoading(true);
+    setIsLoading(true)
 
     try {
       await signIn.create({
-        strategy: "reset_password_email_code",
+        strategy: 'reset_password_email_code',
         identifier: email,
-      });
+      })
 
-      router.push(`/(auth)/reset-password?email=${email}`);
+      router.push(`/(auth)/reset-password?email=${email}`)
     } catch (err) {
       // See https://go.clerk.com/mRUDrIe for more info on error handling
       if (err instanceof Error) {
-        setError({ email: err.message });
-        return;
+        setError({ email: err.message })
+        return
       }
-      console.error(JSON.stringify(err, null, 2));
+      console.error(JSON.stringify(err, null, 2))
     }
 
-    setIsLoading(false);
-  };
+    setIsLoading(false)
+  }
 
   return (
     <View className="gap-6">
@@ -93,12 +93,12 @@ export function ForgotPasswordForm() {
               onPress={onSubmit}
             >
               <Text>
-                {isLoading ? "Please wait..." : "Reset your password"}
+                {isLoading ? 'Please wait...' : 'Reset your password'}
               </Text>
             </Button>
           </View>
         </CardContent>
       </Card>
     </View>
-  );
+  )
 }

@@ -1,11 +1,11 @@
-import Image from "next/image";
-import { CreateOrganization } from "@clerk/nextjs";
+import { CreateOrganization } from '@clerk/nextjs'
+import Image from 'next/image'
 
 export default function Page() {
   return (
     <div className="flex h-svh flex-col items-center justify-center gap-6">
       <Image
-        src={"/instello.svg"}
+        src={'/instello.svg'}
         width={200}
         height={80}
         alt="Instello Logo"
@@ -15,8 +15,8 @@ export default function Page() {
       </p>
       <CreateOrganization
         skipInvitationScreen
-        afterCreateOrganizationUrl={"/:slug"}
+        afterCreateOrganizationUrl={'/:slug'}
       />
     </div>
-  );
+  )
 }

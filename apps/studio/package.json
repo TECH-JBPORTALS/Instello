@@ -7,8 +7,8 @@
     "clean": "git clean -xdf .cache .next .turbo node_modules",
     "dev": "bun --bun --env-file=../../.env next dev --turbopack",
     "db:migrate": "bun --filter=\"@instello/db\" migrate-lms",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
+    "format": "biome format .",
+    "lint": "biome lint .",
     "test": "vitest",
     "start": "bun --bun --env-file=../../.env next start",
     "typecheck": "tsc --noEmit"
@@ -48,8 +48,7 @@
   },
   "devDependencies": {
     "@clerk/types": "catalog:",
-    "@instello/eslint-config": "workspace:*",
-    "@instello/prettier-config": "workspace:*",
+    "@biomejs/biome": "catalog:",
     "@instello/tsconfig": "workspace:*",
     "@types/node": "catalog:react19",
     "@types/react": "catalog:react19",

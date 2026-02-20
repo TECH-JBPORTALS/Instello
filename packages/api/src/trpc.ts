@@ -1,16 +1,16 @@
+import { createClerkClient } from '@clerk/backend'
 import type {
   SignedInAuthObject,
   SignedOutAuthObject,
-} from "@clerk/backend/internal";
-import type { CheckAuthorizationParamsFromSessionClaims } from "@clerk/types";
-import { createClerkClient } from "@clerk/backend";
-import { eq } from "@instello/db";
-import { db } from "@instello/db/client";
-import { branch, semester } from "@instello/db/erp";
-import Mux from "@mux/mux-node";
-import { initTRPC, TRPCError } from "@trpc/server";
-import superjson from "superjson";
-import z, { ZodError } from "zod/v4";
+} from '@clerk/backend/internal'
+import type { CheckAuthorizationParamsFromSessionClaims } from '@clerk/types'
+import { eq } from '@instello/db'
+import { db } from '@instello/db/client'
+import { branch, semester } from '@instello/db/erp'
+import Mux from '@mux/mux-node'
+import { initTRPC, TRPCError } from '@trpc/server'
+import superjson from 'superjson'
+import z, { ZodError } from 'zod/v4'
 
 /**
  * YOU PROBABLY DON'T NEED TO EDIT THIS FILE, UNLESS:
@@ -25,8 +25,8 @@ import z, { ZodError } from "zod/v4";
  * Replace this with an object if you want to pass things to createContextInner
  */
 interface AuthContextProps {
-  auth: SignedInAuthObject | SignedOutAuthObject;
-  headers: Headers;
+  auth: SignedInAuthObject | SignedOutAuthObject
+  headers: Headers
 }
 
 /**
@@ -42,14 +42,14 @@ interface AuthContextProps {
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = ({ auth, headers }: AuthContextProps) => {
-  const source = headers.get("x-trpc-source");
-  console.log(`>>> Request recieved from ${source ?? "UNKNOWN"}`);
-  const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
+  const source = headers.get('x-trpc-source')
+  console.log(`>>> Request recieved from ${source ?? 'UNKNOWN'}`)
+  const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY })
 
   const mux = new Mux({
     tokenId: process.env.MUX_TOKEN_ID,
     tokenSecret: process.env.MUX_TOKEN_SECRET,
-  });
+  })
 
   return {
     mux,
@@ -57,10 +57,10 @@ export const createTRPCContext = ({ auth, headers }: AuthContextProps) => {
     db,
     clerk,
     headers,
-  };
-};
+  }
+}
 
-export type Context = Awaited<ReturnType<typeof createTRPCContext>>;
+export type Context = Awaited<ReturnType<typeof createTRPCContext>>
 
 /**
  * 2. INITIALIZATION
@@ -77,13 +77,13 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
       zodError: error.cause instanceof ZodError ? error.cause.flatten() : null,
     },
   }),
-});
+})
 
 /**
  * Create a server-side caller
  * @see https://trpc.io/docs/server/server-side-calls
  */
-export const createCallerFactory = t.createCallerFactory;
+export const createCallerFactory = t.createCallerFactory
 
 /**
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)
@@ -96,7 +96,7 @@ export const createCallerFactory = t.createCallerFactory;
  * This is how you create new routers and subrouters in your tRPC API
  * @see https://trpc.io/docs/router
  */
-export const createTRPCRouter = t.router;
+export const createTRPCRouter = t.router
 
 /**
  * Middleware for timing procedure execution and adding an articifial delay in development.
@@ -105,21 +105,21 @@ export const createTRPCRouter = t.router;
  * network latency that would occur in production but not in local development.
  */
 const timingMiddleware = t.middleware(async ({ next, path }) => {
-  const start = Date.now();
+  const start = Date.now()
 
   if (t._config.isDev) {
     // artificial delay in dev 100-500ms
-    const waitMs = Math.floor(Math.random() * 400) + 100;
-    await new Promise((resolve) => setTimeout(resolve, waitMs));
+    const waitMs = Math.floor(Math.random() * 400) + 100
+    await new Promise((resolve) => setTimeout(resolve, waitMs))
   }
 
-  const result = await next();
+  const result = await next()
 
-  const end = Date.now();
-  console.log(`[TRPC] ${path} took ${end - start}ms to execute`);
+  const end = Date.now()
+  console.log(`[TRPC] ${path} took ${end - start}ms to execute`)
 
-  return result;
-});
+  return result
+})
 
 /**
  * Middleware to check if the user has the required organization permissions
@@ -136,13 +136,13 @@ export const hasPermission = (
   t.middleware(async ({ next, ctx }) => {
     if (!ctx.auth.has(isAuthorizedParams)) {
       throw new TRPCError({
-        code: "FORBIDDEN",
-        message: "Permission not granted",
-      });
+        code: 'FORBIDDEN',
+        message: 'Permission not granted',
+      })
     }
 
-    return next();
-  });
+    return next()
+  })
 
 /**
  * Public (unauthed) procedure
@@ -151,7 +151,7 @@ export const hasPermission = (
  * tRPC API. It does not guarantee that a user querying is authorized, but you
  * can still access user session data if they are logged in
  */
-export const publicProcedure = t.procedure.use(timingMiddleware);
+export const publicProcedure = t.procedure.use(timingMiddleware)
 
 /**
  * Protected (authenticated) procedure
@@ -165,7 +165,7 @@ export const protectedProcedure = t.procedure
   .use(timingMiddleware)
   .use(({ ctx, next }) => {
     if (!ctx.auth.userId) {
-      throw new TRPCError({ code: "UNAUTHORIZED" });
+      throw new TRPCError({ code: 'UNAUTHORIZED' })
     }
 
     return next({
@@ -174,8 +174,8 @@ export const protectedProcedure = t.procedure
         // infers the `auth.userId` as non-nullable
         auth: { ...ctx.auth, userId: ctx.auth.userId },
       },
-    });
-  });
+    })
+  })
 
 /**
  * Organization context procedure
@@ -190,9 +190,9 @@ export const organizationProcedure = t.procedure
   .use(({ ctx, next }) => {
     if (!ctx.auth.orgId) {
       throw new TRPCError({
-        code: "FORBIDDEN",
-        message: "No organization has been selected. Select one or create one",
-      });
+        code: 'FORBIDDEN',
+        message: 'No organization has been selected. Select one or create one',
+      })
     }
 
     return next({
@@ -201,8 +201,8 @@ export const organizationProcedure = t.procedure
         // infers the `auth.orgId` as non-nullable
         auth: { ...ctx.auth, orgId: ctx.auth.orgId },
       },
-    });
-  });
+    })
+  })
 
 /**
  * Branch context procedure
@@ -219,40 +219,40 @@ export const branchProcedure = t.procedure
   .input(z.object({ branchId: z.string() }))
   .use(async ({ ctx, input, next }) => {
     const branchCookieRaw = ctx.headers
-      .get("cookie")
-      ?.split(";")
+      .get('cookie')
+      ?.split(';')
       .map((v) => v.trim())
-      .find((v) => v.startsWith("semester"))
-      ?.split("=")[1];
+      .find((v) => v.startsWith('semester'))
+      ?.split('=')[1]
 
     if (!branchCookieRaw)
       throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: "No branch cookie has been found",
-      });
+        code: 'BAD_REQUEST',
+        message: 'No branch cookie has been found',
+      })
 
-    const branchCookie = JSON.parse(branchCookieRaw) as Record<string, number>;
+    const branchCookie = JSON.parse(branchCookieRaw) as Record<string, number>
 
-    const semesterRaw = branchCookie[input.branchId];
-    const semesterId = z.coerce.string().parse(semesterRaw);
+    const semesterRaw = branchCookie[input.branchId]
+    const semesterId = z.coerce.string().parse(semesterRaw)
 
     const _branch = await ctx.db.query.branch.findFirst({
       where: eq(branch.id, input.branchId),
-    });
+    })
 
     if (!_branch) {
-      throw new TRPCError({ code: "NOT_FOUND", message: "Branch not found." });
+      throw new TRPCError({ code: 'NOT_FOUND', message: 'Branch not found.' })
     }
 
     const _semester = await ctx.db.query.semester.findFirst({
       where: eq(semester.id, semesterId),
-    });
+    })
 
     if (!_semester) {
       throw new TRPCError({
-        code: "NOT_FOUND",
-        message: "Semester not found.",
-      });
+        code: 'NOT_FOUND',
+        message: 'Semester not found.',
+      })
     }
 
     return next({
@@ -260,5 +260,5 @@ export const branchProcedure = t.procedure
         ...ctx,
         auth: { ...ctx.auth, activeSemester: _semester },
       },
-    });
-  });
+    })
+  })

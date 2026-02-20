@@ -8,7 +8,9 @@
     "ios": "expo start -c --ios",
     "web": "expo start -c --web",
     "clean": "rm -rf .cache .expo node_modules",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "format": "biome format .",
+    "lint": "biome lint ."
   },
   "dependencies": {
     "@clerk/clerk-expo": "^2.14.14",
@@ -81,18 +83,14 @@
   "devDependencies": {
     "@babel/core": "^7.26.0",
     "@clerk/types": "catalog:",
-    "@instello/eslint-config": "workspace:^",
-    "@instello/prettier-config": "workspace:^",
+    "@biomejs/biome": "catalog:",
     "@instello/tsconfig": "workspace:^",
     "@instello/ui": "workspace:^",
     "@tailwindcss/postcss": "^4.1.14",
     "@types/react": "catalog:react19",
     "postcss": "^8.5.6",
-    "prettier": "catalog:",
-    "prettier-plugin-tailwindcss": "^0.5.14",
     "tailwindcss": "catalog:",
     "typescript": "catalog:"
   },
-  "private": true,
-  "prettier": "@instello/prettier-config"
+  "private": true
 }

@@ -1,75 +1,75 @@
-import type { ClerkAPIError } from "@clerk/types";
-import type { TextStyle } from "react-native";
-import * as React from "react";
-import { View } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
-import { Button } from "@/components/ui/button";
+import { isClerkAPIResponseError, useSignUp } from '@clerk/clerk-expo'
+import type { ClerkAPIError } from '@clerk/types'
+import { router, useLocalSearchParams } from 'expo-router'
+import { usePostHog } from 'posthog-react-native'
+import * as React from 'react'
+import type { TextStyle } from 'react-native'
+import { View } from 'react-native'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Text } from "@/components/ui/text";
-import { isClerkAPIResponseError, useSignUp } from "@clerk/clerk-expo";
-import { usePostHog } from "posthog-react-native";
+} from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Text } from '@/components/ui/text'
 
-const RESEND_CODE_INTERVAL_SECONDS = 30;
+const RESEND_CODE_INTERVAL_SECONDS = 30
 
-const TABULAR_NUMBERS_STYLE: TextStyle = { fontVariant: ["tabular-nums"] };
+const TABULAR_NUMBERS_STYLE: TextStyle = { fontVariant: ['tabular-nums'] }
 
 export function VerifyEmailForm() {
-  const posthog = usePostHog();
-  const { signUp, setActive, isLoaded } = useSignUp();
-  const { email = "" } = useLocalSearchParams<{ email?: string }>();
-  const [code, setCode] = React.useState("");
-  const [errors, setErrors] = React.useState<ClerkAPIError[]>();
-  const [isLoading, setIsLoading] = React.useState(false);
+  const posthog = usePostHog()
+  const { signUp, setActive, isLoaded } = useSignUp()
+  const { email = '' } = useLocalSearchParams<{ email?: string }>()
+  const [code, setCode] = React.useState('')
+  const [errors, setErrors] = React.useState<ClerkAPIError[]>()
+  const [isLoading, setIsLoading] = React.useState(false)
   const { countdown, restartCountdown } = useCountdown(
     RESEND_CODE_INTERVAL_SECONDS,
-  );
+  )
 
   async function onSubmit() {
-    if (!isLoaded) return;
+    if (!isLoaded) return
 
-    setIsLoading(true);
+    setIsLoading(true)
 
     try {
       // Use the code the user provided to attempt verification
       const signUpAttempt = await signUp.attemptEmailAddressVerification({
         code,
-      });
+      })
 
       // If verification was completed, set the session to active
       // and redirect the user
-      if (signUpAttempt.status === "complete") {
-        await setActive({ session: signUpAttempt.createdSessionId });
+      if (signUpAttempt.status === 'complete') {
+        await setActive({ session: signUpAttempt.createdSessionId })
       }
     } catch (err) {
       if (isClerkAPIResponseError(err)) {
-        setErrors(err.errors);
+        setErrors(err.errors)
       }
-      posthog.captureException(err, { email, type: "verify_email_form" });
+      posthog.captureException(err, { email, type: 'verify_email_form' })
     }
 
-    setIsLoading(false);
+    setIsLoading(false)
   }
 
   async function onResendCode() {
-    if (!isLoaded) return;
+    if (!isLoaded) return
 
     try {
-      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
-      restartCountdown();
+      await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
+      restartCountdown()
     } catch (err) {
       // See https://go.clerk.com/mRUDrIe for more info on error handling
       if (isClerkAPIResponseError(err)) {
-        setErrors(err.errors);
+        setErrors(err.errors)
       }
-      posthog.captureException(err, { email, type: "resend_code" });
+      posthog.captureException(err, { email, type: 'resend_code' })
     }
   }
 
@@ -81,7 +81,7 @@ export function VerifyEmailForm() {
             Verify your email
           </CardTitle>
           <CardDescription className="text-center sm:text-left">
-            Enter the verification code sent to {email || "your email"}
+            Enter the verification code sent to {email || 'your email'}
           </CardDescription>
         </CardHeader>
         <CardContent className="gap-6">
@@ -101,7 +101,7 @@ export function VerifyEmailForm() {
               />
               {!errors ? null : (
                 <Text className="text-destructive text-sm font-medium">
-                  {errors.map((e) => e.longMessage).join(", ")}
+                  {errors.map((e) => e.longMessage).join(', ')}
                 </Text>
               )}
               <Button
@@ -111,7 +111,7 @@ export function VerifyEmailForm() {
                 onPress={onResendCode}
               >
                 <Text className="text-center text-xs">
-                  Didn&apos;t receive the code? Resend{" "}
+                  Didn&apos;t receive the code? Resend{' '}
                   {countdown > 0 ? (
                     <Text className="text-xs" style={TABULAR_NUMBERS_STYLE}>
                       ({countdown})
@@ -126,7 +126,7 @@ export function VerifyEmailForm() {
                 className="w-full"
                 onPress={onSubmit}
               >
-                <Text>{isLoading ? "Verifying..." : "Continue"}</Text>
+                <Text>{isLoading ? 'Verifying...' : 'Continue'}</Text>
               </Button>
               <Button
                 disabled={isLoading}
@@ -141,43 +141,43 @@ export function VerifyEmailForm() {
         </CardContent>
       </Card>
     </View>
-  );
+  )
 }
 
 function useCountdown(seconds = 30) {
-  const [countdown, setCountdown] = React.useState(seconds);
-  const intervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
+  const [countdown, setCountdown] = React.useState(seconds)
+  const intervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null)
 
   const startCountdown = React.useCallback(() => {
-    setCountdown(seconds);
+    setCountdown(seconds)
 
     if (intervalRef.current) {
-      clearInterval(intervalRef.current);
+      clearInterval(intervalRef.current)
     }
 
     intervalRef.current = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
           if (intervalRef.current) {
-            clearInterval(intervalRef.current);
-            intervalRef.current = null;
+            clearInterval(intervalRef.current)
+            intervalRef.current = null
           }
-          return 0;
+          return 0
         }
-        return prev - 1;
-      });
-    }, 1000);
-  }, [seconds]);
+        return prev - 1
+      })
+    }, 1000)
+  }, [seconds])
 
   React.useEffect(() => {
-    startCountdown();
+    startCountdown()
 
     return () => {
       if (intervalRef.current) {
-        clearInterval(intervalRef.current);
+        clearInterval(intervalRef.current)
       }
-    };
-  }, [startCountdown]);
+    }
+  }, [startCountdown])
 
-  return { countdown, restartCountdown: startCountdown };
+  return { countdown, restartCountdown: startCountdown }
 }

@@ -26,8 +26,8 @@
     "build": "tsc",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "dev": "tsc",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
+    "format": "biome format .",
+    "lint": "biome lint .",
     "push-erp": "bun --env-file=../../.env drizzle-kit push --config=./drizzle.config.erp.ts",
     "push-lms": "bun --env-file=../../.env drizzle-kit push --config=./drizzle.config.lms.ts",
     "generate-erp": "bun --env-file=../../.env drizzle-kit generate --config=./drizzle.config.erp.ts",
@@ -40,16 +40,12 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "devDependencies": {
-    "@instello/eslint-config": "workspace:*",
-    "@instello/prettier-config": "workspace:*",
     "@instello/tsconfig": "workspace:*",
     "dotenv-cli": "^8.0.0",
     "drizzle-kit": "^0.31.8",
-    "eslint": "catalog:",
-    "prettier": "catalog:",
+    "@biomejs/biome": "catalog:",
     "typescript": "catalog:"
   },
-  "prettier": "@instello/prettier-config",
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",
     "@paralleldrive/cuid2": "^2.2.2",

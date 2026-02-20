@@ -1,27 +1,27 @@
-"use client";
+'use client'
 
-import type { RouterOutputs } from "@instello/api";
-import type { ColumnDef } from "@tanstack/react-table";
-import { formatDistanceToNowStrict } from "date-fns";
+import type { RouterOutputs } from '@instello/api'
+import type { ColumnDef } from '@tanstack/react-table'
+import { formatDistanceToNowStrict } from 'date-fns'
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Member =
-  RouterOutputs["erp"]["organization"]["getInviationList"]["invitations"][number];
+  RouterOutputs['erp']['organization']['getInviationList']['invitations'][number]
 
 export const columns: ColumnDef<Member>[] = [
   {
-    accessorKey: "emailAddress",
-    header: "Email address",
+    accessorKey: 'emailAddress',
+    header: 'Email address',
   },
 
   {
-    accessorKey: "role",
-    header: "Role",
+    accessorKey: 'role',
+    header: 'Role',
   },
 
   {
-    accessorKey: "expiresAt",
+    accessorKey: 'expiresAt',
     header: () => <div className="ml-auto w-20 px-3 text-right">Expires</div>,
     cell(props) {
       return (
@@ -32,7 +32,7 @@ export const columns: ColumnDef<Member>[] = [
             })}
           </time>
         </div>
-      );
+      )
     },
   },
-];
+]

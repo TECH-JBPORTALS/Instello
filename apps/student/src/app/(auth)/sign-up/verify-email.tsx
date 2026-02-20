@@ -1,5 +1,5 @@
-import { ScrollView, View } from "react-native";
-import { VerifyEmailForm } from "@/components/verify-email-form";
+import { ScrollView, View } from 'react-native'
+import { VerifyEmailForm } from '@/components/verify-email-form'
 
 export default function VerifyEmailScreen() {
   return (
@@ -12,5 +12,5 @@ export default function VerifyEmailScreen() {
         <VerifyEmailForm />
       </View>
     </ScrollView>
-  );
+  )
 }

@@ -1,42 +1,42 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
-import { env } from "@/env";
-import { useTRPC } from "@/trpc/react";
-import { UploadButton } from "@/utils/uploadthing";
-import { buttonVariants } from "@instello/ui/components/button";
+import { buttonVariants } from '@instello/ui/components/button'
 import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
-} from "@instello/ui/components/sidebar";
-import { Spinner } from "@instello/ui/components/spinner";
-import { cn } from "@instello/ui/lib/utils";
-import { ArrowLeftIcon } from "@phosphor-icons/react";
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
+} from '@instello/ui/components/sidebar'
+import { Spinner } from '@instello/ui/components/spinner'
+import { cn } from '@instello/ui/lib/utils'
+import { ArrowLeftIcon } from '@phosphor-icons/react'
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
+import Image from 'next/image'
+import { useParams, useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { env } from '@/env'
+import { useTRPC } from '@/trpc/react'
+import { UploadButton } from '@/utils/uploadthing'
 
 export function NavHeader() {
   const { channelId, videoId } = useParams<{
-    channelId: string;
-    videoId: string;
-  }>();
-  const router = useRouter();
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
+    channelId: string
+    videoId: string
+  }>()
+  const router = useRouter()
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
   const { data: video } = useSuspenseQuery(
     trpc.lms.video.getById.queryOptions({ videoId }),
-  );
-  const [thumbnailId, setThumbnailId] = useState(video.thumbnailId);
+  )
+  const [thumbnailId, setThumbnailId] = useState(video.thumbnailId)
 
   return (
     <SidebarHeader>
       <SidebarMenu>
         <SidebarMenuButton
           onClick={() => router.push(`/c/${channelId}`)}
-          size={"lg"}
+          size={'lg'}
         >
           <ArrowLeftIcon weight="duotone" /> Channel content
         </SidebarMenuButton>
@@ -49,7 +49,7 @@ export function NavHeader() {
               ? `https://${env.NEXT_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${thumbnailId}`
               : `https://image.mux.com/${video.playbackId}/thumbnail.png?width=214&height=121&time=15`
           }
-          alt={"Video thumneil"}
+          alt={'Video thumneil'}
           className="object-cover"
         />
         <div className="absolute flex h-full w-full items-center justify-center bg-black/40 transition-all duration-200">
@@ -57,11 +57,11 @@ export function NavHeader() {
             config={{ cn }}
             appearance={{
               button: buttonVariants({
-                size: "sm",
-                variant: "outline",
-                className: "hover:text-accent",
+                size: 'sm',
+                variant: 'outline',
+                className: 'hover:text-accent',
               }),
-              allowedContent: "text-accent text-center",
+              allowedContent: 'text-accent text-center',
             }}
             content={{
               button: (props) =>
@@ -70,23 +70,23 @@ export function NavHeader() {
                     <Spinner /> Uploading...
                   </>
                 ) : (
-                  "Change Thumbnail"
+                  'Change Thumbnail'
                 ),
-              allowedContent: () => "jpegs, png, avif and webp",
+              allowedContent: () => 'jpegs, png, avif and webp',
             }}
             input={{ videoId }}
-            endpoint={"videoThumbneilUploader"}
+            endpoint={'videoThumbneilUploader'}
             onClientUploadComplete={async (res) => {
-              setThumbnailId(res.at(0)?.serverData.newThumbnailId ?? "");
+              setThumbnailId(res.at(0)?.serverData.newThumbnailId ?? '')
               await queryClient.invalidateQueries(
                 trpc.lms.channel.getById.queryOptions({
                   channelId,
                 }),
-              );
-              toast.info(`Channel thumbneil image changed.`);
+              )
+              toast.info(`Channel thumbneil image changed.`)
             }}
             onUploadError={(e) => {
-              toast.error(e.message);
+              toast.error(e.message)
             }}
           />
         </div>
@@ -96,5 +96,5 @@ export function NavHeader() {
         {video.title}
       </p>
     </SidebarHeader>
-  );
+  )
 }

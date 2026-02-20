@@ -1,27 +1,27 @@
-"use client";
+'use client'
 
-import React from "react";
-import Link from "next/link";
-import { useParams } from "next/navigation";
-import { ReactTimetable } from "@/components/timetable";
-import { useTRPC } from "@/trpc/react";
-import { Protect } from "@clerk/nextjs";
-import { Button } from "@instello/ui/components/button";
-import { PlusIcon, TableIcon } from "@phosphor-icons/react";
-import { IconCircleArrowUp } from "@tabler/icons-react";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { formatDistanceToNowStrict } from "date-fns";
+import { Protect } from '@clerk/nextjs'
+import { Button } from '@instello/ui/components/button'
+import { PlusIcon, TableIcon } from '@phosphor-icons/react'
+import { IconCircleArrowUp } from '@tabler/icons-react'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { formatDistanceToNowStrict } from 'date-fns'
+import Link from 'next/link'
+import { useParams } from 'next/navigation'
+import React from 'react'
+import { ReactTimetable } from '@/components/timetable'
+import { useTRPC } from '@/trpc/react'
 
 export function TimetableClient() {
   const { branchId, slug, semesterId } = useParams<{
-    branchId: string;
-    slug: string;
-    semesterId: string;
-  }>();
-  const trpc = useTRPC();
+    branchId: string
+    slug: string
+    semesterId: string
+  }>()
+  const trpc = useTRPC()
   const { data } = useSuspenseQuery(
     trpc.erp.timetable.findByActiveSemester.queryOptions({ branchId }),
-  );
+  )
 
   if (!data.timetableData)
     return (
@@ -38,18 +38,18 @@ export function TimetableClient() {
           </Link>
         </Button>
       </div>
-    );
+    )
 
   const timetableSlots = data.timetableData.timetableSlots.map((s) => ({
     ...s,
     subjectName: s.subject.name,
-  }));
+  }))
 
   return (
     <React.Fragment>
       <div className="inline-flex w-full justify-between">
         <h2 className="text-3xl font-semibold">Timetable</h2>
-        <Protect permission={"org:timetables:create"}>
+        <Protect permission={'org:timetables:create'}>
           <Button asChild>
             <Link href={`/${slug}/b/${branchId}/s/${semesterId}/timetable/new`}>
               <PlusIcon />
@@ -71,7 +71,7 @@ export function TimetableClient() {
         </div>
 
         <time className="text-muted-foreground text-xs">
-          Updated{" "}
+          Updated{' '}
           {formatDistanceToNowStrict(data.timetableData.createdAt, {
             addSuffix: true,
           })}
@@ -79,5 +79,5 @@ export function TimetableClient() {
       </div>
       <ReactTimetable timetableSlots={timetableSlots} />
     </React.Fragment>
-  );
+  )
 }

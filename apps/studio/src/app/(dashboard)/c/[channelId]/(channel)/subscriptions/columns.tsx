@@ -1,25 +1,25 @@
-"use client";
+'use client'
 
-import type { RouterOutputs } from "@instello/api";
-import type { ColumnDef } from "@tanstack/react-table";
+import type { RouterOutputs } from '@instello/api'
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@instello/ui/components/avatar";
-import { formatDistanceToNowStrict } from "date-fns";
+} from '@instello/ui/components/avatar'
+import type { ColumnDef } from '@tanstack/react-table'
+import { formatDistanceToNowStrict } from 'date-fns'
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Subscription =
-  RouterOutputs["lms"]["subscription"]["listByChannelId"]["subscribers"][number];
+  RouterOutputs['lms']['subscription']['listByChannelId']['subscribers'][number]
 
 export const columns: ColumnDef<Subscription>[] = [
   {
-    accessorKey: "clerkUser",
-    header: "Subscriber",
+    accessorKey: 'clerkUser',
+    header: 'Subscriber',
     cell(props) {
-      const original = props.row.original;
+      const original = props.row.original
       return (
         <div className="inline-flex items-center gap-2.5">
           <Avatar className="size-8">
@@ -32,25 +32,25 @@ export const columns: ColumnDef<Subscription>[] = [
             {original.clerkUser.firstName} {original.clerkUser.lastName}
           </p>
         </div>
-      );
+      )
     },
   },
   {
-    id: "college",
-    header: "College",
+    id: 'college',
+    header: 'College',
     cell(props) {
-      const original = props.row.original;
+      const original = props.row.original
       return (
         <div>
-          ({original.preferences?.college.code}){" "}
+          ({original.preferences?.college.code}){' '}
           {original.preferences?.college.name}
         </div>
-      );
+      )
     },
   },
 
   {
-    accessorKey: "createdAt",
+    accessorKey: 'createdAt',
     header: () => <div className="ml-auto w-20 px-3 text-right">Joined</div>,
     cell(props) {
       return (
@@ -61,7 +61,7 @@ export const columns: ColumnDef<Subscription>[] = [
             })}
           </time>
         </div>
-      );
+      )
     },
   },
 
@@ -81,4 +81,4 @@ export const columns: ColumnDef<Subscription>[] = [
   //       );
   //     },
   //   },
-];
+]

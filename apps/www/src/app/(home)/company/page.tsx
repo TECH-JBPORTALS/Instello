@@ -1,5 +1,5 @@
-import { Hero } from "./hero";
-import { MembersList } from "./members-list";
+import { Hero } from './hero'
+import { MembersList } from './members-list'
 
 export default function Page() {
   return (
@@ -7,5 +7,5 @@ export default function Page() {
       <Hero />
       <MembersList />
     </>
-  );
+  )
 }

@@ -1,24 +1,24 @@
-"use client";
+'use client'
 
-import { DataTable } from "@/components/data-table";
-import { useTRPC } from "@/trpc/react";
-import { Spinner } from "@instello/ui/components/spinner";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { Spinner } from '@instello/ui/components/spinner'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { DataTable } from '@/components/data-table'
+import { useTRPC } from '@/trpc/react'
 
-import { columns } from "./columns";
+import { columns } from './columns'
 
 export default function DataTableClient() {
-  const trpc = useTRPC();
+  const trpc = useTRPC()
   const { data, isFetching } = useSuspenseQuery(
     trpc.erp.organization.getOrganizationMembers.queryOptions(),
-  );
+  )
 
   if (isFetching)
     return (
       <div className="flex h-svh w-full items-center justify-center">
         <Spinner className="size-8" />
       </div>
-    );
+    )
 
-  return <DataTable columns={columns} data={data.members} />;
+  return <DataTable columns={columns} data={data.members} />
 }

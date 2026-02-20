@@ -1,18 +1,18 @@
-"use client";
+'use client'
 
-import { useParams } from "next/navigation";
-import { DataTable } from "@/components/data-table";
-import { useTRPC } from "@/trpc/react";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { useParams } from 'next/navigation'
+import { DataTable } from '@/components/data-table'
+import { useTRPC } from '@/trpc/react'
 
-import { columns } from "./columns";
+import { columns } from './columns'
 
 export default function DataTableClient() {
-  const trpc = useTRPC();
-  const { branchId } = useParams<{ branchId: string }>();
+  const trpc = useTRPC()
+  const { branchId } = useParams<{ branchId: string }>()
   const { data } = useSuspenseQuery(
     trpc.erp.subject.list.queryOptions({ branchId }),
-  );
+  )
 
-  return <DataTable columns={columns} data={data} />;
+  return <DataTable columns={columns} data={data} />
 }

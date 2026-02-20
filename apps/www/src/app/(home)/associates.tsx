@@ -1,13 +1,13 @@
-import Image from "next/image";
+import Image from 'next/image'
 
 const associatesData = [
-  { image: "/institutes/ksp.png", name: "KS Polytechnic" },
-  { image: "/institutes/dsit.png", name: "DSIT" },
-  { image: "/institutes/pvp.png", name: "PVP Polytechnic" },
-  { image: "/institutes/sct.png", name: "SCT Institutions" },
-  { image: "/institutes/sjes.png", name: "SJES" },
-  { image: "/institutes/vasavi.png", name: "Vasavi" },
-];
+  { image: '/institutes/ksp.png', name: 'KS Polytechnic' },
+  { image: '/institutes/dsit.png', name: 'DSIT' },
+  { image: '/institutes/pvp.png', name: 'PVP Polytechnic' },
+  { image: '/institutes/sct.png', name: 'SCT Institutions' },
+  { image: '/institutes/sjes.png', name: 'SJES' },
+  { image: '/institutes/vasavi.png', name: 'Vasavi' },
+]
 
 export function Associates() {
   return (
@@ -29,5 +29,5 @@ export function Associates() {
         ))}
       </div>
     </section>
-  );
+  )
 }

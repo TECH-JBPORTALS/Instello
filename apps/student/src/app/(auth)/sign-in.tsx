@@ -1,5 +1,5 @@
-import { ScrollView, View } from "react-native";
-import { SignInForm } from "@/components/sign-in-form";
+import { ScrollView, View } from 'react-native'
+import { SignInForm } from '@/components/sign-in-form'
 
 export default function SignInScreen() {
   return (
@@ -12,5 +12,5 @@ export default function SignInScreen() {
         <SignInForm />
       </View>
     </ScrollView>
-  );
+  )
 }

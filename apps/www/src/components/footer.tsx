@@ -1,9 +1,9 @@
-import Image from "next/image";
-import Link from "next/link";
 import {
   GoogleLogoIcon,
   InstagramLogoIcon,
-} from "@phosphor-icons/react/dist/ssr";
+} from '@phosphor-icons/react/dist/ssr'
+import Image from 'next/image'
+import Link from 'next/link'
 
 export function Footer() {
   return (
@@ -13,7 +13,7 @@ export function Footer() {
         {/* Brand / About */}
         <div>
           <Image
-            src={"/instello.svg"}
+            src={'/instello.svg'}
             height={28}
             width={100}
             alt="Instello Logo"
@@ -61,13 +61,13 @@ export function Footer() {
         <div>
           <h4 className="mb-3 font-semibold ">Contact</h4>
           <p className="mb-2 text-sm">
-            Phone:{" "}
+            Phone:{' '}
             <a href="tel:+910000000000" className="hover:underline">
               +91 91641 94556
             </a>
           </p>
           <p className="mb-2 text-sm">
-            Email:{" "}
+            Email:{' '}
             <a href="mailto:info@example.com" className="hover:underline">
               contact@instello.in
             </a>
@@ -87,7 +87,7 @@ export function Footer() {
             </li>
             <li>
               <Link href="/account-deletion" className="hover:underline">
-                ADP{" "}
+                ADP{' '}
                 <span className="text-muted-foreground">{`(Account Deletion Process)`}</span>
               </Link>
             </li>
@@ -100,5 +100,5 @@ export function Footer() {
         © {new Date().getFullYear()} Instello. All rights reserved.
       </div>
     </footer>
-  );
+  )
 }

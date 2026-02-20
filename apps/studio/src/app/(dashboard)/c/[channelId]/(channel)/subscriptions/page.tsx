@@ -1,14 +1,14 @@
-import { HydrateClient, prefetch, trpc } from "@/trpc/server";
+import { HydrateClient, prefetch, trpc } from '@/trpc/server'
 
-import DataTableClient from "./data-table.client";
+import DataTableClient from './data-table.client'
 
 export default async function Page({
   params,
 }: {
-  params: Promise<{ channelId: string }>;
+  params: Promise<{ channelId: string }>
 }) {
-  const { channelId } = await params;
-  prefetch(trpc.lms.subscription.listByChannelId.queryOptions({ channelId }));
+  const { channelId } = await params
+  prefetch(trpc.lms.subscription.listByChannelId.queryOptions({ channelId }))
 
   return (
     <HydrateClient>
@@ -16,5 +16,5 @@ export default async function Page({
         <DataTableClient />
       </div>
     </HydrateClient>
-  );
+  )
 }

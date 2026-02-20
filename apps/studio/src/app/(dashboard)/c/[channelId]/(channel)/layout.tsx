@@ -1,13 +1,13 @@
-import { ChannelPageBreadcrumb } from "@/components/channel-breadcrumb";
-import { ChannelDetailsSection } from "@/components/channel-details-section";
-import Container from "@/components/container";
-import { SiteHeader } from "@/components/site-header";
-import { HydrateClient } from "@/trpc/server";
+import { ChannelPageBreadcrumb } from '@/components/channel-breadcrumb'
+import { ChannelDetailsSection } from '@/components/channel-details-section'
+import Container from '@/components/container'
+import { SiteHeader } from '@/components/site-header'
+import { HydrateClient } from '@/trpc/server'
 
 export default function ChannelLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
     <HydrateClient>
@@ -21,5 +21,5 @@ export default function ChannelLayout({
         </div>
       </Container>
     </HydrateClient>
-  );
+  )
 }

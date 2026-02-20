@@ -1,19 +1,19 @@
-import { SiteHeader } from "@/components/site-header";
-import { VideoSidebar } from "@/components/video-sidebar";
-import { HydrateClient, prefetch, trpc } from "@/trpc/server";
-import { SidebarInset } from "@instello/ui/components/sidebar";
+import { SidebarInset } from '@instello/ui/components/sidebar'
+import { SiteHeader } from '@/components/site-header'
+import { VideoSidebar } from '@/components/video-sidebar'
+import { HydrateClient, prefetch, trpc } from '@/trpc/server'
 
-import { VideoPageBreadcrumb } from "./video-breadcrumb";
+import { VideoPageBreadcrumb } from './video-breadcrumb'
 
 export default async function Layout({
   children,
   params,
 }: {
-  children: React.ReactNode;
-  params: Promise<{ channelId: string; videoId: string }>;
+  children: React.ReactNode
+  params: Promise<{ channelId: string; videoId: string }>
 }) {
-  const { videoId } = await params;
-  prefetch(trpc.lms.video.getById.queryOptions({ videoId }));
+  const { videoId } = await params
+  prefetch(trpc.lms.video.getById.queryOptions({ videoId }))
   return (
     <HydrateClient>
       <SiteHeader startElement={<VideoPageBreadcrumb />} />
@@ -23,5 +23,5 @@ export default async function Layout({
         {children}
       </SidebarInset>
     </HydrateClient>
-  );
+  )
 }

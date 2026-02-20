@@ -7,8 +7,8 @@
     "build": "bun --bun --env-file=../../.env next build",
     "clean": "git clean -xdf .cache .next .turbo node_modules",
     "dev": "bun --bun --env-file=../../.env next dev --turbopack",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
+    "format": "biome format .",
+    "lint": "biome lint .",
     "test": "vitest",
     "start": "bun --bun --env-file=../../.env next start",
     "typecheck": "tsc --noEmit"
@@ -43,8 +43,6 @@
   },
   "devDependencies": {
     "@clerk/types": "catalog:",
-    "@instello/eslint-config": "workspace:*",
-    "@instello/prettier-config": "workspace:*",
     "@instello/tsconfig": "workspace:*",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.3.0",
@@ -54,11 +52,9 @@
     "@types/react-dom": "catalog:react19",
     "@vitejs/plugin-react": "^4.7.0",
     "jsdom": "^26.1.0",
-    "prettier": "catalog:",
     "trpc-ui": "^1.0.15",
     "typescript": "catalog:",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"
-  },
-  "prettier": "@instello/prettier-config"
+  }
 }

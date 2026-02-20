@@ -1,74 +1,74 @@
-import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { Button } from "@instello/ui/components/button";
+import { Button } from '@instello/ui/components/button'
 import {
   ArrowCircleLeftIcon,
   GooglePlayLogoIcon,
-} from "@phosphor-icons/react/ssr";
+} from '@phosphor-icons/react/ssr'
+import type { Metadata } from 'next'
+import Image from 'next/image'
+import Link from 'next/link'
+import { notFound } from 'next/navigation'
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ option: "student" | "institute" }>;
+  params: Promise<{ option: 'student' | 'institute' }>
 }): Promise<Metadata> {
-  const { option } = await params;
+  const { option } = await params
 
-  if (option === "student") {
+  if (option === 'student') {
     return {
-      title: "Student - Download Mobile App",
+      title: 'Student - Download Mobile App',
       description:
-        "Download the Instello mobile app to access your classes, resources, and updates from your institute. Continue your educational journey on the go.",
+        'Download the Instello mobile app to access your classes, resources, and updates from your institute. Continue your educational journey on the go.',
       openGraph: {
-        title: "Student - Download Instello Mobile App",
+        title: 'Student - Download Instello Mobile App',
         description:
-          "Download the Instello mobile app to access your classes, resources, and updates from your institute. Continue your educational journey on the go.",
-        images: ["/banner.png"],
+          'Download the Instello mobile app to access your classes, resources, and updates from your institute. Continue your educational journey on the go.',
+        images: ['/banner.png'],
       },
       twitter: {
-        title: "Student - Download Instello Mobile App",
+        title: 'Student - Download Instello Mobile App',
         description:
-          "Download the Instello mobile app to access your classes, resources, and updates from your institute. Continue your educational journey on the go.",
-        images: ["/banner.png"],
+          'Download the Instello mobile app to access your classes, resources, and updates from your institute. Continue your educational journey on the go.',
+        images: ['/banner.png'],
       },
-    };
+    }
   }
 
   return {
-    title: "Institution - ERP Solution Coming Soon",
+    title: 'Institution - ERP Solution Coming Soon',
     description:
-      "Our powerful ERP solution for institutions is launching soon. Join our waitlist to be an early partner and transform your educational management.",
+      'Our powerful ERP solution for institutions is launching soon. Join our waitlist to be an early partner and transform your educational management.',
     openGraph: {
-      title: "Institution - ERP Solution Coming Soon",
+      title: 'Institution - ERP Solution Coming Soon',
       description:
-        "Our powerful ERP solution for institutions is launching soon. Join our waitlist to be an early partner and transform your educational management.",
-      images: ["/banner.png"],
+        'Our powerful ERP solution for institutions is launching soon. Join our waitlist to be an early partner and transform your educational management.',
+      images: ['/banner.png'],
     },
     twitter: {
-      title: "Institution - ERP Solution Coming Soon",
+      title: 'Institution - ERP Solution Coming Soon',
       description:
-        "Our powerful ERP solution for institutions is launching soon. Join our waitlist to be an early partner and transform your educational management.",
-      images: ["/banner.png"],
+        'Our powerful ERP solution for institutions is launching soon. Join our waitlist to be an early partner and transform your educational management.',
+      images: ['/banner.png'],
     },
-  };
+  }
 }
 
 export default async function Page({
   params,
 }: {
-  params: Promise<{ option: "student" | "institute" }>;
+  params: Promise<{ option: 'student' | 'institute' }>
 }) {
-  const { option } = await params;
+  const { option } = await params
 
   function renderOptionView() {
     switch (option) {
-      case "student":
+      case 'student':
         return (
           <>
             <div className="flex flex-col items-center justify-center gap-3.5">
               <Image
-                src={"/instello.svg"}
+                src={'/instello.svg'}
                 width={200}
                 className="mb-8"
                 height={26}
@@ -82,18 +82,18 @@ export default async function Page({
                 and sign in with your account.
               </p>
             </div>
-            <Button size={"xl"}>
+            <Button size={'xl'}>
               <GooglePlayLogoIcon /> Google Play Store
             </Button>
           </>
-        );
+        )
 
-      case "institute":
+      case 'institute':
         return (
           <>
             <div className="flex flex-col items-center justify-center gap-3.5">
               <Image
-                src={"/instello.svg"}
+                src={'/instello.svg'}
                 width={200}
                 className="mb-8"
                 height={26}
@@ -107,24 +107,24 @@ export default async function Page({
                 for updates, or contact us to be an early partner.
               </p>
             </div>
-            <Button size={"xl"} variant={"secondary"}>
+            <Button size={'xl'} variant={'secondary'}>
               Join Waitlist
             </Button>
           </>
-        );
+        )
 
       default:
-        notFound();
+        notFound()
     }
   }
   return (
     <main className="pattern-polka-v2 flex h-svh w-full flex-col items-center justify-center gap-8 px-4">
-      <Button variant={"outline"} asChild className="fixed top-4 left-4">
-        <Link href={"/"}>
+      <Button variant={'outline'} asChild className="fixed top-4 left-4">
+        <Link href={'/'}>
           <ArrowCircleLeftIcon weight="duotone" /> Back to Home
         </Link>
       </Button>
       {renderOptionView()}
     </main>
-  );
+  )
 }

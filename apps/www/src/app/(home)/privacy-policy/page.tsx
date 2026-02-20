@@ -3,7 +3,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@instello/ui/components/card";
+} from '@instello/ui/components/card'
 
 export default function PrivacyPolicyPage() {
   return (
@@ -79,7 +79,7 @@ export default function PrivacyPolicyPage() {
           </h2>
           <p>
             Currently, there is no in-app account deletion option. To request
-            deletion of your account and data, please contact us at{" "}
+            deletion of your account and data, please contact us at{' '}
             <a
               href="mailto:tech.jbportals@gmail.com"
               className="text-primary underline"
@@ -111,7 +111,7 @@ export default function PrivacyPolicyPage() {
           <h2 className="text-foreground text-lg font-medium">8. Contact Us</h2>
           <p>
             For any questions or concerns about this Privacy Policy, please
-            reach out to us at{" "}
+            reach out to us at{' '}
             <a
               href="mailto:tech.jbportals@gmail.com"
               className="text-primary underline"
@@ -123,5 +123,5 @@ export default function PrivacyPolicyPage() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

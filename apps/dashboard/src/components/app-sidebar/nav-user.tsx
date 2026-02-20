@@ -1,12 +1,12 @@
-"use client";
+'use client'
 
-import type { User } from "@clerk/nextjs/server";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth } from '@clerk/nextjs'
+import type { User } from '@clerk/nextjs/server'
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@instello/ui/components/avatar";
+} from '@instello/ui/components/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,27 +15,27 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@instello/ui/components/dropdown-menu";
+} from '@instello/ui/components/dropdown-menu'
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@instello/ui/components/sidebar";
+} from '@instello/ui/components/sidebar'
 import {
   CreditCardIcon,
   DotsThreeIcon,
   SignOutIcon,
   UserCircleIcon,
-} from "@phosphor-icons/react";
+} from '@phosphor-icons/react'
 
 export function NavUser({
   user,
 }: {
-  user: Pick<User, "imageUrl" | "fullName"> & { primaryEmailAddress?: string };
+  user: Pick<User, 'imageUrl' | 'fullName'> & { primaryEmailAddress?: string }
 }) {
-  const { isMobile } = useSidebar();
-  const { signOut } = useAuth();
+  const { isMobile } = useSidebar()
+  const { signOut } = useAuth()
 
   return (
     <SidebarMenu>
@@ -49,7 +49,7 @@ export function NavUser({
               <Avatar className="h-8 w-8 rounded-lg grayscale">
                 <AvatarImage
                   src={user.imageUrl}
-                  alt={user.fullName ?? "Profile Image"}
+                  alt={user.fullName ?? 'Profile Image'}
                 />
                 <AvatarFallback className="rounded-lg">
                   {user.fullName?.charAt(0)}
@@ -66,7 +66,7 @@ export function NavUser({
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
+            side={isMobile ? 'bottom' : 'right'}
             align="end"
             sideOffset={4}
           >
@@ -75,7 +75,7 @@ export function NavUser({
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage
                     src={user.imageUrl}
-                    alt={user.fullName ?? "Profile Image"}
+                    alt={user.fullName ?? 'Profile Image'}
                   />
                   <AvatarFallback className="rounded-lg">
                     {user.fullName?.charAt(0)}
@@ -109,5 +109,5 @@ export function NavUser({
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  );
+  )
 }

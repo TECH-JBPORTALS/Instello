@@ -1,47 +1,47 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useParams } from "next/navigation";
-import { useTRPC } from "@/trpc/react";
 import {
   Accordion,
   AccordionContent,
   AccordionHeader,
   AccordionItem,
   AccordionTrigger,
-} from "@instello/ui/components/accordion";
-import { Button } from "@instello/ui/components/button";
+} from '@instello/ui/components/accordion'
+import { Button } from '@instello/ui/components/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@instello/ui/components/dropdown-menu";
+} from '@instello/ui/components/dropdown-menu'
 import {
   DotsThreeOutlineIcon,
   HashIcon,
   PenNibIcon,
   PlusSquareIcon,
   TrashSimpleIcon,
-} from "@phosphor-icons/react";
-import { useSuspenseQuery } from "@tanstack/react-query";
+} from '@phosphor-icons/react'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { useParams } from 'next/navigation'
+import { useState } from 'react'
+import { useTRPC } from '@/trpc/react'
 
-import { ChangeVisibilityChapter } from "./change-visibility-chapter-dropdown";
-import { DeleteChapterDialog } from "./dialogs/delete-chapter-dialog";
-import { EditChapterDialog } from "./dialogs/edit-chapter-dialog";
-import { UploadVideoDialog } from "./dialogs/upload-video-dialog";
-import { VideosList } from "./videos-list";
+import { ChangeVisibilityChapter } from './change-visibility-chapter-dropdown'
+import { DeleteChapterDialog } from './dialogs/delete-chapter-dialog'
+import { EditChapterDialog } from './dialogs/edit-chapter-dialog'
+import { UploadVideoDialog } from './dialogs/upload-video-dialog'
+import { VideosList } from './videos-list'
 
 export function ChapterList() {
-  const trpc = useTRPC();
-  const { channelId } = useParams<{ channelId: string }>();
+  const trpc = useTRPC()
+  const { channelId } = useParams<{ channelId: string }>()
   const { data } = useSuspenseQuery(
     trpc.lms.chapter.list.queryOptions({ channelId }),
-  );
+  )
 
   const [openChapter, setOpenChapter] = useState<string | undefined>(
     data.at(0)?.id, // default open first
-  );
+  )
 
   if (data.length === 0)
     return (
@@ -57,7 +57,7 @@ export function ChapterList() {
           Create one by clicking on the new button on the top.
         </p>
       </div>
-    );
+    )
 
   return (
     <Accordion
@@ -78,8 +78,8 @@ export function ChapterList() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  variant={"outline"}
-                  size={"icon"}
+                  variant={'outline'}
+                  size={'icon'}
                   className="size-6 opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100 [&>svg]:size-3!"
                 >
                   <DotsThreeOutlineIcon weight="duotone" />
@@ -89,7 +89,7 @@ export function ChapterList() {
                 <UploadVideoDialog chapterName={item.title} chapterId={item.id}>
                   <DropdownMenuItem
                     onSelect={(e) => {
-                      e.preventDefault();
+                      e.preventDefault()
                     }}
                   >
                     <PlusSquareIcon weight="duotone" /> Add video...
@@ -98,7 +98,7 @@ export function ChapterList() {
                 <EditChapterDialog chapterId={item.id}>
                   <DropdownMenuItem
                     onSelect={(e) => {
-                      e.preventDefault();
+                      e.preventDefault()
                     }}
                   >
                     <PenNibIcon weight="duotone" />
@@ -108,7 +108,7 @@ export function ChapterList() {
                 <DeleteChapterDialog chapterId={item.id}>
                   <DropdownMenuItem
                     onSelect={(e) => {
-                      e.preventDefault();
+                      e.preventDefault()
                     }}
                     variant="destructive"
                   >
@@ -128,5 +128,5 @@ export function ChapterList() {
         </AccordionItem>
       ))}
     </Accordion>
-  );
+  )
 }

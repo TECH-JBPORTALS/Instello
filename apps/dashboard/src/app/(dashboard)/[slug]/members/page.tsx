@@ -1,13 +1,13 @@
-import Container from "@/components/container";
-import { InviteMemberButton } from "@/components/invite-member.button";
-import { SiteHeader } from "@/components/site-header";
-import { HydrateClient, prefetch, trpc } from "@/trpc/server";
+import Container from '@/components/container'
+import { InviteMemberButton } from '@/components/invite-member.button'
+import { SiteHeader } from '@/components/site-header'
+import { HydrateClient, prefetch, trpc } from '@/trpc/server'
 
-import DataTableClient from "./data-table.client";
-import { MembersTabs } from "./members-tabs";
+import DataTableClient from './data-table.client'
+import { MembersTabs } from './members-tabs'
 
 export default function Page() {
-  prefetch(trpc.erp.organization.getOrganizationMembers.queryOptions());
+  prefetch(trpc.erp.organization.getOrganizationMembers.queryOptions())
   return (
     <HydrateClient>
       <SiteHeader startElement={<MembersTabs />} />
@@ -20,5 +20,5 @@ export default function Page() {
         <DataTableClient />
       </Container>
     </HydrateClient>
-  );
+  )
 }

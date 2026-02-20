@@ -1,10 +1,10 @@
-import { ClerkLoaded, UserButton } from "@clerk/nextjs";
-import { Separator } from "@instello/ui/components/separator";
+import { ClerkLoaded, UserButton } from '@clerk/nextjs'
+import { Separator } from '@instello/ui/components/separator'
 
 interface SiteHeaderProps {
-  title?: string;
-  startElement?: React.ReactNode;
-  endElement?: React.ReactNode;
+  title?: string
+  startElement?: React.ReactNode
+  endElement?: React.ReactNode
 }
 
 export function SiteHeader({
@@ -43,5 +43,5 @@ export function SiteHeader({
         </div>
       </div>
     </header>
-  );
+  )
 }

@@ -1,12 +1,12 @@
-import type { UploadOptions } from "@/store/UploadManager";
-import { useUploadStore } from "@/store/upload-store";
-import { uploadManager } from "@/store/UploadManager";
+import type { UploadOptions } from '@/store/UploadManager'
+import { uploadManager } from '@/store/UploadManager'
+import { useUploadStore } from '@/store/upload-store'
 
 /**
  * Hook for managing uploads with Zustand state integration
  */
 export function useUploadManager() {
-  const store = useUploadStore();
+  const store = useUploadStore()
 
   return {
     // Upload management
@@ -14,7 +14,7 @@ export function useUploadManager() {
     pauseUpload: (videoId: string) => uploadManager.pauseUpload(videoId),
     resumeUpload: (videoId: string) => uploadManager.resumeUpload(videoId),
     cancelUpload: (videoId: string) => uploadManager.cancelUpload(videoId),
-    retryUpload: (videoId: string, options: Omit<UploadOptions, "videoId">) =>
+    retryUpload: (videoId: string, options: Omit<UploadOptions, 'videoId'>) =>
       uploadManager.retryUpload(videoId, options),
     removeUpload: (videoId: string) => uploadManager.removeUpload(videoId),
 
@@ -38,5 +38,5 @@ export function useUploadManager() {
 
     // Zustand state
     uploads: store.uploads,
-  };
+  }
 }

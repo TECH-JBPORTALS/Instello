@@ -1,15 +1,15 @@
-import { createJiti } from "jiti";
+import { createJiti } from 'jiti'
 
-const jiti = createJiti(import.meta.url);
+const jiti = createJiti(import.meta.url)
 
 // Import env files to validate at build time. Use jiti so we can load .ts files in here.
-await jiti.import("./src/env");
+await jiti.import('./src/env')
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["@instello/ui", "@instello/db", "@instello/api"],
+  transpilePackages: ['@instello/ui', '@instello/db', '@instello/api'],
   experimental: {
-    optimizePackageImports: ["@phosphor-icons/react"],
+    optimizePackageImports: ['@phosphor-icons/react'],
   },
   eslint: {
     ignoreDuringBuilds: true,
@@ -17,6 +17,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig

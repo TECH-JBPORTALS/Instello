@@ -1,37 +1,37 @@
-import { and, desc, eq, isDrizzleQueryError } from "@instello/db";
+import { and, desc, eq, isDrizzleQueryError } from '@instello/db'
 import {
   CreateTimetableSchema,
   CreateTimetableSlotsSchema,
   subject,
   timetable,
   timetableSlot,
-} from "@instello/db/erp";
-import { TRPCError } from "@trpc/server";
-import { z } from "zod/v4";
+} from '@instello/db/erp'
+import { TRPCError } from '@trpc/server'
+import { z } from 'zod/v4'
 
-import { branchProcedure, hasPermission } from "../trpc";
+import { branchProcedure, hasPermission } from '../trpc'
 
 export const timetableRouter = {
   /** Create new time table */
   create: branchProcedure
-    .use(hasPermission({ permission: "org:timetables:create" }))
-    .use(hasPermission({ permission: "org:timetables:update" }))
+    .use(hasPermission({ permission: 'org:timetables:create' }))
+    .use(hasPermission({ permission: 'org:timetables:update' }))
     .input(
       CreateTimetableSchema.and(
         z.object({ slots: z.array(CreateTimetableSlotsSchema) }),
       ),
     )
     .mutation(async ({ ctx, input }) => {
-      const { slots, branchId, effectiveFrom, message } = input;
+      const { slots, branchId, effectiveFrom, message } = input
 
       await ctx.db.transaction(async (tx) => {
         try {
           const last = await tx.query.timetable.findFirst({
             where: eq(timetable.id, branchId),
             orderBy: desc(timetable.version),
-          });
+          })
 
-          const version = last ? last.version + 1 : 1;
+          const version = last ? last.version + 1 : 1
 
           const newTimetable = await tx
             .insert(timetable)
@@ -43,51 +43,51 @@ export const timetableRouter = {
               semesterId: ctx.auth.activeSemester.id,
             })
             .returning()
-            .then((r) => r.at(0));
+            .then((r) => r.at(0))
 
           if (!newTimetable)
             throw new TRPCError({
-              code: "INTERNAL_SERVER_ERROR",
+              code: 'INTERNAL_SERVER_ERROR',
               message: "Couldn't able to create timetable right now",
-            });
+            })
 
           const slotsWithTimetable = await Promise.all(
             slots.map(async (s) => {
               const sub = await tx.query.subject.findFirst({
                 where: eq(subject.id, s.subjectId),
-              });
+              })
 
               if (!sub)
                 throw new TRPCError({
                   message: `One of the subjects doesn't exists`,
-                  code: "NOT_FOUND",
-                });
+                  code: 'NOT_FOUND',
+                })
 
               return {
                 ...s,
                 staffClerkUserId: sub.staffClerkUserId,
                 timetableId: newTimetable.id,
-              };
+              }
             }),
-          );
+          )
 
-          await tx.insert(timetableSlot).values(slotsWithTimetable).returning();
+          await tx.insert(timetableSlot).values(slotsWithTimetable).returning()
         } catch (e) {
           // Rollback the changes
-          tx.rollback();
+          tx.rollback()
 
           if (isDrizzleQueryError(e))
             throw new TRPCError({
-              code: "INTERNAL_SERVER_ERROR",
+              code: 'INTERNAL_SERVER_ERROR',
               message: e.cause.message,
-            });
+            })
 
           throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Unable to create timetable right now",
-          });
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Unable to create timetable right now',
+          })
         }
-      });
+      })
     }),
 
   /** Get current time table within branch and active semester */
@@ -99,9 +99,9 @@ export const timetableRouter = {
       ),
       orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
       with: { timetableSlots: { with: { subject: true } } },
-    });
+    })
 
-    return { timetableData };
+    return { timetableData }
   }),
 
   /** Get all timetable version history within the branch*/
@@ -114,4 +114,4 @@ export const timetableRouter = {
       orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
     }),
   ),
-};
+}

@@ -1,12 +1,12 @@
-import Image from "next/image";
-import Link from "next/link";
-import { NavLink } from "@/components/nav-link";
-import { Button } from "@instello/ui/components/button";
+import { Button } from '@instello/ui/components/button'
 import {
   DownloadIcon,
   PaperPlaneTiltIcon,
   StarIcon,
-} from "@phosphor-icons/react/ssr";
+} from '@phosphor-icons/react/ssr'
+import Image from 'next/image'
+import Link from 'next/link'
+import { NavLink } from '@/components/nav-link'
 
 export function Hero() {
   return (
@@ -132,5 +132,5 @@ export function Hero() {
         </Button>
       </div>
     </section>
-  );
+  )
 }

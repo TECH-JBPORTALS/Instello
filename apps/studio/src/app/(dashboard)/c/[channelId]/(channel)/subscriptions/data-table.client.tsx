@@ -1,18 +1,18 @@
-"use client";
+'use client'
 
-import { useParams } from "next/navigation";
-import { DataTable } from "@/components/data-table";
-import { useTRPC } from "@/trpc/react";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { useParams } from 'next/navigation'
+import { DataTable } from '@/components/data-table'
+import { useTRPC } from '@/trpc/react'
 
-import { columns } from "./columns";
+import { columns } from './columns'
 
 export default function DataTableClient() {
-  const trpc = useTRPC();
-  const { channelId } = useParams<{ channelId: string }>();
+  const trpc = useTRPC()
+  const { channelId } = useParams<{ channelId: string }>()
   const { data } = useSuspenseQuery(
     trpc.lms.subscription.listByChannelId.queryOptions({ channelId }),
-  );
+  )
 
   return (
     <>
@@ -23,5 +23,5 @@ export default function DataTableClient() {
       </div>
       <DataTable columns={columns} data={data.subscribers} />;
     </>
-  );
+  )
 }

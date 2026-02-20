@@ -7,21 +7,21 @@ import {
   inArray,
   sql,
   sum,
-} from "@instello/db";
+} from '@instello/db'
 import {
+  CreateChannelSchema,
   channel,
   chapter,
-  CreateChannelSchema,
   subscription,
   UpdateChannelSchema,
   video,
-} from "@instello/db/lms";
-import { TRPCError } from "@trpc/server";
-import { z } from "zod/v4";
+} from '@instello/db/lms'
+import { TRPCError } from '@trpc/server'
+import { z } from 'zod/v4'
 
-import { getClerkUserById, withTx } from "../router.helpers";
-import { protectedProcedure } from "../trpc";
-import { deleteChapter } from "./chapter";
+import { getClerkUserById, withTx } from '../router.helpers'
+import { protectedProcedure } from '../trpc'
+import { deleteChapter } from './chapter'
 
 export const channelRouter = {
   create: protectedProcedure
@@ -35,14 +35,14 @@ export const channelRouter = {
           collegeId: !input.isPublic ? input.collegeId : null,
           branchId: !input.isPublic ? input.branchId : null,
         })
-        .returning();
+        .returning()
     }),
 
   list: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.query.channel.findMany({
       where: eq(channel.createdByClerkUserId, ctx.auth.userId),
       orderBy: (col, { desc }) => desc(col.createdAt),
-    });
+    })
   }),
 
   listPublic: protectedProcedure.query(async ({ ctx }) => {
@@ -65,11 +65,11 @@ export const channelRouter = {
             with: { videos: { columns: { id: true } } },
           },
         },
-      });
+      })
 
-      if (!channels.length) return [];
+      if (!channels.length) return []
 
-      const channelIds = channels.map((c) => c.id);
+      const channelIds = channels.map((c) => c.id)
 
       /* -------------------------------------------------- */
       /* 2. Batch chapter counts */
@@ -87,11 +87,11 @@ export const channelRouter = {
             inArray(chapter.channelId, channelIds),
           ),
         )
-        .groupBy(chapter.channelId);
+        .groupBy(chapter.channelId)
 
       const chapterCountMap = new Map(
         chapterCounts.map((c) => [c.channelId, c.total]),
-      );
+      )
 
       // /* -------------------------------------------------- */
       // /* 3. Batch subscriber counts */
@@ -104,11 +104,11 @@ export const channelRouter = {
         })
         .from(subscription)
         .where(inArray(subscription.channelId, channelIds))
-        .groupBy(subscription.channelId);
+        .groupBy(subscription.channelId)
 
       const subscriberMap = new Map(
         subscriberCounts.map((s) => [s.channelId, s.total]),
-      );
+      )
 
       // /* -------------------------------------------------- */
       // /* 4. Batch first chapters (window function) */
@@ -130,30 +130,30 @@ export const channelRouter = {
           asc(sql`CAST(SUBSTRING(${chapter.title} FROM '^[0-9]+') AS INTEGER)`),
         )
         .groupBy(chapter.id, chapter.channelId)
-        .as("fc");
+        .as('fc')
 
       const firstChapters = await tx
         .select({
           channelId: fc.channelId,
           id: fc.chapterId,
         })
-        .from(fc);
+        .from(fc)
 
       const firstChapterMap = new Map(
         firstChapters.map((c) => [c.channelId, c]),
-      );
+      )
 
       /* -------------------------------------------------- */
       /* 5. Batch Clerk users request */
       /* -------------------------------------------------- */
 
-      const userIds = [...new Set(channels.map((c) => c.createdByClerkUserId))];
+      const userIds = [...new Set(channels.map((c) => c.createdByClerkUserId))]
 
       const clerkUsers = await ctx.clerk.users.getUserList({
         userId: userIds,
-      });
+      })
 
-      const userMap = new Map(clerkUsers.data.map((u) => [u.id, u]));
+      const userMap = new Map(clerkUsers.data.map((u) => [u.id, u]))
 
       /* -------------------------------------------------- */
       /* 7. Final mapping (NO ASYNC INSIDE LOOP) */
@@ -167,9 +167,9 @@ export const channelRouter = {
           totalSubscribers: subscriberMap.get(channel.id) ?? 0,
           firstChapter: firstChapterMap.get(channel.id),
           overallValues: { data: { total_views: 0 } },
-        };
-      });
-    });
+        }
+      })
+    })
   }),
 
   getById: protectedProcedure
@@ -179,19 +179,19 @@ export const channelRouter = {
         // 1. Find channel
         const singleChannel = await tx.query.channel.findFirst({
           where: eq(channel.id, input.channelId),
-        });
+        })
 
         if (!singleChannel)
           throw new TRPCError({
-            message: "Channel not found",
-            code: "NOT_FOUND",
-          });
+            message: 'Channel not found',
+            code: 'NOT_FOUND',
+          })
 
         // 2. Get channel creator details
         const createdByClerkUser = await getClerkUserById(
           singleChannel.createdByClerkUserId,
           ctx,
-        );
+        )
 
         // 3. Get total chapters of the channel
         const chapterAggr = await tx
@@ -206,7 +206,7 @@ export const channelRouter = {
               eq(chapter.channelId, singleChannel.id),
               eq(chapter.isPublished, true),
             ),
-          );
+          )
 
         // 4. Get total hours of channel content
         const hoursAggr = await tx
@@ -222,13 +222,13 @@ export const channelRouter = {
               eq(chapter.channelId, singleChannel.id),
               eq(chapter.isPublished, true),
             ),
-          );
+          )
 
         // 5. Get total subscribers
         const subscribersAggr = await tx
           .select({ total: countDistinct(subscription.clerkUserId) })
           .from(subscription)
-          .where(eq(subscription.channelId, singleChannel.id));
+          .where(eq(subscription.channelId, singleChannel.id))
 
         return {
           ...singleChannel,
@@ -236,8 +236,8 @@ export const channelRouter = {
           numberOfChapters: chapterAggr[0]?.total ?? 0,
           totalDuration: hoursAggr[0]?.total ?? 0,
           totalSubscribers: subscribersAggr[0]?.total ?? 0,
-        };
-      });
+        }
+      })
     }),
 
   update: protectedProcedure
@@ -252,7 +252,7 @@ export const channelRouter = {
         })
         .where(eq(channel.id, input.id))
         .returning()
-        .then((r) => r[0]);
+        .then((r) => r[0])
     }),
 
   delete: protectedProcedure
@@ -263,7 +263,7 @@ export const channelRouter = {
           // 1. Find all the chapters in the channel
           const allVideos = await tx.query.chapter.findMany({
             where: eq(chapter.channelId, input.channelId),
-          });
+          })
 
           // 2. Delete all video assets in the chapter
           await Promise.all(
@@ -271,30 +271,30 @@ export const channelRouter = {
               async (chapter) =>
                 await deleteChapter({ chapterId: chapter.id }, withTx(ctx, tx)),
             ),
-          );
+          )
 
           // 3. Delete the channel
           const deletedChannel = await tx
             .delete(channel)
             .where(eq(channel.id, input.channelId))
             .returning()
-            .then((r) => r[0]);
+            .then((r) => r[0])
 
           if (!deletedChannel) {
             throw new TRPCError({
-              message: "Unable to delete the channel",
-              code: "INTERNAL_SERVER_ERROR",
-            });
+              message: 'Unable to delete the channel',
+              code: 'INTERNAL_SERVER_ERROR',
+            })
           }
 
-          return deletedChannel;
+          return deletedChannel
         } catch (e) {
-          console.error("delete:chapter:error: ", e);
+          console.error('delete:chapter:error: ', e)
           throw new TRPCError({
-            message: "Unable to delete the chapter",
-            code: "INTERNAL_SERVER_ERROR",
-          });
+            message: 'Unable to delete the chapter',
+            code: 'INTERNAL_SERVER_ERROR',
+          })
         }
-      });
+      })
     }),
-};
+}

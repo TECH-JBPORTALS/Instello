@@ -1,73 +1,73 @@
-import type { TextInput } from "react-native";
-import * as React from "react";
-import { View } from "react-native";
-import { Link } from "expo-router";
-import { SocialConnections } from "@/components/social-connections";
-import { Button } from "@/components/ui/button";
+import { useSignIn } from '@clerk/clerk-expo'
+import { Link } from 'expo-router'
+import * as React from 'react'
+import type { TextInput } from 'react-native'
+import { View } from 'react-native'
+import { SocialConnections } from '@/components/social-connections'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Text } from "@/components/ui/text";
-import { useSignIn } from "@clerk/clerk-expo";
+} from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Text } from '@/components/ui/text'
 
 export function SignInForm() {
-  const { signIn, setActive, isLoaded } = useSignIn();
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [isLoading, setIsLoading] = React.useState(false);
-  const passwordInputRef = React.useRef<TextInput>(null);
+  const { signIn, setActive, isLoaded } = useSignIn()
+  const [email, setEmail] = React.useState('')
+  const [password, setPassword] = React.useState('')
+  const [isLoading, setIsLoading] = React.useState(false)
+  const passwordInputRef = React.useRef<TextInput>(null)
   const [error, setError] = React.useState<{
-    email?: string;
-    password?: string;
-  }>({});
+    email?: string
+    password?: string
+  }>({})
 
   async function onSubmit() {
     if (!isLoaded) {
-      return;
+      return
     }
 
-    setIsLoading(true);
+    setIsLoading(true)
 
     // Start the sign-in process using the email and password provided
     try {
       const signInAttempt = await signIn.create({
         identifier: email,
         password,
-      });
+      })
 
       // If sign-in process is complete, set the created session as active
       // and redirect the user
-      if (signInAttempt.status === "complete") {
-        setError({ email: "", password: "" });
-        await setActive({ session: signInAttempt.createdSessionId });
-        return;
+      if (signInAttempt.status === 'complete') {
+        setError({ email: '', password: '' })
+        await setActive({ session: signInAttempt.createdSessionId })
+        return
       }
       // TODO: Handle other statuses
-      console.error(JSON.stringify(signInAttempt, null, 2));
+      console.error(JSON.stringify(signInAttempt, null, 2))
     } catch (err) {
       // See https://go.clerk.com/mRUDrIe for more info on error handling
       if (err instanceof Error) {
         const isEmailMessage =
-          err.message.toLowerCase().includes("identifier") ||
-          err.message.toLowerCase().includes("email");
+          err.message.toLowerCase().includes('identifier') ||
+          err.message.toLowerCase().includes('email')
         setError(
           isEmailMessage ? { email: err.message } : { password: err.message },
-        );
+        )
       }
-      console.error(JSON.stringify(err, null, 2));
+      console.error(JSON.stringify(err, null, 2))
     }
 
-    setIsLoading(false);
+    setIsLoading(false)
   }
 
   function onEmailSubmitEditing() {
-    passwordInputRef.current?.focus();
+    passwordInputRef.current?.focus()
   }
 
   return (
@@ -132,11 +132,11 @@ export function SignInForm() {
               disabled={isLoading || !email || !password}
               onPress={onSubmit}
             >
-              <Text>{isLoading ? "Signing in..." : "Continue"}</Text>
+              <Text>{isLoading ? 'Signing in...' : 'Continue'}</Text>
             </Button>
           </View>
           <Text className="text-center text-sm">
-            Don&apos;t have an account?{" "}
+            Don&apos;t have an account?{' '}
             <Link
               href="/(auth)/sign-up"
               className="text-sm underline underline-offset-4"
@@ -153,5 +153,5 @@ export function SignInForm() {
         </CardContent>
       </Card>
     </View>
-  );
+  )
 }

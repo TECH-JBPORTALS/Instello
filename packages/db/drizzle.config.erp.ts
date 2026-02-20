@@ -1,22 +1,22 @@
-import type { Config } from "drizzle-kit";
+import type { Config } from 'drizzle-kit'
 
 if (!process.env.DATABASE_URL) {
-  throw new Error("Missing DATABASE_URL");
+  throw new Error('Missing DATABASE_URL')
 }
 
 // Neon database pooling url
-const nonPoolingUrl = process.env.DATABASE_URL;
+const nonPoolingUrl = process.env.DATABASE_URL
 
 export default {
-  schema: "./src/erp",
-  dialect: "postgresql",
+  schema: './src/erp',
+  dialect: 'postgresql',
   dbCredentials: { url: nonPoolingUrl },
-  casing: "snake_case",
-  out: "./drizzle/erp",
-  tablesFilter: "erp_*",
+  casing: 'snake_case',
+  out: './drizzle/erp',
+  tablesFilter: 'erp_*',
   migrations: {
-    schema: "__drizzle_migrations_erp",
-    table: "drizzle_erp",
-    prefix: "timestamp",
+    schema: '__drizzle_migrations_erp',
+    table: 'drizzle_erp',
+    prefix: 'timestamp',
   },
-} satisfies Config;
+} satisfies Config

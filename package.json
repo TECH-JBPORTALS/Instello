@@ -21,16 +21,14 @@
     "clean:workspaces": "turbo run clean",
     "lint": "turbo run lint --continue -- --cache --cache-location .cache/.eslintcache",
     "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location .cache/.eslintcache",
-    "lint:ws": "pnpm dlx sherif@latest",
-    "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",
-    "format:fix": "turbo run format --continue -- --write --cache --cache-location .cache/.prettiercache",
+    "lint:ws": "bunx sherif@latest",
+    "format-lint": "biome check .",
+    "format-lint:fix": "biome check . --write",
     "typecheck": "turbo typecheck"
   },
   "devDependencies": {
-    "@instello/eslint-config": "workspace:*",
-    "@instello/prettier-config": "workspace:*",
+    "@biomejs/biome": "catalog:",
     "@instello/tsconfig": "workspace:*",
-    "prettier": "catalog:",
     "turbo": "^2.7.2",
     "typescript": "5.7.3"
   },
@@ -41,16 +39,11 @@
     "lightningcss": "1.30.1"
   },
   "packageManager": "bun@1.3.9",
-  "prettier": "@instello/prettier-config",
   "overrides": {
     "lightningcss": "1.30.1"
   },
   "workspaces": {
-    "packages": [
-      "apps/*",
-      "packages/*",
-      "tooling/*"
-    ],
+    "packages": ["apps/*", "packages/*", "tooling/*"],
     "catalog": {
       "@clerk/nextjs": "^6.36.5",
       "@clerk/types": "^4.101.9",
@@ -60,9 +53,8 @@
       "@tanstack/react-table": "^8.21.3",
       "@trpc/client": "^11.4.3",
       "@trpc/tanstack-react-query": "^11.4.3",
-      "eslint": "^9.28.0",
+      "@biomejs/biome": "2.4.3",
       "recharts": "2.15.4",
-      "prettier": "^3.5.3",
       "react-hook-form": "^7.60.0",
       "sonner": "^2.0.6",
       "superjson": "^2.2.2",

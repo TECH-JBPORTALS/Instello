@@ -1,7 +1,6 @@
-"use client";
+'use client'
 
-import React from "react";
-import { Avatar, AvatarFallback } from "@instello/ui/components/avatar";
+import { Avatar, AvatarFallback } from '@instello/ui/components/avatar'
 import {
   ContextMenu,
   ContextMenuContent,
@@ -11,75 +10,75 @@ import {
   ContextMenuSubContent,
   ContextMenuSubTrigger,
   ContextMenuTrigger,
-} from "@instello/ui/components/context-menu";
-import { cn } from "@instello/ui/lib/utils";
+} from '@instello/ui/components/context-menu'
+import { cn } from '@instello/ui/lib/utils'
 import {
   eachDayOfInterval,
   endOfMonth,
   format,
   getDay,
   startOfMonth,
-} from "date-fns";
+} from 'date-fns'
+import React from 'react'
 
-import type { TimetableData } from "../timetable";
+import type { TimetableData } from '../timetable'
 
 // Contexts
 interface Student {
-  id: string;
-  name: string;
+  id: string
+  name: string
 }
 
 interface SelectedCell {
-  studentId: string;
-  date: string; // ISO format
-  periodId: string; // `slot._id`
+  studentId: string
+  date: string // ISO format
+  periodId: string // `slot._id`
 }
 
 interface AttendanceData {
-  _id: string;
-  studentId: string;
-  date: Date;
-  hourSlotId: string;
-  status: "present" | "absent";
+  _id: string
+  studentId: string
+  date: Date
+  hourSlotId: string
+  status: 'present' | 'absent'
 }
 
 interface AttendanceTableContextProps {
-  students: Student[];
-  timetableShema: TimetableData[];
-  selectedDate: Date;
-  selectedCell: SelectedCell | null;
-  setSelectedCell: React.Dispatch<React.SetStateAction<SelectedCell | null>>;
+  students: Student[]
+  timetableShema: TimetableData[]
+  selectedDate: Date
+  selectedCell: SelectedCell | null
+  setSelectedCell: React.Dispatch<React.SetStateAction<SelectedCell | null>>
 }
 
 const AttendanceTableContext =
-  React.createContext<AttendanceTableContextProps | null>(null);
+  React.createContext<AttendanceTableContextProps | null>(null)
 
 function useAttendance() {
-  const attendance = React.useContext(AttendanceTableContext);
+  const attendance = React.useContext(AttendanceTableContext)
 
   if (!attendance) {
-    throw new Error("useAttendance not wrraped in the provider");
+    throw new Error('useAttendance not wrraped in the provider')
   }
 
-  const { selectedDate, timetableShema } = attendance;
+  const { selectedDate, timetableShema } = attendance
 
   const dates = eachDayOfInterval({
     start: startOfMonth(selectedDate),
     end: endOfMonth(selectedDate),
-  });
+  })
 
   function getPeriodsByDate(date: Date) {
-    const dow = getDay(date); // 0 - Sunday, 1 - Monday, etc.
-    return timetableShema.filter((entry) => entry.dayOfWeek === dow);
+    const dow = getDay(date) // 0 - Sunday, 1 - Monday, etc.
+    return timetableShema.filter((entry) => entry.dayOfWeek === dow)
   }
 
-  return { ...attendance, getPeriodsByDate, dates };
+  return { ...attendance, getPeriodsByDate, dates }
 }
 
 interface AttendanceTableProps
-  extends
-    React.HTMLAttributes<HTMLDivElement>,
-    Omit<AttendanceTableContextProps, "selectedCell" | "setSelectedCell"> {}
+  extends React.HTMLAttributes<HTMLDivElement>,
+    Omit<AttendanceTableContextProps, 'selectedCell' | 'setSelectedCell'> {}
 
 export function AttendanceTable({
   className,
@@ -91,9 +90,9 @@ export function AttendanceTable({
 }: AttendanceTableProps) {
   const [selectedCell, setSelectedCell] = React.useState<SelectedCell | null>(
     null,
-  );
+  )
 
-  const [_value, _setAttendanceData] = React.useState<AttendanceData[]>([]);
+  const [_value, _setAttendanceData] = React.useState<AttendanceData[]>([])
 
   return (
     <AttendanceTableContext.Provider
@@ -107,7 +106,7 @@ export function AttendanceTable({
     >
       <div
         className={cn(
-          "grid max-w-svw grid-cols-[200px_1fr] overflow-x-auto overflow-y-auto",
+          'grid max-w-svw grid-cols-[200px_1fr] overflow-x-auto overflow-y-auto',
           className,
         )}
         {...props}
@@ -123,7 +122,7 @@ export function AttendanceTable({
         )}
       </div>
     </AttendanceTableContext.Provider>
-  );
+  )
 }
 
 export function AttendanceTableHeaderLeft({
@@ -133,12 +132,12 @@ export function AttendanceTableHeaderLeft({
   return (
     <div
       className={cn(
-        "bg-background sticky top-0 left-0 z-50 col-span-1 flex h-20 items-center justify-center border-r border-b p-1.5",
+        'bg-background sticky top-0 left-0 z-50 col-span-1 flex h-20 items-center justify-center border-r border-b p-1.5',
         className,
       )}
       {...props}
     />
-  );
+  )
 }
 
 export function AttendanceTableHeaderRight({
@@ -148,18 +147,18 @@ export function AttendanceTableHeaderRight({
   return (
     <div
       className={cn(
-        "bg-background/60 sticky top-0 z-40 flex h-20 items-center justify-end border-b backdrop-blur-lg",
+        'bg-background/60 sticky top-0 z-40 flex h-20 items-center justify-end border-b backdrop-blur-lg',
         className,
       )}
       {...props}
     />
-  );
+  )
 }
 
 export function AttendanceTableCellContextMenu({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
     <ContextMenu>
@@ -182,49 +181,49 @@ export function AttendanceTableCellContextMenu({
         </ContextMenuSub>
       </ContextMenuContent>
     </ContextMenu>
-  );
+  )
 }
 
 function AttendanceTableCell({
   slot,
 }: {
-  slot: TimetableData & { studentId: string; date: Date };
+  slot: TimetableData & { studentId: string; date: Date }
 }) {
-  const { selectedCell, setSelectedCell } = useAttendance();
+  const { selectedCell, setSelectedCell } = useAttendance()
 
   const isSelected =
     selectedCell?.studentId === slot.studentId &&
     selectedCell.date === slot.date.toISOString() &&
-    selectedCell.periodId === slot._id;
+    selectedCell.periodId === slot._id
   return (
     <AttendanceTableCellContextMenu>
       <button
         key={slot._id}
         className={cn(
-          "flex h-full w-20 items-center justify-center border-r-[.5px] px-1.5 last:border-r-0",
-          isSelected && "outline-primary/60 outline outline-offset-[-2px]",
+          'flex h-full w-20 items-center justify-center border-r-[.5px] px-1.5 last:border-r-0',
+          isSelected && 'outline-primary/60 outline outline-offset-[-2px]',
         )}
         onClick={() => {
           setSelectedCell({
             studentId: slot.studentId,
             date: slot.date.toISOString(),
             periodId: slot._id,
-          });
+          })
         }}
         onContextMenu={() => {
           setSelectedCell({
             studentId: slot.studentId,
             date: slot.date.toISOString(),
             periodId: slot._id,
-          });
+          })
         }}
       />
     </AttendanceTableCellContextMenu>
-  );
+  )
 }
 
 export function AttendanceTableData() {
-  const { students, dates, getPeriodsByDate } = useAttendance();
+  const { students, dates, getPeriodsByDate } = useAttendance()
 
   return (
     <>
@@ -244,7 +243,7 @@ export function AttendanceTableData() {
             className="bg-background/60 border-b-border/20 flex h-12 items-center justify-end border-b backdrop-blur-lg"
           >
             {dates.map((date, i) => {
-              const periods = getPeriodsByDate(date);
+              const periods = getPeriodsByDate(date)
 
               return (
                 <div
@@ -262,17 +261,17 @@ export function AttendanceTableData() {
                     ))
                   )}
                 </div>
-              );
+              )
             })}
           </div>
         </React.Fragment>
       ))}
     </>
-  );
+  )
 }
 
 export function AttendanceTableHeaderDates() {
-  const { dates, getPeriodsByDate } = useAttendance();
+  const { dates, getPeriodsByDate } = useAttendance()
 
   return (
     <>
@@ -282,7 +281,7 @@ export function AttendanceTableHeaderDates() {
             key={i}
             className="flex h-10 w-full items-center justify-center border-b px-2.5 text-sm"
           >
-            {format(date, "dd EEE")}
+            {format(date, 'dd EEE')}
           </div>
 
           <div className="flex h-10 w-full items-center">
@@ -307,5 +306,5 @@ export function AttendanceTableHeaderDates() {
         </div>
       ))}
     </>
-  );
+  )
 }

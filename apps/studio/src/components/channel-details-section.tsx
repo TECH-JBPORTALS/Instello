@@ -1,17 +1,17 @@
-"use client";
+'use client'
 
-import Image from "next/image";
-import { useParams } from "next/navigation";
-import { env } from "@/env";
-import { useTRPC } from "@/trpc/react";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from '@tanstack/react-query'
+import Image from 'next/image'
+import { useParams } from 'next/navigation'
+import { env } from '@/env'
+import { useTRPC } from '@/trpc/react'
 
 export function ChannelDetailsSection() {
-  const trpc = useTRPC();
-  const { channelId } = useParams<{ channelId: string }>();
+  const trpc = useTRPC()
+  const { channelId } = useParams<{ channelId: string }>()
   const { data } = useSuspenseQuery(
     trpc.lms.channel.getById.queryOptions({ channelId }),
-  );
+  )
 
   return (
     <div className="space-y-3.5">
@@ -42,5 +42,5 @@ export function ChannelDetailsSection() {
         </p>
       </div>
     </div>
-  );
+  )
 }

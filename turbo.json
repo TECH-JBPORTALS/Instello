@@ -12,11 +12,15 @@
     },
     "build:storybook": {},
     "format": {
-      "outputs": [".cache/.prettiercache"],
+      "outputs": [".cache/.biome"],
       "outputLogs": "new-only"
     },
     "lint": {
       "dependsOn": ["^lint"]
+    },
+    "//#format-and-lint": {},
+    "//#format-and-lint:fix": {
+      "cache": false
     },
     "typecheck": {
       "dependsOn": ["^topo", "^build"],

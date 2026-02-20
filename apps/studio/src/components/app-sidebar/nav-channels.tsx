@@ -1,8 +1,5 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useTRPC } from "@/trpc/react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,12 +7,12 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@instello/ui/components/dropdown-menu";
+} from '@instello/ui/components/dropdown-menu'
 import {
   SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@instello/ui/components/sidebar";
+} from '@instello/ui/components/sidebar'
 import {
   BackspaceIcon,
   DotsThreeIcon,
@@ -23,18 +20,21 @@ import {
   FolderLockIcon,
   FolderOpenIcon,
   GearFineIcon,
-} from "@phosphor-icons/react";
-import { useSuspenseQuery } from "@tanstack/react-query";
+} from '@phosphor-icons/react'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { useTRPC } from '@/trpc/react'
 
-import { ChannelSettingsDialog } from "../dialogs/channel-settings-dialog";
-import { DeleteChannelDialog } from "../dialogs/delete-channel-dialog";
+import { ChannelSettingsDialog } from '../dialogs/channel-settings-dialog'
+import { DeleteChannelDialog } from '../dialogs/delete-channel-dialog'
 
 export function NavChannels() {
-  const trpc = useTRPC();
-  const pathname = usePathname();
+  const trpc = useTRPC()
+  const pathname = usePathname()
   const { data: channels } = useSuspenseQuery(
     trpc.lms.channel.list.queryOptions(),
-  );
+  )
 
   if (channels.length == 0)
     return (
@@ -45,7 +45,7 @@ export function NavChannels() {
           courses. Create one by clicking on the plus button on the top
         </small>
       </div>
-    );
+    )
 
   return (
     <>
@@ -62,7 +62,7 @@ export function NavChannels() {
                 ) : (
                   <>
                     {item.isPublic ? (
-                      <FolderIcon weight={"duotone"} />
+                      <FolderIcon weight={'duotone'} />
                     ) : (
                       <FolderLockIcon weight="duotone" />
                     )}
@@ -101,5 +101,5 @@ export function NavChannels() {
         </DropdownMenu>
       ))}
     </>
-  );
+  )
 }

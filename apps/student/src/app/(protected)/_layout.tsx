@@ -1,7 +1,15 @@
-import { TouchableOpacity, View } from "react-native";
-import { Image } from "expo-image";
-import { Link, Stack } from "expo-router";
-import { Button } from "@/components/ui/button";
+import { useAuth } from '@clerk/clerk-expo'
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
+import { Image } from 'expo-image'
+import { Link, Stack } from 'expo-router'
+import {
+  BrowserIcon,
+  DeviceMobileIcon,
+  DevicesIcon,
+  QuestionIcon,
+} from 'phosphor-react-native'
+import { TouchableOpacity, View } from 'react-native'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -9,27 +17,15 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Icon } from "@/components/ui/icon";
-import { Text } from "@/components/ui/text";
-import { useDeviceLimit } from "@/hooks/useDeviceLimit";
-import { useAuth } from "@clerk/clerk-expo";
-import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import {
-  BrowserIcon,
-  DeviceMobileIcon,
-  DevicesIcon,
-  QuestionIcon,
-} from "phosphor-react-native";
-
-
-
-
+} from '@/components/ui/card'
+import { Icon } from '@/components/ui/icon'
+import { Text } from '@/components/ui/text'
+import { useDeviceLimit } from '@/hooks/useDeviceLimit'
 
 export default function ProtectedLayout() {
-  const { sessionClaims } = useAuth();
+  const { sessionClaims } = useAuth()
   const { blocked, signOutOtherDevices, loading, otherSessions } =
-    useDeviceLimit();
+    useDeviceLimit()
 
   return (
     <BottomSheetModalProvider>
@@ -38,8 +34,8 @@ export default function ProtectedLayout() {
           <View className="flex-1 items-center justify-center gap-6 p-4">
             <Image
               // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-require-imports
-              source={require("assets/images/instello.png")}
-              style={{ height: 28, width: 128, aspectRatio: "auto" }}
+              source={require('assets/images/instello.png')}
+              style={{ height: 28, width: 128, aspectRatio: 'auto' }}
             />
             <Card>
               <CardContent className="items-center justify-center py-2">
@@ -80,15 +76,15 @@ export default function ProtectedLayout() {
                         }
                       />
                       <View>
-                        <Text variant={"small"}>
-                          {session.latestActivity.deviceType}{" "}
+                        <Text variant={'small'}>
+                          {session.latestActivity.deviceType}{' '}
                           {session.latestActivity.browserName}
                         </Text>
                         <Text
-                          variant={"muted"}
+                          variant={'muted'}
                           className="text-muted-foreground text-xs"
                         >
-                          {session.latestActivity.city},{" "}
+                          {session.latestActivity.city},{' '}
                           {session.latestActivity.country}
                         </Text>
                       </View>
@@ -97,12 +93,12 @@ export default function ProtectedLayout() {
                 </View>
                 <Button
                   onPressIn={() => signOutOtherDevices()}
-                  size={"lg"}
+                  size={'lg'}
                   className="w-full"
                 >
                   <Text className="font-[MontserratBold] font-bold">
                     {loading
-                      ? "Signing out..."
+                      ? 'Signing out...'
                       : `Sign out from (${otherSessions.length}) devices`}
                   </Text>
                 </Button>
@@ -129,12 +125,12 @@ export default function ProtectedLayout() {
               <Stack.Screen
                 name="profile"
                 options={{
-                  title: "My Profile",
-                  headerTitleAlign: "center",
+                  title: 'My Profile',
+                  headerTitleAlign: 'center',
                   headerShadowVisible: false,
                   headerRight(props) {
                     return (
-                      <Link {...props} href={"/help"} asChild>
+                      <Link {...props} href={'/help'} asChild>
                         <TouchableOpacity>
                           <View className="flex-row items-center  gap-1">
                             <Icon as={QuestionIcon} />
@@ -142,7 +138,7 @@ export default function ProtectedLayout() {
                           </View>
                         </TouchableOpacity>
                       </Link>
-                    );
+                    )
                   },
                 }}
               />
@@ -150,30 +146,30 @@ export default function ProtectedLayout() {
               <Stack.Screen
                 name="(subscribe)/index"
                 options={{
-                  presentation: "modal",
-                  title: "Subscribe Now",
-                  headerTitleAlign: "center",
+                  presentation: 'modal',
+                  title: 'Subscribe Now',
+                  headerTitleAlign: 'center',
                 }}
               />
               <Stack.Screen
                 name="(subscribe)/apply-coupon"
                 options={{
                   headerShown: false,
-                  animation: "fade",
+                  animation: 'fade',
                 }}
               />
               <Stack.Screen
                 name="(subscribe)/coupon-success"
                 options={{
-                  title: "",
+                  title: '',
                 }}
               />
               <Stack.Screen
                 name="video"
                 options={{
                   headerShown: false,
-                  animation: "slide_from_bottom",
-                  gestureDirection: "vertical",
+                  animation: 'slide_from_bottom',
+                  gestureDirection: 'vertical',
                 }}
               />
             </Stack.Protected>
@@ -181,5 +177,5 @@ export default function ProtectedLayout() {
         )}
       </View>
     </BottomSheetModalProvider>
-  );
+  )
 }

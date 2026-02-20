@@ -10,11 +10,11 @@
     "deploy": "sanity deploy",
     "deploy-graphql": "sanity graphql deploy",
     "typecheck": "tsc --noEmit",
-    "clean": "git clean -xdf .cache .next .turbo node_modules"
+    "clean": "git clean -xdf .cache .next .turbo node_modules",
+    "format": "biome format .",
+    "lint": "biome lint ."
   },
-  "keywords": [
-    "sanity"
-  ],
+  "keywords": ["sanity"],
   "dependencies": {
     "@phosphor-icons/react": "catalog:",
     "@sanity/vision": "^5.1.0",
@@ -26,8 +26,6 @@
   "devDependencies": {
     "@sanity/eslint-config-studio": "^6.0.0",
     "@types/react": "catalog:react19",
-    "eslint": "catalog:",
-    "prettier": "catalog:",
     "typescript": "catalog:"
   },
   "prettier": {

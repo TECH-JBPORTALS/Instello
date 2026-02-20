@@ -1,8 +1,5 @@
-"use client";
+'use client'
 
-import React from "react";
-import { useRouter } from "next/navigation";
-import { useTRPC } from "@/trpc/react";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -12,37 +9,40 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@instello/ui/components/alert-dialog";
-import { Button } from "@instello/ui/components/button";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+} from '@instello/ui/components/alert-dialog'
+import { Button } from '@instello/ui/components/button'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useRouter } from 'next/navigation'
+import React from 'react'
+import { toast } from 'sonner'
+import { useTRPC } from '@/trpc/react'
 
 export function DeleteChannelDialog({
   children,
   channelId,
 }: {
-  children: React.ReactNode;
-  channelId: string;
+  children: React.ReactNode
+  channelId: string
 }) {
-  const [open, setOpen] = React.useState(false);
-  const trpc = useTRPC();
-  const router = useRouter();
-  const queryClient = useQueryClient();
+  const [open, setOpen] = React.useState(false)
+  const trpc = useTRPC()
+  const router = useRouter()
+  const queryClient = useQueryClient()
   const { mutate: deleteChannel, isPending } = useMutation(
     trpc.lms.channel.delete.mutationOptions({
       async onSuccess(data) {
-        toast.info(`Channel ${data.title} deleted`);
+        toast.info(`Channel ${data.title} deleted`)
         await queryClient.invalidateQueries(
           trpc.lms.channel.list.queryOptions(),
-        );
-        router.replace("/");
-        setOpen(false);
+        )
+        router.replace('/')
+        setOpen(false)
       },
       onError(error) {
-        toast.error(error.message);
+        toast.error(error.message)
       },
     }),
-  );
+  )
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -57,17 +57,17 @@ export function DeleteChannelDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel asChild>
-            <Button variant={"secondary"}>Cancel</Button>
+            <Button variant={'secondary'}>Cancel</Button>
           </AlertDialogCancel>
           <Button
             loading={isPending}
             onClick={() => deleteChannel({ channelId })}
-            variant={"destructive"}
+            variant={'destructive'}
           >
             Delete
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  );
+  )
 }

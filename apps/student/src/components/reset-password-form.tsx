@@ -1,60 +1,58 @@
-import * as React from "react";
-import { TextInput, View } from "react-native";
-import { Button } from "@/components/ui/button";
+import { useSignIn } from '@clerk/clerk-expo'
+import * as React from 'react'
+import { TextInput, View } from 'react-native'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Text } from "@/components/ui/text";
-import { useSignIn } from "@clerk/clerk-expo";
+} from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Text } from '@/components/ui/text'
 
 export function ResetPasswordForm() {
-  const { signIn, setActive, isLoaded } = useSignIn();
-  const [password, setPassword] = React.useState("");
-  const [code, setCode] = React.useState("");
-  const codeInputRef = React.useRef<TextInput>(null);
-  const [error, setError] = React.useState({ code: "", password: "" });
-  const [isLoading, setIsLoading] = React.useState(false);
+  const { signIn, setActive, isLoaded } = useSignIn()
+  const [password, setPassword] = React.useState('')
+  const [code, setCode] = React.useState('')
+  const codeInputRef = React.useRef<TextInput>(null)
+  const [error, setError] = React.useState({ code: '', password: '' })
+  const [isLoading, setIsLoading] = React.useState(false)
 
   async function onSubmit() {
     if (!isLoaded) {
-      return;
+      return
     }
-    setIsLoading(true);
+    setIsLoading(true)
     try {
       const result = await signIn?.attemptFirstFactor({
-        strategy: "reset_password_email_code",
+        strategy: 'reset_password_email_code',
         code,
         password,
-      });
+      })
 
-      if (result.status === "complete") {
+      if (result.status === 'complete') {
         // Set the active session to
         // the newly created session (user is now signed in)
-        setActive({ session: result.createdSessionId });
-        return;
+        setActive({ session: result.createdSessionId })
+        return
       }
       // TODO: Handle other statuses
     } catch (err) {
       // See https://go.clerk.com/mRUDrIe for more info on error handling
       if (err instanceof Error) {
-        const isPasswordMessage = err.message
-          .toLowerCase()
-          .includes("password");
-        setError({ code: "", password: isPasswordMessage ? err.message : "" });
+        const isPasswordMessage = err.message.toLowerCase().includes('password')
+        setError({ code: '', password: isPasswordMessage ? err.message : '' })
       }
-      console.error(JSON.stringify(err, null, 2));
+      console.error(JSON.stringify(err, null, 2))
     }
-    setIsLoading(false);
+    setIsLoading(false)
   }
 
   function onPasswordSubmitEditing() {
-    codeInputRef.current?.focus();
+    codeInputRef.current?.focus()
   }
 
   return (
@@ -107,11 +105,11 @@ export function ResetPasswordForm() {
               ) : null}
             </View>
             <Button disabled={isLoading} className="w-full" onPress={onSubmit}>
-              <Text>{isLoading ? "Loading..." : "Reset Password"}</Text>
+              <Text>{isLoading ? 'Loading...' : 'Reset Password'}</Text>
             </Button>
           </View>
         </CardContent>
       </Card>
     </View>
-  );
+  )
 }

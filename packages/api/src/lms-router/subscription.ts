@@ -1,11 +1,11 @@
-import { count, eq } from "@instello/db";
-import { couponRedemption, preference, subscription } from "@instello/db/lms";
-import { TRPCError } from "@trpc/server";
-import { addDays, endOfDay, isWithinInterval } from "date-fns";
-import { z } from "zod/v4";
+import { count, eq } from '@instello/db'
+import { couponRedemption, preference, subscription } from '@instello/db/lms'
+import { TRPCError } from '@trpc/server'
+import { addDays, endOfDay, isWithinInterval } from 'date-fns'
+import { z } from 'zod/v4'
 
-import { getClerkUserById } from "../router.helpers";
-import { protectedProcedure } from "../trpc";
+import { getClerkUserById } from '../router.helpers'
+import { protectedProcedure } from '../trpc'
 
 export const subscriptionRouter = {
   create: protectedProcedure
@@ -21,24 +21,24 @@ export const subscriptionRouter = {
                   eq(t.clerkUserId, ctx.auth.userId),
                   eq(t.couponId, input.couponId),
                 ),
-            });
+            })
 
           if (userCouponRedemption)
             throw new TRPCError({
-              message: "Coupon already been claimed",
-              code: "BAD_REQUEST",
-            });
+              message: 'Coupon already been claimed',
+              code: 'BAD_REQUEST',
+            })
 
           // 2. Get the coupon details
           const channelCoupon = await tx.query.coupon.findFirst({
             where: (t, { eq }) => eq(t.id, input.couponId),
-          });
+          })
 
           if (!channelCoupon)
             throw new TRPCError({
               message: "Coupon doesn't exists",
-              code: "BAD_REQUEST",
-            });
+              code: 'BAD_REQUEST',
+            })
 
           // 3. Create subscription for user
           const userSubscription = await tx
@@ -52,27 +52,27 @@ export const subscriptionRouter = {
               ),
             })
             .returning()
-            .then((r) => r[0]);
+            .then((r) => r[0])
 
           if (!userSubscription)
             throw new TRPCError({
               message: "Couldn't able to process now",
-              code: "BAD_REQUEST",
-            });
+              code: 'BAD_REQUEST',
+            })
 
           // 4. Store coupon redemption by user
           await tx.insert(couponRedemption).values({
             clerkUserId: ctx.auth.userId,
             couponId: channelCoupon.id,
-          });
+          })
 
-          return userSubscription;
+          return userSubscription
         } catch (e) {
           throw new TRPCError({
-            message: "Unable to process now, try again later",
-            code: "INTERNAL_SERVER_ERROR",
+            message: 'Unable to process now, try again later',
+            code: 'INTERNAL_SERVER_ERROR',
             cause: e,
-          });
+          })
         }
       }),
     ),
@@ -104,9 +104,9 @@ export const subscriptionRouter = {
           ),
 
         orderBy: (t, { desc }) => desc(t.createdAt),
-      });
+      })
 
-      let status: "subscribed" | "expired" | undefined;
+      let status: 'subscribed' | 'expired' | undefined
 
       if (userSubscription)
         if (
@@ -115,15 +115,15 @@ export const subscriptionRouter = {
             end: userSubscription.endDate,
           })
         ) {
-          status = "subscribed";
+          status = 'subscribed'
         } else {
-          status = "expired";
+          status = 'expired'
         }
 
       return {
         ...userSubscription,
         status,
-      };
+      }
     }),
 
   listByChannelId: protectedProcedure
@@ -132,7 +132,7 @@ export const subscriptionRouter = {
       const subscribersAggr = await ctx.db
         .select({ total: count() })
         .from(subscription)
-        .where(eq(subscription.channelId, input.channelId));
+        .where(eq(subscription.channelId, input.channelId))
 
       const subscribers = await ctx.db.query.subscription
         .findMany({
@@ -141,24 +141,24 @@ export const subscriptionRouter = {
         .then((subscriptions) =>
           Promise.all(
             subscriptions.map(async (sub) => {
-              const clerkUser = await getClerkUserById(sub.clerkUserId, ctx);
+              const clerkUser = await getClerkUserById(sub.clerkUserId, ctx)
               const preferences = await ctx.db.query.preference.findFirst({
                 where: eq(preference.id, sub.clerkUserId),
                 with: { college: true },
-              });
+              })
 
               return {
                 ...sub,
                 clerkUser,
                 preferences,
-              };
+              }
             }),
           ),
-        );
+        )
 
       return {
         totalSubscribers: subscribersAggr[0]?.total ?? 0,
         subscribers,
-      };
+      }
     }),
-};
+}

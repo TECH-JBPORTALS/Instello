@@ -1,23 +1,23 @@
-import { cookies } from "next/headers";
-import { AppSidebar } from "@/components/app-sidebar";
-import { SidebarInset, SidebarProvider } from "@instello/ui/components/sidebar";
+import { SidebarInset, SidebarProvider } from '@instello/ui/components/sidebar'
+import { cookies } from 'next/headers'
+import { AppSidebar } from '@/components/app-sidebar'
 
 export default async function Layout({
   children,
 }: {
-  children: React.ReactNode;
-  params: Promise<{ orgSlug: string }>;
+  children: React.ReactNode
+  params: Promise<{ orgSlug: string }>
 }) {
-  const cookieStore = await cookies();
-  const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
+  const cookieStore = await cookies()
+  const defaultOpen = cookieStore.get('sidebar_state')?.value === 'true'
 
   /** Continue to dashboard content */
   return (
     <SidebarProvider
       style={
         {
-          "--sidebar-width": "calc(var(--spacing) * 64)",
-          "--header-height": "calc(var(--spacing) * 14)",
+          '--sidebar-width': 'calc(var(--spacing) * 64)',
+          '--header-height': 'calc(var(--spacing) * 14)',
         } as React.CSSProperties
       }
       defaultOpen={defaultOpen}
@@ -26,5 +26,5 @@ export default async function Layout({
       <AppSidebar />
       <SidebarInset>{children}</SidebarInset>
     </SidebarProvider>
-  );
+  )
 }

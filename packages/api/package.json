@@ -11,21 +11,16 @@
     "build": "tsc",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "dev": "tsc",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
+    "format": "biome format .",
+    "lint": "biome lint .",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "devDependencies": {
     "@clerk/types": "catalog:",
     "@instello/db": "workspace:*",
-    "@instello/eslint-config": "workspace:*",
-    "@instello/prettier-config": "workspace:*",
     "@instello/tsconfig": "workspace:*",
-    "eslint": "catalog:",
-    "prettier": "catalog:",
     "typescript": "catalog:"
   },
-  "prettier": "@instello/prettier-config",
   "dependencies": {
     "@clerk/backend": "^2.29.0",
     "@clerk/nextjs": "catalog:",

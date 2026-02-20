@@ -1,38 +1,38 @@
-import type { RouterOutputs } from "@/utils/api";
-import type { VideoSource } from "expo-video";
-import { useState } from "react";
-import { ScrollView, View } from "react-native";
-import Animated, { FadeInUp, FadeOutUp } from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import * as Linking from "expo-linking";
-import { useLocalSearchParams } from "expo-router";
-import { usePreventScreenCapture } from "expo-screen-capture";
-import { StatusBar } from "expo-status-bar";
-import { NativeVideo } from "@/components/native-video";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Icon } from "@/components/ui/icon";
-import { Separator } from "@/components/ui/separator";
-import { Text } from "@/components/ui/text";
-import { formatNumber } from "@/lib/utils";
-import { trpc } from "@/utils/api";
-import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
+import { useQuery } from '@tanstack/react-query'
+import { format } from 'date-fns'
+import * as Linking from 'expo-linking'
+import { useLocalSearchParams } from 'expo-router'
+import { usePreventScreenCapture } from 'expo-screen-capture'
+import { StatusBar } from 'expo-status-bar'
+import type { VideoSource } from 'expo-video'
 import {
   CalendarIcon,
   CaretDownIcon,
   ClockIcon,
   EyeIcon,
   InstagramLogoIcon,
-} from "phosphor-react-native";
+} from 'phosphor-react-native'
+import { useState } from 'react'
+import { ScrollView, View } from 'react-native'
+import Animated, { FadeInUp, FadeOutUp } from 'react-native-reanimated'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { NativeVideo } from '@/components/native-video'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import { Icon } from '@/components/ui/icon'
+import { Separator } from '@/components/ui/separator'
+import { Text } from '@/components/ui/text'
+import { formatNumber } from '@/lib/utils'
+import type { RouterOutputs } from '@/utils/api'
+import { trpc } from '@/utils/api'
 
 export default function VideoScreen() {
-  usePreventScreenCapture();
+  usePreventScreenCapture()
   const { videoId, playbackId, assetId } = useLocalSearchParams<{
-    videoId: string;
-    playbackId: string;
-    assetId: string;
-  }>();
+    videoId: string
+    playbackId: string
+    assetId: string
+  }>()
 
   const {
     data: video,
@@ -43,7 +43,7 @@ export default function VideoScreen() {
     trpc.lms.video.getById.queryOptions({
       videoId: videoId,
     }),
-  );
+  )
 
   const videoSource: VideoSource = {
     uri: `https://stream.mux.com/${playbackId}.m3u8`,
@@ -51,9 +51,9 @@ export default function VideoScreen() {
       title: video?.title,
       artist: video?.chapter.title,
     },
-  };
+  }
 
-  const { top } = useSafeAreaInsets();
+  const { top } = useSafeAreaInsets()
 
   return (
     <>
@@ -63,7 +63,7 @@ export default function VideoScreen() {
           assetId={assetId}
           videoId={videoId}
           videoSource={videoSource}
-          channelName={video?.chapter.channel.title ?? "Unknown Channel"}
+          channelName={video?.chapter.channel.title ?? 'Unknown Channel'}
         />
         <NativeVideo.Content className="flex-1">
           <ScrollView
@@ -82,14 +82,14 @@ export default function VideoScreen() {
         </NativeVideo.Content>
       </NativeVideo>
     </>
-  );
+  )
 }
 
 interface VideoDetailsProps {
-  isLoading: boolean;
-  isFetching?: boolean;
-  error?: unknown;
-  video?: RouterOutputs["lms"]["video"]["getById"];
+  isLoading: boolean
+  isFetching?: boolean
+  error?: unknown
+  video?: RouterOutputs['lms']['video']['getById']
 }
 
 function VideoDetails({
@@ -98,25 +98,25 @@ function VideoDetails({
   error,
   video,
 }: VideoDetailsProps) {
-  const [showAuthorDetails, setAuthorDetails] = useState(false);
+  const [showAuthorDetails, setAuthorDetails] = useState(false)
   const formatDuration = (seconds: number | null | undefined) => {
-    if (!seconds) return "0:00";
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = Math.floor(seconds % 60);
-    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
-  };
+    if (!seconds) return '0:00'
+    const minutes = Math.floor(seconds / 60)
+    const remainingSeconds = Math.floor(seconds % 60)
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
+  }
 
   const formatDate = (date: string | Date | null | undefined) => {
-    if (!date) return "Unknown date";
+    if (!date) return 'Unknown date'
     try {
-      return format(new Date(date), "MMM dd, yyyy");
+      return format(new Date(date), 'MMM dd, yyyy')
     } catch {
-      return "Unknown date";
+      return 'Unknown date'
     }
-  };
+  }
 
   if (isLoading) {
-    return <VideoDetailsSkeleton />;
+    return <VideoDetailsSkeleton />
   }
 
   if (error) {
@@ -126,7 +126,7 @@ function VideoDetails({
           Failed to load video details. Please try again.
         </Text>
       </View>
-    );
+    )
   }
 
   if (!video) {
@@ -136,7 +136,7 @@ function VideoDetails({
           Video not found.
         </Text>
       </View>
-    );
+    )
   }
 
   return (
@@ -207,22 +207,22 @@ function VideoDetails({
               </AvatarFallback>
             </Avatar>
             <View>
-              <Text variant={"small"}>
+              <Text variant={'small'}>
                 {video.author.firstName} {video.author.lastName}
               </Text>
-              <Text variant={"muted"}>Author</Text>
+              <Text variant={'muted'}>Author</Text>
             </View>
 
             <Button
               onPress={() => setAuthorDetails(!showAuthorDetails)}
-              variant={showAuthorDetails ? "outline" : "secondary"}
+              variant={showAuthorDetails ? 'outline' : 'secondary'}
               className="ml-auto rounded-full"
             >
-              <Text>{showAuthorDetails ? "Hide" : "More"}</Text>
+              <Text>{showAuthorDetails ? 'Hide' : 'More'}</Text>
               <Animated.View
                 style={{
                   transform: [{ rotate: `${showAuthorDetails ? -180 : 0}deg` }],
-                  transition: "0.25s linear",
+                  transition: '0.25s linear',
                 }}
               >
                 <Icon as={CaretDownIcon} />
@@ -237,31 +237,31 @@ function VideoDetails({
               <View className="gap-2">
                 {video.author.bio && (
                   <>
-                    <Text variant={"small"}>{video.author.bio}</Text>
+                    <Text variant={'small'}>{video.author.bio}</Text>
                     <Separator />
                   </>
                 )}
                 <View className="flex-row items-center justify-between">
-                  <Text variant={"muted"}>Email address</Text>
-                  <Text variant={"small"}>{video.author.email}</Text>
+                  <Text variant={'muted'}>Email address</Text>
+                  <Text variant={'small'}>{video.author.email}</Text>
                 </View>
 
                 {video.author.organization && (
                   <View className="flex-row items-center justify-between">
-                    <Text variant={"muted"}>Organization</Text>
-                    <Text variant={"small"}>{video.author.organization}</Text>
+                    <Text variant={'muted'}>Organization</Text>
+                    <Text variant={'small'}>{video.author.organization}</Text>
                   </View>
                 )}
 
                 {video.author.designation && (
                   <>
                     <View className="flex-row items-center justify-between">
-                      <Text variant={"muted"}>Designation</Text>
-                      <Text variant={"small"}>{video.author.designation}</Text>
+                      <Text variant={'muted'}>Designation</Text>
+                      <Text variant={'small'}>{video.author.designation}</Text>
                     </View>
                     <View className="flex-row items-center justify-between">
-                      <Text variant={"muted"}>Experience</Text>
-                      <Text variant={"small"}>
+                      <Text variant={'muted'}>Experience</Text>
+                      <Text variant={'small'}>
                         {video.author.experienceYears} Years
                       </Text>
                     </View>
@@ -274,11 +274,11 @@ function VideoDetails({
                       video.author?.instagramLink &&
                       Linking.openURL(video.author.instagramLink)
                     }
-                    variant={"link"}
+                    variant={'link'}
                   >
                     <Icon as={InstagramLogoIcon} />
                     <Text className="underline">Follow on Instagram</Text>
-                    <Text variant={"muted"} className="text-lg">
+                    <Text variant={'muted'} className="text-lg">
                       ↗
                     </Text>
                   </Button>
@@ -289,7 +289,7 @@ function VideoDetails({
         </>
       )}
     </View>
-  );
+  )
 }
 
 function VideoDetailsSkeleton() {
@@ -316,5 +316,5 @@ function VideoDetailsSkeleton() {
         </View>
       </View>
     </View>
-  );
+  )
 }

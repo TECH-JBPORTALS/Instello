@@ -1,15 +1,15 @@
-import React from "react";
-import { TouchableOpacity, View } from "react-native";
+import React from 'react'
+import { TouchableOpacity, View } from 'react-native'
 
-import { Text } from "./text";
+import { Text } from './text'
 
 export default function ExapandableText({
   numberOfLines = 2,
   onTextLayout,
   ...props
 }: React.ComponentProps<typeof Text>) {
-  const [expanded, setExpanded] = React.useState(false);
-  const [showMore, setShowMore] = React.useState(false);
+  const [expanded, setExpanded] = React.useState(false)
+  const [showMore, setShowMore] = React.useState(false)
 
   return (
     <View>
@@ -17,9 +17,9 @@ export default function ExapandableText({
         className="sr-only"
         onTextLayout={(e) => {
           if (e.nativeEvent.lines.length > numberOfLines * 80) {
-            setShowMore(true);
+            setShowMore(true)
           }
-          onTextLayout?.(e);
+          onTextLayout?.(e)
         }}
       >
         {props.children}
@@ -33,10 +33,10 @@ export default function ExapandableText({
           onPress={() => setExpanded(!expanded)}
         >
           <Text className="mt-0.5 text-xs">
-            {expanded ? "Show less" : "Read more"}
+            {expanded ? 'Show less' : 'Read more'}
           </Text>
         </TouchableOpacity>
       )}
     </View>
-  );
+  )
 }

@@ -1,36 +1,36 @@
-import { Bug, Code2, Palette, Rocket, Server } from "lucide-react";
+import { Bug, Code2, Palette, Rocket, Server } from 'lucide-react'
 
 const skills = [
   {
-    title: "UI Design",
+    title: 'UI Design',
     icon: Palette,
-    items: ["Wireframing", "Designing using Figma", "Design using Shadcn UI"],
+    items: ['Wireframing', 'Designing using Figma', 'Design using Shadcn UI'],
   },
   {
-    title: "Front-end Development",
+    title: 'Front-end Development',
     icon: Code2,
-    items: ["HTML, CSS, JavaScript", "React JS", "Next JS"],
+    items: ['HTML, CSS, JavaScript', 'React JS', 'Next JS'],
   },
   {
-    title: "Back-end Development",
+    title: 'Back-end Development',
     icon: Server,
-    items: ["Back-end with TypeScript", "Python", "Spring Boot", "PHP"],
+    items: ['Back-end with TypeScript', 'Python', 'Spring Boot', 'PHP'],
   },
   {
-    title: "Testing",
+    title: 'Testing',
     icon: Bug,
     items: [
-      "Manual Testing",
-      "API Testing using Postman",
-      "Automation Testing using Java",
+      'Manual Testing',
+      'API Testing using Postman',
+      'Automation Testing using Java',
     ],
   },
   {
-    title: "Deployment",
+    title: 'Deployment',
     icon: Rocket,
-    items: ["Deployment on Vercel"],
+    items: ['Deployment on Vercel'],
   },
-];
+]
 
 export function SkillsSection() {
   return (
@@ -77,5 +77,5 @@ export function SkillsSection() {
         </div>
       </div>
     </section>
-  );
+  )
 }

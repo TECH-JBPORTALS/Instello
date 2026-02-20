@@ -3,7 +3,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@instello/ui/components/card";
+} from '@instello/ui/components/card'
 import {
   BookOpenIcon,
   CubeIcon,
@@ -11,45 +11,45 @@ import {
   HammerIcon,
   PenNibIcon,
   PresentationIcon,
-} from "@phosphor-icons/react/ssr";
+} from '@phosphor-icons/react/ssr'
 
 const services = [
   {
-    title: "LMS",
+    title: 'LMS',
     description:
-      "Structured digital learning made simple. Manage courses, track progress, and deliver content seamlessly through a unified learning platform.",
+      'Structured digital learning made simple. Manage courses, track progress, and deliver content seamlessly through a unified learning platform.',
     icon: BookOpenIcon,
   },
   {
-    title: "Workshops",
+    title: 'Workshops',
     description:
-      "Hands-on, practical, skill-based training programs designed to bridge the gap between theory and real-world application.",
+      'Hands-on, practical, skill-based training programs designed to bridge the gap between theory and real-world application.',
     icon: HammerIcon,
   },
   {
-    title: "Seminars",
+    title: 'Seminars',
     description:
-      "Career guidance, industry exposure, and awareness programs led by experienced professionals and domain experts.",
+      'Career guidance, industry exposure, and awareness programs led by experienced professionals and domain experts.',
     icon: PresentationIcon,
   },
   {
-    title: "Visiting Faculty (Subject Takeover)",
+    title: 'Visiting Faculty (Subject Takeover)',
     description:
-      "Complete subject ownership by visiting faculty, including syllabus coverage, academic planning, assessments, and exam support.",
+      'Complete subject ownership by visiting faculty, including syllabus coverage, academic planning, assessments, and exam support.',
     icon: GraduationCapIcon,
   },
   {
-    title: "DCET",
+    title: 'DCET',
     description:
-      "Clear study materials and recorded sessions, successfully trained 500+ students",
+      'Clear study materials and recorded sessions, successfully trained 500+ students',
     icon: PenNibIcon,
   },
   {
-    title: "Project Work",
-    description: "Complete project guidance, supported 1,000+ students",
+    title: 'Project Work',
+    description: 'Complete project guidance, supported 1,000+ students',
     icon: CubeIcon,
   },
-];
+]
 
 export default function Services() {
   return (
@@ -94,5 +94,5 @@ export default function Services() {
         </div>
       </div>
     </section>
-  );
+  )
 }

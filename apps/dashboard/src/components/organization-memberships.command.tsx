@@ -1,13 +1,12 @@
-"use client";
+'use client'
 
-import type { PublicUserData } from "@clerk/types";
-import React from "react";
-import { useOrganization } from "@clerk/nextjs";
+import { useOrganization } from '@clerk/nextjs'
+import type { PublicUserData } from '@clerk/types'
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@instello/ui/components/avatar";
+} from '@instello/ui/components/avatar'
 import {
   Command,
   CommandEmpty,
@@ -15,26 +14,27 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@instello/ui/components/command";
-import { Label } from "@instello/ui/components/label";
-import { Spinner } from "@instello/ui/components/spinner";
-import { cn } from "@instello/ui/lib/utils";
-import { CheckIcon, UserIcon } from "@phosphor-icons/react";
+} from '@instello/ui/components/command'
+import { Label } from '@instello/ui/components/label'
+import { Spinner } from '@instello/ui/components/spinner'
+import { cn } from '@instello/ui/lib/utils'
+import { CheckIcon, UserIcon } from '@phosphor-icons/react'
+import React from 'react'
 
 interface OrganizationMembershipsCommandProps {
   /** Staff UserId */
-  value?: string | null;
-  onValueChange?: (value?: string | null) => Promise<void> | void;
+  value?: string | null
+  onValueChange?: (value?: string | null) => Promise<void> | void
 }
 
 export function OrganizationMembershipsCommand({
   ...props
 }: OrganizationMembershipsCommandProps) {
   const { isLoaded, memberships } = useOrganization({
-    memberships: { role: ["org:staff"], infinite: true },
-  });
+    memberships: { role: ['org:staff'], infinite: true },
+  })
 
-  if (!isLoaded) return null;
+  if (!isLoaded) return null
 
   return (
     <Command>
@@ -64,24 +64,24 @@ export function OrganizationMembershipsCommand({
         </CommandList>
       )}
     </Command>
-  );
+  )
 }
 
 function OrganizationMembershipsCommandNoAssigneeItem({
   value,
   onValueChange,
 }: OrganizationMembershipsCommandProps) {
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false)
 
   return (
     <CommandItem
       className="justify-between"
       onSelect={() => {
         if (value !== null) {
-          setIsLoading(true);
+          setIsLoading(true)
           onValueChange?.(null)
             ?.then(() => setIsLoading(false))
-            .catch(() => setIsLoading(false));
+            .catch(() => setIsLoading(false))
         }
       }}
     >
@@ -99,13 +99,13 @@ function OrganizationMembershipsCommandNoAssigneeItem({
       ) : (
         <CheckIcon
           className={cn(
-            "mr-2 h-4 w-4",
-            value === null ? "opacity-100" : "opacity-0",
+            'mr-2 h-4 w-4',
+            value === null ? 'opacity-100' : 'opacity-0',
           )}
         />
       )}
     </CommandItem>
-  );
+  )
 }
 
 function OrganizationMembershipsCommandItem({
@@ -114,11 +114,11 @@ function OrganizationMembershipsCommandItem({
   onValueChange,
 }: OrganizationMembershipsCommandProps & {
   membership: {
-    id: string;
-    publicUserData?: PublicUserData;
-  };
+    id: string
+    publicUserData?: PublicUserData
+  }
 }) {
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false)
 
   return (
     <CommandItem
@@ -127,10 +127,10 @@ function OrganizationMembershipsCommandItem({
       value={membership.publicUserData?.userId}
       onSelect={(selectedValue) => {
         if (selectedValue !== value) {
-          setIsLoading(true);
+          setIsLoading(true)
           onValueChange?.(selectedValue)
             ?.then(() => setIsLoading(false))
-            .catch(() => setIsLoading(false));
+            .catch(() => setIsLoading(false))
         }
       }}
     >
@@ -141,7 +141,7 @@ function OrganizationMembershipsCommandItem({
             {membership.publicUserData?.firstName?.charAt(0)}
           </AvatarFallback>
         </Avatar>
-        {membership.publicUserData?.firstName}{" "}
+        {membership.publicUserData?.firstName}{' '}
         {membership.publicUserData?.lastName}
       </span>
 
@@ -150,13 +150,13 @@ function OrganizationMembershipsCommandItem({
       ) : (
         <CheckIcon
           className={cn(
-            "mr-2 h-4 w-4",
+            'mr-2 h-4 w-4',
             value === membership.publicUserData?.userId
-              ? "opacity-100"
-              : "opacity-0",
+              ? 'opacity-100'
+              : 'opacity-0',
           )}
         />
       )}
     </CommandItem>
-  );
+  )
 }
