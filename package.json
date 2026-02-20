@@ -71,5 +71,8 @@
   },
   "patchedDependencies": {
     "expo-screen-capture@8.0.9": "patches/expo-screen-capture@8.0.9.patch"
+  },
+  "installConfig": {
+    "hoistingLimits": "workspaces"
   }
 }
