@@ -135,7 +135,6 @@
       },
       "devDependencies": {
         "@babel/core": "^7.26.0",
-        "@biomejs/biome": "catalog:",
         "@clerk/types": "catalog:",
         "@instello/tsconfig": "workspace:^",
         "@instello/ui": "workspace:^",
@@ -183,7 +182,6 @@
         "zustand": "^5.0.8",
       },
       "devDependencies": {
-        "@biomejs/biome": "catalog:",
         "@clerk/types": "catalog:",
         "@instello/tsconfig": "workspace:*",
         "@types/node": "catalog:react19",
@@ -271,7 +269,6 @@
         "zod": "catalog:",
       },
       "devDependencies": {
-        "@biomejs/biome": "catalog:",
         "@instello/tsconfig": "workspace:*",
         "dotenv-cli": "^8.0.0",
         "drizzle-kit": "^0.31.8",

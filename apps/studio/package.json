@@ -46,7 +46,6 @@
   },
   "devDependencies": {
     "@clerk/types": "catalog:",
-    "@biomejs/biome": "catalog:",
     "@instello/tsconfig": "workspace:*",
     "@types/node": "catalog:react19",
     "@types/react": "catalog:react19",

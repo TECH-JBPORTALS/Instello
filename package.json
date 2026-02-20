@@ -19,8 +19,8 @@
     "db:studio": "turbo -F @instello/db studio",
     "clean": "git clean -xdf node_modules",
     "clean:workspaces": "turbo run clean",
-    "format-lint": "biome check .",
-    "format-lint:fix": "biome check . --write",
+    "check": "biome check .",
+    "check:fix": "biome check . --write",
     "typecheck": "turbo typecheck"
   },
   "devDependencies": {

@@ -41,7 +41,6 @@
     "@instello/tsconfig": "workspace:*",
     "dotenv-cli": "^8.0.0",
     "drizzle-kit": "^0.31.8",
-    "@biomejs/biome": "catalog:",
     "typescript": "catalog:"
   },
   "dependencies": {

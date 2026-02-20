@@ -18,8 +18,8 @@
     "lint": {
       "dependsOn": ["^lint"]
     },
-    "//#format-and-lint": {},
-    "//#format-and-lint:fix": {
+    "//#check": {},
+    "//#check:fix": {
       "cache": false
     },
     "typecheck": {
