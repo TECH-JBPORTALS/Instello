@@ -10,8 +10,14 @@ import { TRPCReactProvider } from '@/trpc/react'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   useUploadLeaveGuard()
+
   return (
-    <NextThemesProvider attribute="class" defaultTheme="dark" enableSystem>
+    <NextThemesProvider
+      attribute="class"
+      enableColorScheme
+      defaultTheme="dark"
+      enableSystem
+    >
       <NuqsAdapter>
         <TRPCReactProvider>
           <TooltipProvider>{children}</TooltipProvider>
