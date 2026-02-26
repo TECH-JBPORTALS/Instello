@@ -9,7 +9,7 @@ import { author } from './author'
 import { chapter } from './chapter'
 
 export const video = lmsPgTable(
-  'video',
+  "video",
   (d) => ({
     ...initialColumns,
     thumbnailId: d.text(),
@@ -17,7 +17,7 @@ export const video = lmsPgTable(
     chapterId: d
       .text()
       .notNull()
-      .references(() => chapter.id, { onDelete: 'cascade' }),
+      .references(() => chapter.id, { onDelete: "cascade" }),
     title: d.varchar({ length: 100 }).notNull(),
     description: d.varchar({ length: 5000 }),
     uploadId: d.text().notNull(),
@@ -27,18 +27,19 @@ export const video = lmsPgTable(
     status: d
       .text({
         enum: [
-          'errored',
-          'waiting',
-          'asset_created',
-          'cancelled',
-          'timed_out',
-          'ready',
+          "errored",
+          "waiting",
+          "asset_created",
+          "cancelled",
+          "timed_out",
+          "ready",
         ],
       })
       .notNull(),
     authorId: d.text().references(() => author.id),
     isPublished: d.boolean().default(false),
     orderIndex: d.integer().default(0),
+    isPreview: d.boolean().default(false),
   }),
   (t) => [
     index().on(t.chapterId),
@@ -46,30 +47,32 @@ export const video = lmsPgTable(
     index().on(t.authorId),
     index().on(t.orderIndex),
   ],
-)
+);
 
 export const CreateVideoSchema = createInsertSchema(video, {
   title: z
     .string()
-    .min(2, 'Title of the video should be atlease 2 letters long.')
-    .max(100, 'Title is too long'),
-  description: z.string().max(5000, 'Description is too long').optional(),
+    .min(2, "Title of the video should be atlease 2 letters long.")
+    .max(100, "Title is too long"),
+  description: z.string().max(5000, "Description is too long").optional(),
 }).omit({
   id: true,
   isPublished: true,
+  isPreview: true,
   createdByClerkUserId: true,
   createdAt: true,
   updatedAt: true,
-})
+});
 
 export const UpdateVideoSchema = createUpdateSchema(video, {
   title: z
     .string()
-    .min(2, 'Title of the video should be atlease 2 letters long.')
-    .max(100, 'Title is too long')
+    .min(2, "Title of the video should be atlease 2 letters long.")
+    .max(100, "Title is too long")
     .optional(),
-  description: z.string().max(5000, 'Description is too long').optional(),
+  description: z.string().max(5000, "Description is too long").optional(),
   isPublished: z.boolean().optional(),
+  isPreview: z.boolean().optional(),
   authorId: z.string().optional(),
 }).omit({
   id: true,
@@ -81,7 +84,7 @@ export const UpdateVideoSchema = createUpdateSchema(video, {
   createdByClerkUserId: true,
   createdAt: true,
   updatedAt: true,
-})
+});
 
 export const videoRealations = relations(video, ({ one }) => ({
   chapter: one(chapter, {

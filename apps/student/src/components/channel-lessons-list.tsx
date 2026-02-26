@@ -38,7 +38,7 @@ import { useVideoPrefetch } from '@/hooks/useVideoPrefetch'
 import { THEME } from '@/lib/theme'
 import { formatDuration, formatNumber } from '@/lib/utils'
 import { trpc } from '@/utils/api'
-
+import { Badge } from './ui/badge'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card'
 
 export function ChannelLessonsList() {
@@ -196,15 +196,22 @@ export function ChannelLessonsList() {
                     </Text>
                   </View>
                 </CardHeader>
-                {!item.canWatch && (
-                  <CardFooter>
-                    <Icon
-                      weight="duotone"
-                      as={LockLaminatedIcon}
-                      className="text-muted-foreground"
-                    />
-                  </CardFooter>
-                )}
+                <CardFooter className="p-0">
+                  {item.isPreview && (
+                    <Badge variant={'secondary'}>
+                      <Text className="text-xs">Preview</Text>
+                    </Badge>
+                  )}
+                  {!item.canWatch && (
+                    <View className="p-4">
+                      <Icon
+                        weight="duotone"
+                        as={LockLaminatedIcon}
+                        className="text-muted-foreground"
+                      />
+                    </View>
+                  )}
+                </CardFooter>
               </Card>
             </TouchableOpacity>
           </Link>

@@ -13,6 +13,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { Badge } from '@instello/ui/components/badge'
 import { Button } from '@instello/ui/components/button'
 import { Progress } from '@instello/ui/components/progress'
 import { Skeleton } from '@instello/ui/components/skeleton'
@@ -40,7 +41,6 @@ import {
 } from '@/hooks/useUnifiedVideoList'
 import { useUploadManager } from '@/hooks/useUploadManager'
 import { useTRPC } from '@/trpc/react'
-
 import { ChangeVisibilityVideoDropdown } from './change-visibility-video-dropdown'
 import { DeleteVideoDialog } from './dialogs/delete-video-dialog'
 
@@ -195,133 +195,147 @@ function VideoItem({ video }: { video: UnifiedVideo }) {
   return (
     <div
       className={cn(
-        'group relative flex h-16 max-h-16 w-full items-center gap-2.5 overflow-hidden rounded-md px-2',
-        video.isUploading
-          ? 'bg-transparent'
-          : 'hover:bg-accent/25 hover:text-accent-foreground',
-        isDragging && 'bg-accent!',
+        'relative group bg-transparent rounded-md overflow-hidden',
+        isDragging && 'bg-accent/30! backdrop-blur-md shadow-md z-20',
       )}
-      key={video.id}
-      style={style}
-      {...attributes}
-      {...listeners}
       ref={setNodeRef}
+      style={style}
     >
-      {/* Sortable Handle */}
-      <Button
-        ref={setDraggableNodeRef}
-        variant={'ghost'}
-        className="cursor-grab"
-        size={'icon-sm'}
+      {/** Container */}
+      <div
+        className={cn(
+          'group top-0 group left-0 flex h-16 max-h-16 w-full items-center gap-2.5 overflow-hidden rounded-md px-2',
+          video.isUploading
+            ? 'bg-transparent'
+            : 'hover:bg-accent/25 hover:text-accent-foreground',
+        )}
+        key={video.id}
       >
-        <DotsSixIcon />
-      </Button>
+        {/* Sortable Handle */}
+        <Button
+          ref={setDraggableNodeRef}
+          variant={'ghost'}
+          className="cursor-grab active:cursor-grabbing"
+          size={'icon-sm'}
+          {...attributes}
+          {...listeners}
+        >
+          <DotsSixIcon />
+        </Button>
 
-      {/* Status Icon */}
-      <div className="shrink-0">
-        <div className="bg-accent relative aspect-video h-full w-20 overflow-hidden rounded-sm">
-          {video.status === 'ready' && (
-            <Image
-              src={
-                video.thumbnailId
-                  ? `https://${env.NEXT_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${video.thumbnailId}`
-                  : `https://image.mux.com/${video.playbackId}/thumbnail.png?width=214&height=121&time=15`
-              }
-              fill
-              alt={`${video.title}'s thumbneil`}
-              className="aspect-video h-full w-full"
-            />
-          )}
-        </div>
-      </div>
-
-      {/* Video Info */}
-      <div className="min-w-0 flex-1 space-y-1.5">
-        <div className="flex justify-between">
-          <div className="flex h-full flex-col gap-1.5">
-            <span className="max-w-xl truncate text-sm">{video.title}</span>
+        {/* Status Icon */}
+        <div className="shrink-0">
+          <div className="bg-accent relative aspect-video border border-border/15 h-full w-20 overflow-hidden rounded-sm">
             {video.status === 'ready' && (
-              <p className="text-muted-foreground max-w-xl truncate text-xs">
-                {video.description ?? 'Add description...'}
-              </p>
+              <Image
+                src={
+                  video.thumbnailId
+                    ? `https://${env.NEXT_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${video.thumbnailId}`
+                    : `https://image.mux.com/${video.playbackId}/thumbnail.png?width=214&height=121&time=15`
+                }
+                fill
+                alt={`${video.title}'s thumbneil`}
+                className="aspect-video h-full w-full"
+              />
             )}
           </div>
-          <span className="text-muted-foreground ml-2 inline-flex shrink-0 items-center gap-0.5 text-xs">
-            {/** Local Uploading status */}
-            {video.isUploading && !video.interrupted ? (
-              <span className="text-accent-foreground">
-                {video.uploadStatus === 'uploading' && (
-                  <div className="flex items-center gap-1.5">
-                    <Progress
-                      className="h-1.5 min-w-32"
-                      value={video.uploadProgress}
-                    />
-                    <span className="min-w-fit">{video.uploadProgress}%</span>
-                  </div>
-                )}
-                {video.uploadStatus === 'paused' && 'Paused'}
-                {video.uploadStatus === 'error' && 'Failed'}
-                {video.uploadStatus === 'cancelled' && 'Cancelled'}
-                {video.uploadStatus === 'pending' && 'Preparing...'}
-              </span>
-            ) : !video.isUploading && !video.interrupted ? (
-              <>
-                {video.status === 'waiting' && `Processing...`}
-                {video.status === 'asset_created' && 'Processing asset...'}
-                {video.status === 'errored' && 'Failed'}
-                {video.status === 'cancelled' && 'Cancelled'}
-                {video.status === 'ready' &&
-                  (video.isPublished ? (
-                    <>
-                      <GlobeHemisphereEastIcon weight="duotone" /> Public
-                    </>
-                  ) : (
-                    <>
-                      <LockLaminatedIcon weight="duotone" /> Private
-                    </>
-                  ))}
-              </>
-            ) : null}
-          </span>
         </div>
 
-        {/* Upload Progress Bar and Details */}
-        {video.isUploading &&
-          !video.uploadError &&
-          video.uploadStatus !== 'success' && (
-            <div className="text-muted-foreground flex gap-1.5 text-xs">
-              <span>
-                {video.uploadedBytes && video.fileSize ? (
-                  <>
-                    {formatFileSize(video.uploadedBytes)} /{' '}
-                    {formatFileSize(video.fileSize)}
-                  </>
-                ) : (
-                  `${video.uploadProgress ?? 0}%`
+        {/* Video Info */}
+        <div className="min-w-0 flex-1 space-y-1.5">
+          <div className="flex justify-between">
+            <div className="flex h-full flex-col gap-1.5">
+              <span className="flex-1 shrink-0 flex-nowrap flex gap-2.5">
+                <span className="max-w-md truncate text-sm">{video.title}</span>
+                {video.isPreview && (
+                  <Badge variant={'secondary'}>Preview</Badge>
                 )}
               </span>
-              <span>ᐧ</span>
-              {video.uploadSpeed && video.uploadSpeed > 0 && (
-                <span>{formatUploadSpeed(video.uploadSpeed)}</span>
+              {video.status === 'ready' && (
+                <p className="text-muted-foreground max-w-xl truncate text-xs">
+                  {video.description ?? 'Add description...'}
+                </p>
               )}
-              <span>ᐧ</span>
-              {video.estimatedTimeRemaining &&
-                video.estimatedTimeRemaining > 0 && (
-                  <span>
-                    {formatTimeRemaining(video.estimatedTimeRemaining)}
-                  </span>
+            </div>
+            <span className="text-muted-foreground ml-2 inline-flex shrink-0 items-center gap-0.5 text-xs">
+              {/** Local Uploading status */}
+              {video.isUploading && !video.interrupted ? (
+                <span className="text-accent-foreground">
+                  {video.uploadStatus === 'uploading' && (
+                    <div className="flex items-center gap-1.5">
+                      <Progress
+                        className="h-1.5 min-w-32"
+                        value={video.uploadProgress}
+                      />
+                      <span className="min-w-fit">{video.uploadProgress}%</span>
+                    </div>
+                  )}
+                  {video.uploadStatus === 'paused' && 'Paused'}
+                  {video.uploadStatus === 'error' && 'Failed'}
+                  {video.uploadStatus === 'cancelled' && 'Cancelled'}
+                  {video.uploadStatus === 'pending' && 'Preparing...'}
+                </span>
+              ) : !video.isUploading && !video.interrupted ? (
+                <>
+                  {video.status === 'waiting' && `Processing...`}
+                  {video.status === 'asset_created' && 'Processing asset...'}
+                  {video.status === 'errored' && 'Failed'}
+                  {video.status === 'cancelled' && 'Cancelled'}
+                  {video.status === 'ready' &&
+                    (video.isPublished ? (
+                      <>
+                        <GlobeHemisphereEastIcon weight="duotone" /> Public
+                      </>
+                    ) : (
+                      <>
+                        <LockLaminatedIcon weight="duotone" /> Private
+                      </>
+                    ))}
+                </>
+              ) : null}
+            </span>
+          </div>
+
+          {/* Upload Progress Bar and Details */}
+          {video.isUploading &&
+            !video.uploadError &&
+            video.uploadStatus !== 'success' && (
+              <div className="text-muted-foreground flex gap-1.5 text-xs">
+                <span>
+                  {video.uploadedBytes && video.fileSize ? (
+                    <>
+                      {formatFileSize(video.uploadedBytes)} /{' '}
+                      {formatFileSize(video.fileSize)}
+                    </>
+                  ) : (
+                    `${video.uploadProgress ?? 0}%`
+                  )}
+                </span>
+                <span>ᐧ</span>
+                {video.uploadSpeed && video.uploadSpeed > 0 && (
+                  <span>{formatUploadSpeed(video.uploadSpeed)}</span>
                 )}
+                <span>ᐧ</span>
+                {video.estimatedTimeRemaining &&
+                  video.estimatedTimeRemaining > 0 && (
+                    <span>
+                      {formatTimeRemaining(video.estimatedTimeRemaining)}
+                    </span>
+                  )}
+              </div>
+            )}
+
+          {/* Error Message */}
+          {video.uploadError && (
+            <div className="text-destructive text-xs">
+              ⚠️ {video.uploadError}
             </div>
           )}
-
-        {/* Error Message */}
-        {video.uploadError && (
-          <div className="text-destructive text-xs">⚠️ {video.uploadError}</div>
-        )}
+        </div>
       </div>
 
       {/** Action */}
-      <div className="space-x-1.5">
+      <div className="space-x-1.5 absolute right-0 top-0 bottom-0">
         {video.interrupted || video.uploadError ? (
           <>
             <input
@@ -358,7 +372,12 @@ function VideoItem({ video }: { video: UnifiedVideo }) {
         ) : null}
 
         {video.status == 'ready' && (
-          <div className="from-accent/50 to-accent/0 bg-linear-to-l absolute bottom-0 right-0 top-0 flex h-16 items-center gap-1.5 px-2 opacity-0 group-hover:opacity-100 has-[button[data-loading=true]]:opacity-100 has-[button[data-state=open]]:opacity-100">
+          <div
+            className={cn(
+              'from-accent/50 to-accent/0 bg-linear-to-l absolute bottom-0 right-0 top-0 flex h-16 items-center gap-1.5 px-2 opacity-0 group-hover:opacity-100 has-[button[data-loading=true]]:opacity-100 has-[button[data-state=open]]:opacity-100',
+              isDragging && 'opacity-0 group-hover:opacity-0 hidden',
+            )}
+          >
             <ChangeVisibilityVideoDropdown videoId={video.id} />
             <Button
               onClick={() => router.push(`/c/${channelId}/v/${video.id}`)}
