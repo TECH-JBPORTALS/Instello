@@ -6,70 +6,70 @@
       "idx": 0,
       "version": "7",
       "when": 1759062110645,
-      "tag": "20250928122150_yellow_lake",
+      "tag": "20250928122150_init",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
       "when": 1759336867409,
-      "tag": "20251001164107_stiff_sharon_ventura",
+      "tag": "20251001164107_alter_video_duraton_column",
       "breakpoints": true
     },
     {
       "idx": 2,
       "version": "7",
       "when": 1764163118407,
-      "tag": "20251126131838_adorable_chameleon",
+      "tag": "20251126131838_alter_preference_college_branch",
       "breakpoints": true
     },
     {
       "idx": 3,
       "version": "7",
       "when": 1764306524758,
-      "tag": "20251128050844_elite_millenium_guard",
+      "tag": "20251128050844_add_code_to_college_or_branch",
       "breakpoints": true
     },
     {
       "idx": 4,
       "version": "7",
       "when": 1767678934461,
-      "tag": "20260106055534_long_penance",
+      "tag": "20260106055534_enhance_channel",
       "breakpoints": true
     },
     {
       "idx": 5,
       "version": "7",
       "when": 1767682087335,
-      "tag": "20260106064807_mysterious_proteus",
+      "tag": "20260106064807_add_thumbnail_to_video",
       "breakpoints": true
     },
     {
       "idx": 6,
       "version": "7",
       "when": 1767715350795,
-      "tag": "20260106160230_young_zarek",
+      "tag": "20260106160230_alter_preference_contraint_on_collegeId_branch_id",
       "breakpoints": true
     },
     {
       "idx": 7,
       "version": "7",
       "when": 1767875968170,
-      "tag": "20260108123928_handy_maria_hill",
+      "tag": "20260108123928_create_author",
       "breakpoints": true
     },
     {
       "idx": 8,
       "version": "7",
       "when": 1768377137751,
-      "tag": "20260114075217_polite_hannibal_king",
+      "tag": "20260114075217_alter_coupon_and_video",
       "breakpoints": true
     },
     {
       "idx": 9,
       "version": "7",
       "when": 1768743341826,
-      "tag": "20260118133541_chief_harry_osborn",
+      "tag": "20260118133541_create_study_material",
       "breakpoints": true
     },
     {
