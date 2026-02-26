@@ -39,6 +39,7 @@ export const video = lmsPgTable(
     authorId: d.text().references(() => author.id),
     isPublished: d.boolean().default(false),
     orderIndex: d.integer().default(0),
+    isPreview: d.boolean().default(false),
   }),
   (t) => [
     index().on(t.chapterId),
@@ -57,6 +58,7 @@ export const CreateVideoSchema = createInsertSchema(video, {
 }).omit({
   id: true,
   isPublished: true,
+  isPreview: true,
   createdByClerkUserId: true,
   createdAt: true,
   updatedAt: true,
@@ -70,6 +72,7 @@ export const UpdateVideoSchema = createUpdateSchema(video, {
     .optional(),
   description: z.string().max(5000, 'Description is too long').optional(),
   isPublished: z.boolean().optional(),
+  isPreview: z.boolean().optional(),
   authorId: z.string().optional(),
 }).omit({
   id: true,

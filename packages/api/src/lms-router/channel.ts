@@ -129,7 +129,7 @@ export const channelRouter = {
         .orderBy(
           asc(sql`CAST(SUBSTRING(${chapter.title} FROM '^[0-9]+') AS INTEGER)`),
         )
-        .groupBy(chapter.id, chapter.channelId)
+        .limit(1)
         .as('fc')
 
       const firstChapters = await tx
