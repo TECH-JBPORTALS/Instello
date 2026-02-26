@@ -32,36 +32,36 @@ export const videoRouter = {
     .mutation(async ({ ctx, input }) => {
       return await ctx.db
         .insert(video)
-        .values({ ...input, createdByClerkUserId: ctx.auth.userId });
+        .values({ ...input, createdByClerkUserId: ctx.auth.userId })
     }),
 
   createUpload: protectedProcedure
     .input(CreateVideoSchema.omit({ uploadId: true, status: true }))
     .mutation(async ({ ctx, input }) => {
-      const id = createId();
+      const id = createId()
 
       const upload = await ctx.mux.video.uploads.create({
         cors_origin:
-          process.env.NODE_ENV === "production"
-            ? (process.env.VERCEL_URL ?? "No url found")
+          process.env.NODE_ENV === 'production'
+            ? (process.env.VERCEL_URL ?? 'No url found')
             : `http://localhost:${process.env.PORT}`,
         new_asset_settings: {
-          playback_policies: ["public"],
+          playback_policies: ['public'],
           passthrough: id,
           meta: { creator_id: ctx.auth.userId, external_id: input.chapterId },
         },
         // test: process.env.NODE_ENV !== "production",
-      });
+      })
 
       await ctx.db.insert(video).values({
         ...input,
         id,
         uploadId: upload.id,
-        status: "waiting",
+        status: 'waiting',
         createdByClerkUserId: ctx.auth.userId,
-      });
+      })
 
-      return upload;
+      return upload
     }),
 
   list: protectedProcedure.input(z.object({ chapterId: z.string() })).query(
@@ -79,7 +79,7 @@ export const videoRouter = {
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { channelId } = input;
+      const { channelId } = input
 
       return await ctx.db.transaction(async (tx) => {
         const videos = await tx
@@ -102,7 +102,7 @@ export const videoRouter = {
               sql`CAST(SUBSTRING(${chapter.title} FROM '^[0-9]+') AS INTEGER)`,
             ),
             asc(video.id), // ensures stable pagination
-          );
+          )
 
         const videosWithAuthorization = await Promise.all(
           videos.map(async (video) => {
@@ -112,39 +112,39 @@ export const videoRouter = {
                 eq(subscription.channelId, video.channelId),
                 gte(subscription.endDate, endOfDay(new Date())),
               ),
-            });
+            })
 
             const overallValues = await ctx.mux.data.metrics.getOverallValues(
-              "views",
+              'views',
               {
                 filters: [`video_id:${video.id}`],
-                timeframe: ["3:months"],
+                timeframe: ['3:months'],
               },
-            );
+            )
 
             return {
               ...video,
               canWatch: !!userSubscription,
               overallValues,
-            };
+            }
           }),
-        );
+        )
 
         // Group videos under chapters
         const grouped: (string | (typeof videosWithAuthorization)[number])[] =
-          [];
-        let lastChapterId: string | null = null;
+          []
+        let lastChapterId: string | null = null
 
         for (const row of videosWithAuthorization) {
           if (row.chapterId !== lastChapterId) {
-            grouped.push(row.chapterTitle ?? "Untitled Chapter");
-            lastChapterId = row.chapterId;
+            grouped.push(row.chapterTitle ?? 'Untitled Chapter')
+            lastChapterId = row.chapterId
           }
-          grouped.push(row);
+          grouped.push(row)
         }
 
-        return grouped;
-      });
+        return grouped
+      })
     }),
 
   // Used in Student App v1.2.1
@@ -157,7 +157,7 @@ export const videoRouter = {
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { channelId, cursor, limit } = input;
+      const { channelId, cursor, limit } = input
 
       return await ctx.db.transaction(async (tx) => {
         const videos = await tx
@@ -187,10 +187,10 @@ export const videoRouter = {
             asc(video.orderIndex),
             asc(video.id), // ensures stable pagination
           )
-          .limit(limit + 1); // fetch one extra to detect next page
+          .limit(limit + 1) // fetch one extra to detect next page
 
-        const hasNextPage = videos.length > limit;
-        const items = hasNextPage ? videos.slice(0, -1) : videos;
+        const hasNextPage = videos.length > limit
+        const items = hasNextPage ? videos.slice(0, -1) : videos
 
         const videosWithAuthorization = await Promise.all(
           items.map(async (video) => {
@@ -200,42 +200,42 @@ export const videoRouter = {
                 eq(subscription.channelId, video.channelId),
                 gte(subscription.endDate, endOfDay(new Date())),
               ),
-            });
+            })
 
             const overallValues = await ctx.mux.data.metrics.getOverallValues(
-              "views",
+              'views',
               {
                 filters: [`video_id:${video.id}`],
-                timeframe: ["3:months"],
+                timeframe: ['3:months'],
               },
-            );
+            )
 
             return {
               ...video,
               canWatch: !!userSubscription,
               overallValues,
-            };
+            }
           }),
-        );
+        )
 
         // Group videos under chapters
         const grouped: (string | (typeof videosWithAuthorization)[number])[] =
-          [];
-        let lastChapterId: string | null = null;
+          []
+        let lastChapterId: string | null = null
 
         for (const row of videosWithAuthorization) {
           if (row.chapterId !== lastChapterId) {
-            grouped.push(row.chapterTitle ?? "Untitled Chapter");
-            lastChapterId = row.chapterId;
+            grouped.push(row.chapterTitle ?? 'Untitled Chapter')
+            lastChapterId = row.chapterId
           }
-          grouped.push(row);
+          grouped.push(row)
         }
 
         return {
           items: grouped,
           nextCursor: hasNextPage ? items[items.length - 1]?.id : null,
-        };
-      });
+        }
+      })
     }),
 
   // Used in Student App v1.3.0
@@ -248,7 +248,7 @@ export const videoRouter = {
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { chapterId, cursor, limit } = input;
+      const { chapterId, cursor, limit } = input
 
       return await ctx.db.transaction(async (tx) => {
         const videos = await tx
@@ -273,12 +273,12 @@ export const videoRouter = {
             asc(video.orderIndex),
             asc(video.id), // ensures stable pagination
           )
-          .limit(limit + 1); // fetch one extra to detect next page
+          .limit(limit + 1) // fetch one extra to detect next page
 
-        const hasNextPage = videos.length > limit;
-        const items = hasNextPage ? videos.slice(0, -1) : videos;
+        const hasNextPage = videos.length > limit
+        const items = hasNextPage ? videos.slice(0, -1) : videos
 
-        const channelIds = videos.map((v) => v.chapter.channelId);
+        const channelIds = videos.map((v) => v.chapter.channelId)
 
         const userSubscription = await tx.query.subscription.findFirst({
           where: and(
@@ -286,7 +286,7 @@ export const videoRouter = {
             inArray(subscription.channelId, channelIds),
             gte(subscription.endDate, endOfDay(new Date())),
           ),
-        });
+        })
 
         const videosWithAuthorization = items.map((video) => {
           // const overallValues = await ctx.mux.data.metrics.getOverallValues(
@@ -301,14 +301,14 @@ export const videoRouter = {
             ...video,
             canWatch: video.isPreview || !!userSubscription,
             overallValues: { data: { total_views: 0 } },
-          };
-        });
+          }
+        })
 
         return {
           items: videosWithAuthorization,
           nextCursor: hasNextPage ? items[items.length - 1]?.id : null,
-        };
-      });
+        }
+      })
     }),
 
   update: protectedProcedure
@@ -319,7 +319,7 @@ export const videoRouter = {
         .set({ ...input })
         .where(eq(video.id, input.videoId))
         .returning()
-        .then((r) => r.at(0));
+        .then((r) => r.at(0))
     }),
 
   reorder: protectedProcedure
@@ -340,7 +340,7 @@ export const videoRouter = {
             .returning()
             .then((r) => r.at(0)),
         ),
-      );
+      )
     }),
 
   setPreviewMode: protectedProcedure
@@ -354,26 +354,26 @@ export const videoRouter = {
       return ctx.db.transaction(async (tx) => {
         const singleVideo = await tx.query.video.findFirst({
           where: eq(video.id, input.videoId),
-        });
+        })
 
         if (!singleVideo)
           throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "No video found to set it as preview mode.",
-          });
+            code: 'NOT_FOUND',
+            message: 'No video found to set it as preview mode.',
+          })
 
         // 1. Turn off all video's previw mode first
         await tx
           .update(video)
           .set({ isPreview: false })
-          .where(and(eq(video.chapterId, singleVideo.chapterId)));
+          .where(and(eq(video.chapterId, singleVideo.chapterId)))
 
         // 2. Turn on provided video's previw mode
         await tx
           .update(video)
           .set({ isPreview: input.isPreview })
-          .where(and(eq(video.id, input.videoId)));
-      });
+          .where(and(eq(video.id, input.videoId)))
+      })
     }),
 
   getById: protectedProcedure
@@ -387,20 +387,20 @@ export const videoRouter = {
           },
           author: true,
         },
-      });
+      })
 
       if (!singleVideo)
-        throw new TRPCError({ message: "No video found", code: "NOT_FOUND" });
+        throw new TRPCError({ message: 'No video found', code: 'NOT_FOUND' })
 
       const overallValues = await ctx.mux.data.metrics.getOverallValues(
-        "views",
+        'views',
         {
           filters: [`video_id:${input.videoId}`],
-          timeframe: ["3:months"],
+          timeframe: ['3:months'],
         },
-      );
+      )
 
-      return { ...singleVideo, overallValues };
+      return { ...singleVideo, overallValues }
     }),
 
   delete: protectedProcedure
@@ -410,19 +410,19 @@ export const videoRouter = {
   getMetrics: protectedProcedure
     .input(z.object({ videoId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const metrics = await ctx.mux.data.metrics.getTimeseries("views", {
+      const metrics = await ctx.mux.data.metrics.getTimeseries('views', {
         filters: [`video_id:${input.videoId}`],
-        timeframe: ["3:months"],
-        group_by: "day",
-      });
+        timeframe: ['3:months'],
+        group_by: 'day',
+      })
 
       const overallValues = await ctx.mux.data.metrics.getOverallValues(
-        "views",
+        'views',
         {
           filters: [`video_id:${input.videoId}`],
-          timeframe: ["3:months"],
+          timeframe: ['3:months'],
         },
-      );
+      )
 
       return {
         overallValues,
@@ -431,7 +431,7 @@ export const videoRouter = {
           metricValue: m[1],
           views: m[2],
         })),
-      };
+      }
     }),
 
   getMatricsByChannel: protectedProcedure
@@ -452,24 +452,24 @@ export const videoRouter = {
         })
         .then((channel) =>
           channel?.chapters.flatMap((c) => c.videos.map((v) => v)),
-        );
+        )
 
-      const filters = channelVideos?.flatMap((v) => `video_id:${v.id}`);
+      const filters = channelVideos?.flatMap((v) => `video_id:${v.id}`)
 
-      const metrics = await ctx.mux.data.metrics.getTimeseries("views", {
+      const metrics = await ctx.mux.data.metrics.getTimeseries('views', {
         filters,
-        timeframe: ["3:months"],
-        measurement: "count",
+        timeframe: ['3:months'],
+        measurement: 'count',
         metric_filters: [],
-      });
+      })
 
       const overallValues = await ctx.mux.data.metrics.getOverallValues(
-        "views",
+        'views',
         {
           filters,
-          timeframe: ["3:months"],
+          timeframe: ['3:months'],
         },
-      );
+      )
 
       return {
         overallValues,
@@ -478,9 +478,9 @@ export const videoRouter = {
           metricValue: m[1],
           views: m[2],
         })),
-      };
+      }
     }),
-};
+}
 
 export function deleteVideo(
   input: { videoId: string },
