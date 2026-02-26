@@ -24,7 +24,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@instello/ui/components/select'
+import { Spinner } from '@instello/ui/components/spinner'
+import { Switch } from '@instello/ui/components/switch'
 import { Textarea } from '@instello/ui/components/textarea'
+import { cn } from '@instello/ui/lib/utils'
 import MuxPlayer from '@mux/mux-player-react/lazy'
 import {
   GlobeHemisphereEastIcon,
@@ -59,7 +62,8 @@ export function VideoForm() {
       title: data.title,
       description: data.description ?? '',
       isPublished: data.isPublished ?? false,
-      authorId: data.authorId,
+      authorId: data.authorId ?? '',
+      isPreview: data.isPreview ?? false,
     },
   })
 
@@ -83,6 +87,35 @@ export function VideoForm() {
       },
     }),
   )
+
+   const { mutate: setPreviewMode, isPending: isSettingPreviewMode } =
+    useMutation(
+      trpc.lms.video.setPreviewMode.mutationOptions({
+        async onSuccess(_, v) {
+          await Promise.all([
+            queryClient.invalidateQueries(
+              trpc.lms.video.getById.queryOptions({ videoId }),
+            ),
+            queryClient.invalidateQueries(trpc.lms.video.list.queryFilter()),
+          ])
+
+          toast.info(
+            v.isPreview
+              ? 'Preview mode is enabled'
+              : 'Preview mode is disabled',
+            {
+              description: v.isPreview
+                ? 'Now students can access this video without subscription'
+                : "Now student can't able to access this video without subscription",
+            },
+          )
+        },
+        onError(error) {
+          form.resetField('isPreview')
+          toast.error(error.message)
+        },
+      }),
+    )
 
   async function onSubmit(values: z.infer<typeof UpdateVideoSchema>) {
     await updateVideo({
@@ -252,11 +285,50 @@ export function VideoForm() {
                 metadataVideoTitle={data.title}
                 metadataVideoId={data.id}
                 loading="page"
-                style={{ aspectRatio: 16 / 9 }}
+                style={{
+                  aspectRatio: 16 / 9,
+                  borderRadius: 16,
+                  overflow: 'hidden',
+                  border: '1px solid var(--border)',
+                }}
                 maxResolution="720p"
                 disableTracking
               />
             )}
+
+            <FormField
+              control={form.control}
+              name="isPreview"
+              render={({ field }) => (
+                <FormItem
+                  className={cn(
+                    'flex items-center justify-between w-full py-4 space-x-2',
+                    isSettingPreviewMode && 'opacity-60',
+                  )}
+                >
+                  <div className="space-y-1">
+                    <FormLabel htmlFor="preview-mode" className="font-semibold">
+                      Preview Mode{' '}
+                      {isSettingPreviewMode && <Spinner className="size-4" />}
+                    </FormLabel>
+                    <FormDescription>
+                      Note: If you enable this video as preview mode exiting
+                      preview video will be disabled from this mode
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      id="preview-mode"
+                      onCheckedChange={(isPreview) => {
+                        field.onChange(isPreview)
+                        setPreviewMode({ videoId, isPreview })
+                      }}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
           </div>
         </div>
       </form>

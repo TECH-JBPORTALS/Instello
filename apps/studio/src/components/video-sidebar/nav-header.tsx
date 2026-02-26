@@ -41,7 +41,7 @@ export function NavHeader() {
           <ArrowLeftIcon weight="duotone" /> Channel content
         </SidebarMenuButton>
       </SidebarMenu>
-      <div className="bg-accent relative aspect-video h-32 w-full overflow-hidden rounded-md">
+      <div className="bg-accent relative border border-border/40 aspect-video h-32 w-full overflow-hidden rounded-md">
         <Image
           fill
           src={
@@ -57,11 +57,12 @@ export function NavHeader() {
             config={{ cn }}
             appearance={{
               button: buttonVariants({
-                size: 'sm',
                 variant: 'outline',
-                className: 'hover:text-accent',
+                size: 'xs',
+                className:
+                  'hover:text-foreground backdrop-blur-xs text-xs font-semibold',
               }),
-              allowedContent: 'text-accent text-center',
+              allowedContent: 'text-foreground text-center',
             }}
             content={{
               button: (props) =>
