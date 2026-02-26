@@ -130,7 +130,7 @@ export const channelRouter = {
           asc(sql`CAST(SUBSTRING(${chapter.title} FROM '^[0-9]+') AS INTEGER)`),
         )
         .limit(1)
-        .as("fc");
+        .as('fc')
 
       const firstChapters = await tx
         .select({

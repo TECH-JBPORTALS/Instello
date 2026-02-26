@@ -88,7 +88,7 @@ export function VideoForm() {
     }),
   )
 
-   const { mutate: setPreviewMode, isPending: isSettingPreviewMode } =
+  const { mutate: setPreviewMode, isPending: isSettingPreviewMode } =
     useMutation(
       trpc.lms.video.setPreviewMode.mutationOptions({
         async onSuccess(_, v) {

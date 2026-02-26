@@ -376,6 +376,39 @@ export const videoRouter = {
       });
     }),
 
+  setPreviewMode: protectedProcedure
+    .input(
+      z.object({
+        videoId: z.string(),
+        isPreview: z.boolean(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.transaction(async (tx) => {
+        const singleVideo = await tx.query.video.findFirst({
+          where: eq(video.id, input.videoId),
+        })
+
+        if (!singleVideo)
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'No video found to set it as preview mode.',
+          })
+
+        // 1. Turn off all video's previw mode first
+        await tx
+          .update(video)
+          .set({ isPreview: false })
+          .where(and(eq(video.chapterId, singleVideo.chapterId)))
+
+        // 2. Turn on provided video's previw mode
+        await tx
+          .update(video)
+          .set({ isPreview: input.isPreview })
+          .where(and(eq(video.id, input.videoId)))
+      })
+    }),
+
   getById: protectedProcedure
     .input(z.object({ videoId: z.string() }))
     .query(async ({ ctx, input }) => {

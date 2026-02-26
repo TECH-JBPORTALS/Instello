@@ -1,0 +1,1 @@
+ALTER TABLE "lms_video" ADD COLUMN "is_preview" boolean DEFAULT false;
