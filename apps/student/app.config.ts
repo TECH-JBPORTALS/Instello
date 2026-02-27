@@ -92,7 +92,7 @@ export function getConfig() {
       return {
         name: 'Instello (Dev)',
         scheme: 'in.instello.dev',
-        slug: 'instello-dev',
+        slug: 'instello',
       }
     case 'preview':
       return {
