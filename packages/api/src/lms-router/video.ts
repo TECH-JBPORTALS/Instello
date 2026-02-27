@@ -238,7 +238,7 @@ export const videoRouter = {
       })
     }),
 
-  // Used in Student App v1.3.0
+  // Used in Student App  =< v1.3.0
   listPublicByChapterId: protectedProcedure
     .input(
       z.object({

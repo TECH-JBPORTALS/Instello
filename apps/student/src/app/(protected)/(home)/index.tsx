@@ -1,11 +1,12 @@
 import { FlashList } from '@shopify/flash-list'
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { formatDate } from 'date-fns'
 import { Image } from 'expo-image'
 import { Link } from 'expo-router'
 import { BookOpenTextIcon } from 'phosphor-react-native'
 import { useState } from 'react'
 import {
+  ActivityIndicator,
   ScrollView,
   TouchableOpacity,
   useColorScheme,
@@ -27,7 +28,7 @@ function ChannelCard({
   channel,
   className,
 }: {
-  channel: RouterOutputs['lms']['channel']['listPublic'][number]
+  channel: RouterOutputs['lms']['channel']['listPublic']['items'][number]
   className?: string
 }) {
   const theme = useColorScheme()
@@ -115,11 +116,23 @@ function ChannelCardSkeleton({ className }: { className?: string }) {
 export default function Home() {
   const [hasSubscribed, setHasSubscribed] = useState(false)
 
-  const { data, isRefetching, error, refetch, isLoading } = useQuery(
-    trpc.lms.channel.listPublic.queryOptions({ hasSubscribed }),
+  const {
+    data,
+    isRefetching,
+    error,
+    refetch,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+    isLoading,
+  } = useInfiniteQuery(
+    trpc.lms.channel.listPublic.infiniteQueryOptions(
+      { hasSubscribed, limit: 10 },
+      { getNextPageParam: (p) => p.nextCursor },
+    ),
   )
 
-  const channelList = data ?? []
+  const channelList = data?.pages.flatMap((p) => p.items) ?? []
 
   return (
     <ScrollView
@@ -198,6 +211,14 @@ export default function Home() {
         renderItem={({ item }) => (
           <ChannelCard className={cn('w-full')} channel={item} />
         )}
+        onEndReached={() => hasNextPage && fetchNextPage()}
+        ListFooterComponent={
+          <View className="items-center justify-center py-8">
+            {isFetchingNextPage && (
+              <ActivityIndicator style={{ marginBottom: 16 }} size={'small'} />
+            )}
+          </View>
+        }
       />
     </ScrollView>
   )

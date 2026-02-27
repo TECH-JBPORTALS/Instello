@@ -4,7 +4,11 @@ import {
   count,
   countDistinct,
   eq,
+  gt,
+  gte,
   inArray,
+  lt,
+  or,
   sql,
   sum,
 } from '@instello/db'
@@ -46,11 +50,22 @@ export const channelRouter = {
   }),
 
   listPublic: protectedProcedure
-    .input(z.object({ hasSubscribed: z.boolean() }).optional())
-    .query(async ({ ctx, input }) => {
+    .input(
+      z.object({
+        hasSubscribed: z.boolean().default(false),
+        cursor: z
+          .object({ id: z.string().optional(), createdAt: z.date().optional() })
+          .optional()
+          .nullish(), // video.id cursor
+        limit: z.number().min(1).max(50).optional().default(10),
+      }),
+    )
+    .query(({ ctx, input }) => {
       const hasSubscribed = input?.hasSubscribed
+      const cursor = input?.cursor
+      const limit = input?.limit
 
-      return await ctx.db.transaction(async (tx) => {
+      return ctx.db.transaction(async (tx) => {
         /* -------------------------------------------------- */
         /* 1. Fetch channels with chapters + videos */
         /* -------------------------------------------------- */
@@ -73,13 +88,19 @@ export const channelRouter = {
             collegeId: false,
             isPublic: false,
           },
-          where: and(
-            eq(channel.isPublic, true),
-            hasSubscribed
-              ? inArray(channel.id, subscibedChannelIds)
+          where: or(
+            cursor?.createdAt
+              ? lt(channel.createdAt, cursor.createdAt)
               : undefined,
+            and(
+              eq(channel.isPublic, true),
+              hasSubscribed
+                ? inArray(channel.id, subscibedChannelIds)
+                : undefined,
+              cursor?.id ? gt(channel.id, cursor.id) : undefined,
+            ),
           ),
-          orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
+          orderBy: ({ createdAt, id }, { desc }) => [desc(createdAt), asc(id)],
           with: {
             chapters: {
               columns: { channelId: true, id: true },
@@ -89,9 +110,8 @@ export const channelRouter = {
               ),
             },
           },
+          limit: limit && limit + 1,
         })
-
-        if (!channels.length) return []
 
         const channelIds = channels.map((c) => c.id)
 
@@ -152,16 +172,27 @@ export const channelRouter = {
         /* 6. Final mapping (NO ASYNC INSIDE LOOP) */
         /* -------------------------------------------------- */
 
-        return channels.map((channel) => {
-          return {
-            ...channel,
-            numberOfChapters: chapterCountMap.get(channel.id) ?? 0,
-            createdByClerkUser: userMap.get(channel.createdByClerkUserId),
-            totalSubscribers: subscriberMap.get(channel.id) ?? 0,
-            firstChapter: channel.chapters[0],
-            overallValues: { data: { total_views: 0 } },
-          }
-        })
+        const hasNextPage = limit ? channels.length > limit : false
+        const items = hasNextPage ? channels.slice(0, -1) : channels
+
+        const channelsWithMetaInfo = items.map((channel) => ({
+          ...channel,
+          numberOfChapters: chapterCountMap.get(channel.id) ?? 0,
+          createdByClerkUser: userMap.get(channel.createdByClerkUserId),
+          totalSubscribers: subscriberMap.get(channel.id) ?? 0,
+          firstChapter: channel.chapters[0],
+          overallValues: { data: { total_views: 0 } },
+        }))
+
+        return {
+          items: channelsWithMetaInfo,
+          nextCursor: hasNextPage
+            ? {
+                id: items[items.length - 1]?.id,
+                createdAt: items[items.length - 1]?.createdAt,
+              }
+            : null,
+        }
       })
     }),
 
