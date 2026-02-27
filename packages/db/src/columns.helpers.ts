@@ -6,7 +6,7 @@ export const initialColumns = {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => createId()),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at', {
     mode: 'date',
     withTimezone: true,
