@@ -45,102 +45,125 @@ export const channelRouter = {
     })
   }),
 
-  listPublic: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.db.transaction(async (tx) => {
-      /* -------------------------------------------------- */
-      /* 1. Fetch channels with chapters + videos */
-      /* -------------------------------------------------- */
+  listPublic: protectedProcedure
+    .input(z.object({ hasSubscribed: z.boolean() }).optional())
+    .query(async ({ ctx, input }) => {
+      const hasSubscribed = input?.hasSubscribed
 
-      const channels = await tx.query.channel.findMany({
-        columns: {
-          branchId: false,
-          collegeId: false,
-          isPublic: false,
-        },
-        where: eq(channel.isPublic, true),
-        orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
-        with: {
-          chapters: {
-            columns: { channelId: true, id: true },
-            with: { videos: { columns: { id: true } } },
-            orderBy: asc(
-              sql`CAST(SUBSTRING(${chapter.title} FROM '^[0-9]+') AS INTEGER)`,
-            ),
-          },
-        },
-      })
+      return await ctx.db.transaction(async (tx) => {
+        /* -------------------------------------------------- */
+        /* 1. Fetch channels with chapters + videos */
+        /* -------------------------------------------------- */
 
-      if (!channels.length) return []
+        let subscibedChannelIds: string[] = []
 
-      const channelIds = channels.map((c) => c.id)
+        if (hasSubscribed) {
+          const subscribedChannels = await tx.query.subscription.findMany({
+            where: eq(subscription.clerkUserId, ctx.auth.userId),
+          })
 
-      /* -------------------------------------------------- */
-      /* 2. Batch chapter counts */
-      /* -------------------------------------------------- */
-
-      const chapterCounts = await tx
-        .select({
-          channelId: chapter.channelId,
-          total: countDistinct(chapter.id),
-        })
-        .from(chapter)
-        .where(
-          and(
-            eq(chapter.isPublished, true),
-            inArray(chapter.channelId, channelIds),
-          ),
-        )
-        .groupBy(chapter.channelId)
-
-      const chapterCountMap = new Map(
-        chapterCounts.map((c) => [c.channelId, c.total]),
-      )
-
-      // /* -------------------------------------------------- */
-      // /* 3. Batch subscriber counts */
-      // /* -------------------------------------------------- */
-
-      const subscriberCounts = await tx
-        .select({
-          channelId: subscription.channelId,
-          total: count(),
-        })
-        .from(subscription)
-        .where(inArray(subscription.channelId, channelIds))
-        .groupBy(subscription.channelId)
-
-      const subscriberMap = new Map(
-        subscriberCounts.map((s) => [s.channelId, s.total]),
-      )
-
-      /* -------------------------------------------------- */
-      /* 4. Batch Clerk users request */
-      /* -------------------------------------------------- */
-
-      const userIds = [...new Set(channels.map((c) => c.createdByClerkUserId))]
-
-      const clerkUsers = await ctx.clerk.users.getUserList({
-        userId: userIds,
-      })
-
-      const userMap = new Map(clerkUsers.data.map((u) => [u.id, u]))
-
-      /* -------------------------------------------------- */
-      /* 6. Final mapping (NO ASYNC INSIDE LOOP) */
-      /* -------------------------------------------------- */
-
-      return channels.map((channel) => {
-        return {
-          ...channel,
-          numberOfChapters: chapterCountMap.get(channel.id) ?? 0,
-          createdByClerkUser: userMap.get(channel.createdByClerkUserId),
-          totalSubscribers: subscriberMap.get(channel.id) ?? 0,
-          firstChapter: channel.chapters[0],
-          overallValues: { data: { total_views: 0 } },
+          subscibedChannelIds = subscribedChannels
+            .map((s) => s.channelId)
+            .filter((channelId) => channelId !== null)
         }
+
+        const channels = await tx.query.channel.findMany({
+          columns: {
+            branchId: false,
+            collegeId: false,
+            isPublic: false,
+          },
+          where: and(
+            eq(channel.isPublic, true),
+            hasSubscribed
+              ? inArray(channel.id, subscibedChannelIds)
+              : undefined,
+          ),
+          orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
+          with: {
+            chapters: {
+              columns: { channelId: true, id: true },
+              with: { videos: { columns: { id: true } } },
+              orderBy: asc(
+                sql`CAST(SUBSTRING(${chapter.title} FROM '^[0-9]+') AS INTEGER)`,
+              ),
+            },
+          },
+        })
+
+        if (!channels.length) return []
+
+        const channelIds = channels.map((c) => c.id)
+
+        /* -------------------------------------------------- */
+        /* 2. Batch chapter counts */
+        /* -------------------------------------------------- */
+
+        const chapterCounts = await tx
+          .select({
+            channelId: chapter.channelId,
+            total: countDistinct(chapter.id),
+          })
+          .from(chapter)
+          .where(
+            and(
+              eq(chapter.isPublished, true),
+              inArray(chapter.channelId, channelIds),
+            ),
+          )
+          .groupBy(chapter.channelId)
+
+        const chapterCountMap = new Map(
+          chapterCounts.map((c) => [c.channelId, c.total]),
+        )
+
+        // /* -------------------------------------------------- */
+        // /* 3. Batch subscriber counts */
+        // /* -------------------------------------------------- */
+
+        const subscriberCounts = await tx
+          .select({
+            channelId: subscription.channelId,
+            total: count(),
+          })
+          .from(subscription)
+          .where(inArray(subscription.channelId, channelIds))
+          .groupBy(subscription.channelId)
+
+        const subscriberMap = new Map(
+          subscriberCounts.map((s) => [s.channelId, s.total]),
+        )
+
+        /* -------------------------------------------------- */
+        /* 4. Batch Clerk users request */
+        /* -------------------------------------------------- */
+
+        const userIds = [
+          ...new Set(channels.map((c) => c.createdByClerkUserId)),
+        ]
+
+        const clerkUsers = await ctx.clerk.users.getUserList({
+          userId: userIds,
+        })
+
+        const userMap = new Map(clerkUsers.data.map((u) => [u.id, u]))
+
+        /* -------------------------------------------------- */
+        /* 6. Final mapping (NO ASYNC INSIDE LOOP) */
+        /* -------------------------------------------------- */
+
+        return channels.map((channel) => {
+          return {
+            ...channel,
+            numberOfChapters: chapterCountMap.get(channel.id) ?? 0,
+            createdByClerkUser: userMap.get(channel.createdByClerkUserId),
+            totalSubscribers: subscriberMap.get(channel.id) ?? 0,
+            firstChapter: channel.chapters[0],
+            overallValues: { data: { total_views: 0 } },
+          }
+        })
       })
-    })
-  }),
+    }),
 
   getById: protectedProcedure
     .input(z.object({ channelId: z.string() }))

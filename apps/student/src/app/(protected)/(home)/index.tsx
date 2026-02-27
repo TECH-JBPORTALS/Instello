@@ -4,13 +4,16 @@ import { formatDate } from 'date-fns'
 import { Image } from 'expo-image'
 import { Link } from 'expo-router'
 import { BookOpenTextIcon } from 'phosphor-react-native'
+import { useState } from 'react'
 import {
   ScrollView,
   TouchableOpacity,
   useColorScheme,
   View,
 } from 'react-native'
+import { ErrorView } from '@/components/error-view'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { Icon } from '@/components/ui/icon'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -28,7 +31,6 @@ function ChannelCard({
   className?: string
 }) {
   const theme = useColorScheme()
-  const views = channel.overallValues.data.total_views
   const totalSubscribers = channel.totalSubscribers
   const thumbnailUri = `https://${process.env.EXPO_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${channel.thumbneilId}`
 
@@ -111,8 +113,10 @@ function ChannelCardSkeleton({ className }: { className?: string }) {
 }
 
 export default function Home() {
-  const { data, isLoading } = useQuery(
-    trpc.lms.channel.listPublic.queryOptions(),
+  const [hasSubscribed, setHasSubscribed] = useState(false)
+
+  const { data, isRefetching, error, refetch, isLoading } = useQuery(
+    trpc.lms.channel.listPublic.queryOptions({ hasSubscribed }),
   )
 
   const channelList = data ?? []
@@ -127,12 +131,34 @@ export default function Home() {
       <FlashList
         data={channelList}
         ListHeaderComponent={
-          <Text
-            variant={'large'}
-            className="text-muted-foreground px-2 py-1.5 text-xs"
-          >
-            RECOMMENDED FOR YOU
-          </Text>
+          <View className="gap-2">
+            <View className="flex-row px-2 gap-2">
+              <Button
+                size={'xs'}
+                onPress={() => setHasSubscribed(false)}
+                variant={!hasSubscribed ? 'default' : 'outline'}
+                className="rounded-full"
+              >
+                <Text>All</Text>
+              </Button>
+              <Button
+                onPress={() => setHasSubscribed(true)}
+                size={'xs'}
+                className="rounded-full"
+                variant={hasSubscribed ? 'default' : 'outline'}
+              >
+                <Text>Subscribed</Text>
+              </Button>
+            </View>
+            <Text
+              variant={'large'}
+              className="text-muted-foreground px-2 py-1.5 text-xs"
+            >
+              {hasSubscribed
+                ? 'YOUR SUBSCRIBED CHANNELS'
+                : 'RECOMMENDED FOR YOU'}
+            </Text>
+          </View>
         }
         ListEmptyComponent={
           isLoading ? (
@@ -144,6 +170,12 @@ export default function Home() {
                 />
               ))}
             </View>
+          ) : true ? (
+            <ErrorView
+              code={error?.data?.code}
+              isRefetching={isRefetching}
+              refetchFn={refetch}
+            />
           ) : (
             <View className="h-52 flex-1 items-center justify-center gap-2.5">
               <Icon
