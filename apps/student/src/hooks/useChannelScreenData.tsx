@@ -10,10 +10,9 @@ export function useChannelScreenData(channelId: string) {
     ],
   })
 
-
   return {
     channelQuery: queries[0],
     subscriptionQuery: queries[1],
-    chaptersQuery: queries[2]
+    chaptersQuery: queries[2],
   }
 }

@@ -1,11 +1,19 @@
-import { router } from "expo-router";
-import { WarningOctagonIcon } from "phosphor-react-native";
-import { View } from "react-native";
-import { Button } from "./ui/button";
-import { Icon } from "./ui/icon";
-import { Text } from "./ui/text";
+import { router } from 'expo-router'
+import { WarningOctagonIcon } from 'phosphor-react-native'
+import { View } from 'react-native'
+import { Button } from './ui/button'
+import { Icon } from './ui/icon'
+import { Text } from './ui/text'
 
-export function ErrorView({code,refetchFn,isRefetching}:{code?:string,refetchFn:()=>void, isRefetching?:boolean}) {
+export function ErrorView({
+  code,
+  refetchFn,
+  isRefetching,
+}: {
+  code?: string
+  refetchFn: () => void
+  isRefetching?: boolean
+}) {
   return (
     <View className="flex-1 items-center justify-center gap-2.5">
       <Icon
@@ -33,8 +41,13 @@ export function ErrorView({code,refetchFn,isRefetching}:{code?:string,refetchFn:
         >
           <Text>Help</Text>
         </Button>
-        <Button disabled={isRefetching} onPress={() => refetchFn()} size={'sm'} variant={'secondary'}>
-          <Text>{isRefetching?"Retrying...":"Retry"}</Text>
+        <Button
+          disabled={isRefetching}
+          onPress={() => refetchFn()}
+          size={'sm'}
+          variant={'secondary'}
+        >
+          <Text>{isRefetching ? 'Retrying...' : 'Retry'}</Text>
         </Button>
       </View>
     </View>

@@ -223,7 +223,7 @@ export function ChannelLessonsList() {
 }
 
 function ChannelDetailsSection() {
-   const { channelId } = useLocalSearchParams() as {
+  const { channelId } = useLocalSearchParams() as {
     channelId: string
   }
   const { channelQuery, subscriptionQuery, chaptersQuery } =
