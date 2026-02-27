@@ -15,7 +15,7 @@ export function ErrorView({
   isRefetching?: boolean
 }) {
   return (
-    <View className="flex-1 items-center justify-center gap-2.5">
+    <View className="flex-1 items-center py-6 justify-center gap-2.5">
       <Icon
         as={WarningOctagonIcon}
         size={52}
