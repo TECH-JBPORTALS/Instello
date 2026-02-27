@@ -61,8 +61,11 @@ export const channelRouter = {
         orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
         with: {
           chapters: {
-            columns: { channelId: true },
+            columns: { channelId: true, id: true },
             with: { videos: { columns: { id: true } } },
+            orderBy: asc(
+              sql`CAST(SUBSTRING(${chapter.title} FROM '^[0-9]+') AS INTEGER)`,
+            ),
           },
         },
       })
@@ -110,41 +113,8 @@ export const channelRouter = {
         subscriberCounts.map((s) => [s.channelId, s.total]),
       )
 
-      // /* -------------------------------------------------- */
-      // /* 4. Batch first chapters (window function) */
-      // /* -------------------------------------------------- */
-
-      const fc = tx
-        .select({
-          channelId: chapter.channelId,
-          chapterId: chapter.id,
-        })
-        .from(chapter)
-        .where(
-          and(
-            eq(chapter.isPublished, true),
-            inArray(chapter.channelId, channelIds),
-          ),
-        )
-        .orderBy(
-          asc(sql`CAST(SUBSTRING(${chapter.title} FROM '^[0-9]+') AS INTEGER)`),
-        )
-        .limit(1)
-        .as('fc')
-
-      const firstChapters = await tx
-        .select({
-          channelId: fc.channelId,
-          id: fc.chapterId,
-        })
-        .from(fc)
-
-      const firstChapterMap = new Map(
-        firstChapters.map((c) => [c.channelId, c]),
-      )
-
       /* -------------------------------------------------- */
-      /* 5. Batch Clerk users request */
+      /* 4. Batch Clerk users request */
       /* -------------------------------------------------- */
 
       const userIds = [...new Set(channels.map((c) => c.createdByClerkUserId))]
@@ -156,7 +126,7 @@ export const channelRouter = {
       const userMap = new Map(clerkUsers.data.map((u) => [u.id, u]))
 
       /* -------------------------------------------------- */
-      /* 7. Final mapping (NO ASYNC INSIDE LOOP) */
+      /* 6. Final mapping (NO ASYNC INSIDE LOOP) */
       /* -------------------------------------------------- */
 
       return channels.map((channel) => {
@@ -165,7 +135,7 @@ export const channelRouter = {
           numberOfChapters: chapterCountMap.get(channel.id) ?? 0,
           createdByClerkUser: userMap.get(channel.createdByClerkUserId),
           totalSubscribers: subscriberMap.get(channel.id) ?? 0,
-          firstChapter: firstChapterMap.get(channel.id),
+          firstChapter: channel.chapters[0],
           overallValues: { data: { total_views: 0 } },
         }
       })

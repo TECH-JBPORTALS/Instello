@@ -64,8 +64,6 @@ function ChannelCard({
             <CardTitle numberOfLines={1}>{channel.title}</CardTitle>
             <Text variant="muted" className="text-muted-foreground text-xs">
               {formatNumber(channel.numberOfChapters)} Chapters{' · '}
-              {formatNumber(views)} Views
-              {' · '}
               {formatNumber(totalSubscribers)} Subscribers
               {' · '}
               {formatDate(channel.createdAt, 'MMM yyyy')}

@@ -11,7 +11,8 @@
       "android": {
         "buildType": "apk"
       },
-      "channel": "development"
+      "channel": "development",
+      "environment": "development"
     },
     "preview": {
       "bun": "1.3.9",

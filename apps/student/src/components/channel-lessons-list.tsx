@@ -6,7 +6,12 @@ import {
 } from '@gorhom/bottom-sheet'
 import { FlashList } from '@shopify/flash-list'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
-import { format } from 'date-fns'
+import {
+  format,
+  formatDate,
+  formatDistance,
+  formatDistanceToNow,
+} from 'date-fns'
 import { Image, ImageBackground } from 'expo-image'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Link, useLocalSearchParams, useRouter } from 'expo-router'
@@ -192,7 +197,8 @@ export function ChannelLessonsList() {
                       variant={'muted'}
                       className="text-muted-foreground text-xs"
                     >
-                      {formatNumber(item.overallValues.data.total_views)} Views
+                      {item.createdAt &&
+                        formatDate(item.createdAt, 'EEE, dd MMM yyyy')}
                     </Text>
                   </View>
                 </CardHeader>
