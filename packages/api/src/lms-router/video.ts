@@ -91,7 +91,7 @@ export const videoRouter = {
             ...getTableColumns(video),
           })
           .from(video)
-          .rightJoin(
+          .innerJoin(
             chapter,
             and(eq(video.chapterId, chapter.id), eq(chapter.isPublished, true)),
           )
@@ -103,7 +103,6 @@ export const videoRouter = {
             ),
           )
           .orderBy(
-            desc(video.isPreview),
             asc(video.orderIndex),
             asc(video.id), // ensures stable pagination
           )
@@ -112,15 +111,17 @@ export const videoRouter = {
         const hasNextPage = videos.length > limit
         const items = hasNextPage ? videos.slice(0, -1) : videos
 
-        const channelIds = videos.map((v) => v.chapter.channelId)
+        const channelId = videos[0]?.chapter.channelId
 
-        const userSubscription = await tx.query.subscription.findFirst({
-          where: and(
-            eq(subscription.clerkUserId, ctx.auth.userId),
-            inArray(subscription.channelId, channelIds),
-            gte(subscription.endDate, endOfDay(new Date())),
-          ),
-        })
+        const userSubscription = channelId
+          ? await tx.query.subscription.findFirst({
+              where: and(
+                eq(subscription.clerkUserId, ctx.auth.userId),
+                eq(subscription.channelId, channelId),
+                gte(subscription.endDate, endOfDay(new Date())),
+              ),
+            })
+          : null
 
         const videosWithAuthorization = items.map((video) => {
           // const overallValues = await ctx.mux.data.metrics.getOverallValues(
