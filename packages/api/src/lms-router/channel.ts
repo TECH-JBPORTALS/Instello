@@ -51,14 +51,19 @@ export const channelRouter = {
 
   listPublic: protectedProcedure
     .input(
-      z.object({
-        hasSubscribed: z.boolean().default(false),
-        cursor: z
-          .object({ id: z.string().optional(), createdAt: z.date().optional() })
-          .optional()
-          .nullish(), // video.id cursor
-        limit: z.number().min(1).max(50).optional().default(10),
-      }),
+      z
+        .object({
+          hasSubscribed: z.boolean().default(false),
+          cursor: z
+            .object({
+              id: z.string().optional(),
+              createdAt: z.date().optional(),
+            })
+            .optional()
+            .nullish(), // video.id cursor
+          limit: z.number().min(1).max(50).optional().default(10),
+        })
+        .optional(),
     )
     .query(({ ctx, input }) => {
       const hasSubscribed = input?.hasSubscribed
