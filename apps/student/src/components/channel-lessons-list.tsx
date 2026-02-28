@@ -119,6 +119,7 @@ export function ChannelLessonsList() {
           </View>
         )
       }
+      onEndReachedThreshold={0.2}
       onEndReached={() =>
         videosQuery.hasNextPage && videosQuery.fetchNextPage()
       }
