@@ -27,7 +27,7 @@ function ChannelCard({
   channel,
   className,
 }: {
-  channel: RouterOutputs['lms']['channel']['listPublic']['items'][number]
+  channel: RouterOutputs['lms']['channel']['listPublicWithPagination']['items'][number]
   className?: string
 }) {
   const theme = useColorScheme()
@@ -126,7 +126,7 @@ export default function Home() {
     isFetchingNextPage,
     isLoading,
   } = useInfiniteQuery(
-    trpc.lms.channel.listPublic.infiniteQueryOptions(
+    trpc.lms.channel.listPublicWithPagination.infiniteQueryOptions(
       { hasSubscribed, limit: 10 },
       { getNextPageParam: (p) => p.nextCursor },
     ),
