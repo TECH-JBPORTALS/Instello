@@ -197,11 +197,15 @@ export default function Home() {
                 weight="duotone"
                 className="text-muted-foreground"
               />
-              <Text variant={'large'}>Comming Soon</Text>
+              <Text variant={'large'}>
+                {hasSubscribed
+                  ? "You don't have any subscribed channels"
+                  : 'Comming Soon'}
+              </Text>
               <Text variant={'muted'} className="text-center">
-                We are excited to share some cool content based channels with
-                you soon. Please wait for some time in while we are making
-                things faster to reach out to you.
+                {hasSubscribed
+                  ? 'As soon as you subscribe to any channel that will appear over here.'
+                  : 'We are excited to share some cool content based channels with you soon. Please wait for some time in while we are making things faster to reach out to you.'}
               </Text>
             </View>
           )
