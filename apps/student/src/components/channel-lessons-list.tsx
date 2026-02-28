@@ -490,7 +490,7 @@ function ChapterButton({
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null)
   const theme = useColorScheme()
-const BottomSheetListScrollable = useBottomSheetScrollableCreator()
+  const BottomSheetListScrollable = useBottomSheetScrollableCreator()
   // callbacks
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present()
