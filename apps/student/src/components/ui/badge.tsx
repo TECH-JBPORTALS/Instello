@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 
 const badgeVariants = cva(
   cn(
-    'border-border group shrink-0 flex-row items-center justify-center gap-1 overflow-hidden rounded-full border px-2 py-0.5',
+    'border-border group shrink-0 flex-row items-center justify-center gap-1 overflow-hidden rounded-full border',
     Platform.select({
       web: 'focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-fit whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] [&>svg]:pointer-events-none [&>svg]:size-3',
     }),
@@ -30,14 +30,19 @@ const badgeVariants = cva(
           web: '[a&]:hover:bg-accent [a&]:hover:text-accent-foreground',
         }),
       },
+      size: {
+        default: 'px-2 py-0.5',
+        lg: 'px-3 py-1.5',
+      },
     },
     defaultVariants: {
       variant: 'default',
+      size: 'default',
     },
   },
 )
 
-const badgeTextVariants = cva('text-xs font-medium', {
+const badgeTextVariants = cva('font-[MontserratSemiBold]', {
   variants: {
     variant: {
       default: 'text-primary-foreground',
@@ -45,9 +50,14 @@ const badgeTextVariants = cva('text-xs font-medium', {
       destructive: 'text-white',
       outline: 'text-foreground',
     },
+    size: {
+      default: 'text-xs',
+      lg: 'text-base',
+    },
   },
   defaultVariants: {
     variant: 'default',
+    size: 'default',
   },
 })
 
@@ -56,12 +66,12 @@ type BadgeProps = ViewProps &
     asChild?: boolean
   } & VariantProps<typeof badgeVariants>
 
-function Badge({ className, variant, asChild, ...props }: BadgeProps) {
+function Badge({ className, variant, size, asChild, ...props }: BadgeProps) {
   const Component = asChild ? Slot.View : View
   return (
     <TextClassContext.Provider value={badgeTextVariants({ variant })}>
       <Component
-        className={cn(badgeVariants({ variant }), className)}
+        className={cn(badgeVariants({ variant, size }), className)}
         {...props}
       />
     </TextClassContext.Provider>

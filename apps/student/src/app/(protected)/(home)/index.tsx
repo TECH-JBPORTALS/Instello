@@ -1,16 +1,19 @@
 import { FlashList } from '@shopify/flash-list'
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { formatDate } from 'date-fns'
 import { Image } from 'expo-image'
-import { Link } from 'expo-router'
+import { Link, router, useGlobalSearchParams } from 'expo-router'
 import { BookOpenTextIcon } from 'phosphor-react-native'
 import {
-  ScrollView,
+  ActivityIndicator,
+  StyleSheet,
   TouchableOpacity,
   useColorScheme,
   View,
 } from 'react-native'
+import { ErrorView } from '@/components/error-view'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { Icon } from '@/components/ui/icon'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -24,11 +27,10 @@ function ChannelCard({
   channel,
   className,
 }: {
-  channel: RouterOutputs['lms']['channel']['listPublic'][number]
+  channel: RouterOutputs['lms']['channel']['listPublic']['items'][number]
   className?: string
 }) {
   const theme = useColorScheme()
-  const views = channel.overallValues.data.total_views
   const totalSubscribers = channel.totalSubscribers
   const thumbnailUri = `https://${process.env.EXPO_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${channel.thumbneilId}`
 
@@ -111,62 +113,112 @@ function ChannelCardSkeleton({ className }: { className?: string }) {
 }
 
 export default function Home() {
-  const { data, isLoading } = useQuery(
-    trpc.lms.channel.listPublic.queryOptions(),
-  )
+ const searchParams = useGlobalSearchParams()
+const hasSubscribed = Boolean(searchParams.hasSubscribed as unknown as number)
 
-  const channelList = data ?? []
+const {
+  data,
+  isRefetching,
+  error,
+  refetch,
+  hasNextPage,
+  fetchNextPage,
+  isFetchingNextPage,
+  isLoading,
+} = useInfiniteQuery(
+  trpc.lms.channel.listPublic.infiniteQueryOptions(
+    { hasSubscribed, limit: 10 },
+    { getNextPageParam: (p) => p.nextCursor },
+  ),
+)
 
+const channelList = data?.pages.flatMap((p) => p.items) ?? []
+
+function Header() {
   return (
-    <ScrollView
-      keyboardShouldPersistTaps="handled"
-      contentContainerClassName="gap-3.5"
-      keyboardDismissMode="interactive"
-      showsVerticalScrollIndicator={false}
-    >
-      <FlashList
-        data={channelList}
-        ListHeaderComponent={
-          <Text
-            variant={'large'}
-            className="text-muted-foreground px-2 py-1.5 text-xs"
-          >
-            RECOMMENDED FOR YOU
-          </Text>
-        }
-        ListEmptyComponent={
-          isLoading ? (
-            <View className="w-full flex-1 flex-row flex-wrap">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <ChannelCardSkeleton
-                  className="w-full"
-                  key={`skeleton-${i + 1}`}
-                />
-              ))}
-            </View>
-          ) : (
-            <View className="h-52 flex-1 items-center justify-center gap-2.5">
-              <Icon
-                as={BookOpenTextIcon}
-                size={52}
-                weight="duotone"
-                className="text-muted-foreground"
-              />
-              <Text variant={'large'}>Comming Soon</Text>
-              <Text variant={'muted'} className="text-center">
-                We are excited to share some cool content based channels with
-                you soon. Please wait for some time in while we are making
-                things faster to reach out to you.
-              </Text>
-            </View>
-          )
-        }
-        keyExtractor={(item) => item.id + '_recommended'}
-        contentContainerStyle={{ paddingHorizontal: 8 }}
-        renderItem={({ item }) => (
-          <ChannelCard className={cn('w-full')} channel={item} />
-        )}
-      />
-    </ScrollView>
+    <View className="gap-2 fixed px-4 left-0 top-0">
+      <View className="flex-row  gap-2">
+        <Button
+          size={'xs'}
+          onPress={() => router.setParams({ hasSubscribed: 0 })}
+          variant={!hasSubscribed ? 'default' : 'outline'}
+          className="rounded-full"
+        >
+          <Text>All</Text>
+        </Button>
+        <Button
+          onPress={() => router.setParams({ hasSubscribed: 1 })}
+          size={'xs'}
+          className="rounded-full"
+          variant={hasSubscribed ? 'default' : 'outline'}
+        >
+          <Text>Subscribed</Text>
+        </Button>
+      </View>
+      <Text variant={'large'} className="text-muted-foreground py-1.5 text-xs">
+        {hasSubscribed ? 'YOUR SUBSCRIBED CHANNELS' : 'RECOMMENDED FOR YOU'}
+      </Text>
+    </View>
   )
+}
+
+return (
+  <View className="flex-1 relative">
+    <Header />
+    <FlashList
+      data={channelList}
+      ListEmptyComponent={
+        isLoading ? (
+          <View className="w-full flex-1 flex-row flex-wrap">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <ChannelCardSkeleton
+                className="w-full"
+                key={`skeleton-${i + 1}`}
+              />
+            ))}
+          </View>
+        ) : true ? (
+          <ErrorView
+            code={error?.data?.code}
+            isRefetching={isRefetching}
+            refetchFn={refetch}
+          />
+        ) : (
+          <View className="h-52 flex-1 items-center justify-center gap-2.5">
+            <Icon
+              as={BookOpenTextIcon}
+              size={52}
+              weight="duotone"
+              className="text-muted-foreground"
+            />
+            <Text variant={'large'}>
+              {hasSubscribed
+                ? "You don't have any subscribed channels"
+                : 'Comming Soon'}
+            </Text>
+            <Text variant={'muted'} className="text-center">
+              {hasSubscribed
+                ? 'As soon as you subscribe to any channel that will appear over here.'
+                : 'We are excited to share some cool content based channels with you soon. Please wait for some time in while we are making things faster to reach out to you.'}
+            </Text>
+          </View>
+        )
+      }
+      keyExtractor={(item) => item.id + '_recommended'}
+      contentContainerStyle={{ paddingHorizontal: 8 }}
+      renderItem={({ item }) => (
+        <ChannelCard className={cn('w-full')} channel={item} />
+      )}
+      onEndReachedThreshold={0.2}
+      onEndReached={() => hasNextPage && fetchNextPage()}
+      ListFooterComponent={
+        <View className="items-center justify-center py-8">
+          {isFetchingNextPage && (
+            <ActivityIndicator style={{ marginBottom: 16 }} size={'small'} />
+          )}
+        </View>
+      }
+    />
+  </View>
+)
 }

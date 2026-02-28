@@ -72,173 +72,7 @@ export const videoRouter = {
       }),
   ),
 
-  listPublicByChannelId: protectedProcedure
-    .input(
-      z.object({
-        channelId: z.string(),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      const { channelId } = input
-
-      return await ctx.db.transaction(async (tx) => {
-        const videos = await tx
-          .select({
-            videoDescription: video.description,
-            chapterTitle: chapter.title,
-            channelId: channel.id,
-            ...getTableColumns(video),
-          })
-          .from(video)
-          .leftJoin(
-            chapter,
-            and(eq(video.chapterId, chapter.id), eq(chapter.isPublished, true)),
-          )
-          .innerJoin(channel, eq(chapter.channelId, channel.id))
-          .where(and(eq(channel.id, channelId), eq(video.isPublished, true)))
-          .orderBy(
-            asc(video.orderIndex),
-            asc(
-              sql`CAST(SUBSTRING(${chapter.title} FROM '^[0-9]+') AS INTEGER)`,
-            ),
-            asc(video.id), // ensures stable pagination
-          )
-
-        const videosWithAuthorization = await Promise.all(
-          videos.map(async (video) => {
-            const userSubscription = await tx.query.subscription.findFirst({
-              where: and(
-                eq(subscription.clerkUserId, ctx.auth.userId),
-                eq(subscription.channelId, video.channelId),
-                gte(subscription.endDate, endOfDay(new Date())),
-              ),
-            })
-
-            const overallValues = await ctx.mux.data.metrics.getOverallValues(
-              'views',
-              {
-                filters: [`video_id:${video.id}`],
-                timeframe: ['3:months'],
-              },
-            )
-
-            return {
-              ...video,
-              canWatch: !!userSubscription,
-              overallValues,
-            }
-          }),
-        )
-
-        // Group videos under chapters
-        const grouped: (string | (typeof videosWithAuthorization)[number])[] =
-          []
-        let lastChapterId: string | null = null
-
-        for (const row of videosWithAuthorization) {
-          if (row.chapterId !== lastChapterId) {
-            grouped.push(row.chapterTitle ?? 'Untitled Chapter')
-            lastChapterId = row.chapterId
-          }
-          grouped.push(row)
-        }
-
-        return grouped
-      })
-    }),
-
-  // Used in Student App v1.2.1
-  listPublicByChannelIdWithPagination: protectedProcedure
-    .input(
-      z.object({
-        channelId: z.string(),
-        cursor: z.string().optional().nullish(), // video.id cursor
-        limit: z.number().min(1).max(50).optional().default(10),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      const { channelId, cursor, limit } = input
-
-      return await ctx.db.transaction(async (tx) => {
-        const videos = await tx
-          .select({
-            videoDescription: video.description,
-            chapterTitle: chapter.title,
-            channelId: channel.id,
-            ...getTableColumns(video),
-          })
-          .from(video)
-          .leftJoin(
-            chapter,
-            and(eq(video.chapterId, chapter.id), eq(chapter.isPublished, true)),
-          )
-          .innerJoin(channel, eq(chapter.channelId, channel.id))
-          .where(
-            and(
-              eq(channel.id, channelId),
-              eq(video.isPublished, true),
-              cursor ? gt(video.id, cursor) : undefined,
-            ),
-          )
-          .orderBy(
-            asc(
-              sql`CAST(SUBSTRING(${chapter.title} FROM '^[0-9]+') AS INTEGER)`,
-            ),
-            asc(video.orderIndex),
-            asc(video.id), // ensures stable pagination
-          )
-          .limit(limit + 1) // fetch one extra to detect next page
-
-        const hasNextPage = videos.length > limit
-        const items = hasNextPage ? videos.slice(0, -1) : videos
-
-        const videosWithAuthorization = await Promise.all(
-          items.map(async (video) => {
-            const userSubscription = await tx.query.subscription.findFirst({
-              where: and(
-                eq(subscription.clerkUserId, ctx.auth.userId),
-                eq(subscription.channelId, video.channelId),
-                gte(subscription.endDate, endOfDay(new Date())),
-              ),
-            })
-
-            const overallValues = await ctx.mux.data.metrics.getOverallValues(
-              'views',
-              {
-                filters: [`video_id:${video.id}`],
-                timeframe: ['3:months'],
-              },
-            )
-
-            return {
-              ...video,
-              canWatch: !!userSubscription,
-              overallValues,
-            }
-          }),
-        )
-
-        // Group videos under chapters
-        const grouped: (string | (typeof videosWithAuthorization)[number])[] =
-          []
-        let lastChapterId: string | null = null
-
-        for (const row of videosWithAuthorization) {
-          if (row.chapterId !== lastChapterId) {
-            grouped.push(row.chapterTitle ?? 'Untitled Chapter')
-            lastChapterId = row.chapterId
-          }
-          grouped.push(row)
-        }
-
-        return {
-          items: grouped,
-          nextCursor: hasNextPage ? items[items.length - 1]?.id : null,
-        }
-      })
-    }),
-
-  // Used in Student App v1.3.0
+  // Used in Student App  =< v1.3.0
   listPublicByChapterId: protectedProcedure
     .input(
       z.object({
@@ -257,7 +91,7 @@ export const videoRouter = {
             ...getTableColumns(video),
           })
           .from(video)
-          .rightJoin(
+          .innerJoin(
             chapter,
             and(eq(video.chapterId, chapter.id), eq(chapter.isPublished, true)),
           )
@@ -265,11 +99,10 @@ export const videoRouter = {
             and(
               eq(video.chapterId, chapterId),
               eq(video.isPublished, true),
-              cursor ? gte(video.id, cursor) : undefined,
+              cursor ? gt(video.id, cursor) : undefined,
             ),
           )
           .orderBy(
-            desc(video.isPreview),
             asc(video.orderIndex),
             asc(video.id), // ensures stable pagination
           )
@@ -278,15 +111,17 @@ export const videoRouter = {
         const hasNextPage = videos.length > limit
         const items = hasNextPage ? videos.slice(0, -1) : videos
 
-        const channelIds = videos.map((v) => v.chapter.channelId)
+        const channelId = videos[0]?.chapter.channelId
 
-        const userSubscription = await tx.query.subscription.findFirst({
-          where: and(
-            eq(subscription.clerkUserId, ctx.auth.userId),
-            inArray(subscription.channelId, channelIds),
-            gte(subscription.endDate, endOfDay(new Date())),
-          ),
-        })
+        const userSubscription = channelId
+          ? await tx.query.subscription.findFirst({
+              where: and(
+                eq(subscription.clerkUserId, ctx.auth.userId),
+                eq(subscription.channelId, channelId),
+                gte(subscription.endDate, endOfDay(new Date())),
+              ),
+            })
+          : null
 
         const videosWithAuthorization = items.map((video) => {
           // const overallValues = await ctx.mux.data.metrics.getOverallValues(

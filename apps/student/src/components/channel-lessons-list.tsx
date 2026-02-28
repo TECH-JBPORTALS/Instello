@@ -3,15 +3,11 @@ import {
   BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetView,
+  useBottomSheetScrollableCreator,
 } from '@gorhom/bottom-sheet'
 import { FlashList } from '@shopify/flash-list'
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
-import {
-  format,
-  formatDate,
-  formatDistance,
-  formatDistanceToNow,
-} from 'date-fns'
+import { useInfiniteQuery } from '@tanstack/react-query'
+import { format, formatDate } from 'date-fns'
 import { Image, ImageBackground } from 'expo-image'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Link, useLocalSearchParams, useRouter } from 'expo-router'
@@ -19,6 +15,7 @@ import {
   ArrowLeftIcon,
   CardsThreeIcon,
   CaretDownIcon,
+  CheckIcon,
   ClockIcon,
   CrownIcon,
   LockLaminatedIcon,
@@ -39,6 +36,7 @@ import ExapandableText from '@/components/ui/expandable-text'
 import { Icon } from '@/components/ui/icon'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Text } from '@/components/ui/text'
+import { useChannelScreenData } from '@/hooks/useChannelScreenData'
 import { useVideoPrefetch } from '@/hooks/useVideoPrefetch'
 import { THEME } from '@/lib/theme'
 import { formatDuration, formatNumber } from '@/lib/utils'
@@ -47,23 +45,17 @@ import { Badge } from './ui/badge'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card'
 
 export function ChannelLessonsList() {
-  const chapterId = useLocalSearchParams().chapterId as string
-  const {
-    data,
-    isLoading,
-    refetch,
-    isRefetching,
-    isFetchingNextPage,
-    hasNextPage,
-    fetchNextPage,
-  } = useInfiniteQuery(
+  const { chapterId } = useLocalSearchParams() as {
+    chapterId: string
+  }
+  const videosQuery = useInfiniteQuery(
     trpc.lms.video.listPublicByChapterId.infiniteQueryOptions(
       { chapterId },
       { getNextPageParam: (p) => p.nextCursor },
     ),
   )
 
-  const videos = data?.pages.flatMap((p) => p.items)
+  const videos = videosQuery.data?.pages.flatMap((p) => p.items)
   const theme = useColorScheme()
 
   const { prefetchVideo, prefetchVideos } = useVideoPrefetch()
@@ -90,10 +82,13 @@ export function ChannelLessonsList() {
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={<ChannelDetailsSection />}
       refreshControl={
-        <RefreshControl onRefresh={() => refetch()} refreshing={isRefetching} />
+        <RefreshControl
+          onRefresh={() => videosQuery.refetch()}
+          refreshing={videosQuery.isRefetching}
+        />
       }
       ListEmptyComponent={
-        isLoading ? (
+        videosQuery.isLoading ? (
           <View className="px-4">
             {Array.from({ length: 6 }).map((_, index) => (
               <View key={`skeleton-${index + 1}`} className="mb-2.5">
@@ -126,10 +121,13 @@ export function ChannelLessonsList() {
           </View>
         )
       }
-      onEndReached={() => hasNextPage && fetchNextPage()}
+      onEndReachedThreshold={0.2}
+      onEndReached={() =>
+        videosQuery.hasNextPage && videosQuery.fetchNextPage()
+      }
       ListFooterComponent={
         <View className="items-center justify-center py-8">
-          {isFetchingNextPage && (
+          {videosQuery.isFetchingNextPage && (
             <ActivityIndicator style={{ marginBottom: 16 }} size={'small'} />
           )}
           <Text variant={'muted'} className="text-xs">
@@ -228,26 +226,24 @@ export function ChannelLessonsList() {
 }
 
 function ChannelDetailsSection() {
+  const { channelId } = useLocalSearchParams() as {
+    channelId: string
+  }
+  const { channelQuery, subscriptionQuery, chaptersQuery } =
+    useChannelScreenData(channelId)
   const router = useRouter()
   const { top } = useSafeAreaInsets()
-  const { channelId } = useLocalSearchParams<{ channelId: string }>()
-  const {
-    data: channel,
-    isLoading,
-    isError,
-    error,
-  } = useQuery(trpc.lms.channel.getById.queryOptions({ channelId }))
   const theme = useColorScheme()
 
-  if (isError)
+  if (channelQuery.isError)
     return (
       <View>
         <Text variant={'lead'}>Something went wrong!</Text>
-        <Text variant={'muted'}>{error.message}</Text>
+        <Text variant={'muted'}>{channelQuery.error.message}</Text>
       </View>
     )
 
-  const thumbnailUri = `https://${process.env.EXPO_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${channel?.thumbneilId}`
+  const thumbnailUri = `https://${process.env.EXPO_PUBLIC_UPLOADTHING_PROJECT_ID}.ufs.sh/f/${channelQuery.data?.thumbneilId}`
 
   return (
     <>
@@ -299,7 +295,7 @@ function ChannelDetailsSection() {
         </LinearGradient>
       </ImageBackground>
 
-      {isLoading ? (
+      {channelQuery.isLoading ? (
         <View style={{ paddingVertical: 12, paddingHorizontal: 16, gap: 10 }}>
           <Skeleton className={'h-4 w-[90%]'} />
           <View className="flex-row items-center gap-1">
@@ -343,7 +339,7 @@ function ChannelDetailsSection() {
       ) : (
         <View style={{ paddingVertical: 12, paddingHorizontal: 16, gap: 10 }}>
           <Text variant={'h4'} className="font-medium tracking-wide">
-            {channel?.title}
+            {channelQuery.data?.title}
           </Text>
           <View className="flex-row items-center gap-1">
             <Icon
@@ -353,7 +349,8 @@ function ChannelDetailsSection() {
             />
 
             <Text variant={'muted'} className="text-xs">
-              {channel && formatDuration(channel.totalDuration)}
+              {channelQuery.data &&
+                formatDuration(channelQuery.data.totalDuration)}
             </Text>
             <Text variant={'muted'}>·</Text>
             <Icon
@@ -363,7 +360,9 @@ function ChannelDetailsSection() {
             />
 
             <Text variant={'muted'} className="text-xs">
-              {channel && formatNumber(channel.numberOfChapters)} Chapters
+              {channelQuery.data &&
+                formatNumber(channelQuery.data.numberOfChapters)}{' '}
+              Chapters
             </Text>
             <Text variant={'muted'}>·</Text>
             <Icon
@@ -372,57 +371,69 @@ function ChannelDetailsSection() {
               className="text-muted-foreground"
             />
             <Text variant={'muted'} className="text-xs">
-              {channel && formatNumber(channel.totalSubscribers)} Subscribers
+              {channelQuery.data &&
+                formatNumber(channelQuery.data.totalSubscribers)}{' '}
+              Subscribers
             </Text>
             <Text variant={'muted'}>·</Text>
             <Text variant={'muted'} className="text-xs">
-              {channel && format(channel.createdAt, 'MMM yyyy')}
+              {channelQuery.data &&
+                format(channelQuery.data.createdAt, 'MMM yyyy')}
             </Text>
           </View>
 
-          {channel?.description && channel.description.length !== 0 && (
-            <ExapandableText variant={'muted'}>
-              {channel.description}
-            </ExapandableText>
-          )}
+          {channelQuery.data?.description &&
+            channelQuery.data.description.length !== 0 && (
+              <ExapandableText variant={'muted'}>
+                {channelQuery.data.description}
+              </ExapandableText>
+            )}
 
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-2.5 py-1.5">
-              <Avatar alt={`${channel?.createdByClerkUser.firstName}'s Logo`}>
+              <Avatar
+                alt={`${channelQuery.data?.createdByClerkUser.firstName}'s Logo`}
+              >
                 <AvatarImage
-                  source={{ uri: channel?.createdByClerkUser.imageUrl }}
+                  source={{
+                    uri: channelQuery.data?.createdByClerkUser.imageUrl,
+                  }}
                 />
                 <AvatarFallback>
                   <Text>
-                    {channel?.createdByClerkUser.firstName?.charAt(0)}
+                    {channelQuery.data?.createdByClerkUser.firstName?.charAt(0)}
                   </Text>
                 </AvatarFallback>
               </Avatar>
               <Text variant={'small'}>
-                {channel?.createdByClerkUser.firstName}{' '}
-                {channel?.createdByClerkUser.lastName}
+                {channelQuery.data?.createdByClerkUser.firstName}{' '}
+                {channelQuery.data?.createdByClerkUser.lastName}
               </Text>
             </View>
-            <SubscribeButton />
+            <SubscribeButton subscriptionQuery={subscriptionQuery} />
           </View>
-          <ChapterButton />
+          <ChapterButton chaptersQuery={chaptersQuery} />
         </View>
       )}
     </>
   )
 }
 
-function SubscribeButton() {
+function SubscribeButton({
+  subscriptionQuery,
+}: {
+  subscriptionQuery: ReturnType<
+    typeof useChannelScreenData
+  >['subscriptionQuery']
+}) {
   const { channelId } = useLocalSearchParams<{ channelId: string }>()
-  const { data, isLoading } = useQuery(
-    trpc.lms.subscription.getByChannelId.queryOptions({ channelId }),
-  )
   const router = useRouter()
 
-  if (isLoading) return <Skeleton className={'h-[38px] w-28 rounded-full'} />
+  if (subscriptionQuery.isLoading)
+    return <Skeleton className={'h-[38px] w-28 rounded-full'} />
 
   const renderSubscriptionButotn = () => {
-    switch (data?.status) {
+    switch (subscriptionQuery.data?.status) {
       case 'expired':
         return (
           <Button
@@ -467,19 +478,19 @@ function SubscribeButton() {
   return <>{renderSubscriptionButotn()}</>
 }
 
-function ChapterButton() {
-  const { chapterId, channelId } = useLocalSearchParams<{
+function ChapterButton({
+  chaptersQuery,
+}: {
+  chaptersQuery: ReturnType<typeof useChannelScreenData>['chaptersQuery']
+}) {
+  const { chapterId } = useLocalSearchParams<{
     chapterId: string
-    channelId: string
   }>()
-  const { data, isLoading } = useQuery(
-    trpc.lms.chapter.list.queryOptions({ channelId, published: true }),
-  )
   const router = useRouter()
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null)
   const theme = useColorScheme()
-
+const BottomSheetListScrollable = useBottomSheetScrollableCreator()
   // callbacks
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present()
@@ -492,9 +503,11 @@ function ChapterButton() {
     [],
   )
 
-  if (isLoading) return <Skeleton className={'h-10 w-40'} />
+  if (chaptersQuery.isLoading) return <Skeleton className={'h-10 w-40'} />
 
-  const selectedChapter = data?.find((chapter) => chapter.id == chapterId)
+  const selectedChapter = chaptersQuery.data?.find(
+    (chapter) => chapter.id == chapterId,
+  )
 
   if (!selectedChapter) return null
 
@@ -520,7 +533,6 @@ function ChapterButton() {
           borderColor: THEME[theme ?? 'light'].border,
         }}
         backdropComponent={renderBackdrop}
-        enableDynamicSizing={false}
         handleStyle={{
           borderTopEndRadius: 8,
           borderTopStartRadius: 8,
@@ -529,53 +541,42 @@ function ChapterButton() {
         handleIndicatorStyle={{
           backgroundColor: THEME[theme ?? 'light'].mutedForeground,
         }}
-        snapPoints={['60%', '60%']}
-        $modal={false}
-        style={{
-          minHeight: 320,
-        }}
+        snapPoints={['64%', '64%']}
+        enableDynamicSizing={false}
       >
-        <BottomSheetView
-          style={{
-            ...styles.contentContainer,
-          }}
-        >
-          <View className="pb-4">
-            <Text variant={'muted'} className="text-xs">
-              CHAPTERS
-            </Text>
-          </View>
-          <FlashList
-            data={data}
-            renderItem={({ item: chapter }) => (
-              <Button
-                size={'lg'}
-                variant={chapter.id == chapterId ? 'secondary' : 'ghost'}
-                key={chapter.id}
-                className="w-full justify-start"
-                onPress={() => {
-                  if (chapter.id !== chapterId) {
-                    router.setParams({
-                      chapterId: chapter.id,
-                    })
-                    bottomSheetModalRef.current?.close()
-                  }
-                }}
-              >
-                <Text>{chapter.title}</Text>
-              </Button>
-            )}
-          />
-        </BottomSheetView>
+        <View className="pb-4 px-6">
+          <Text variant={'muted'} className="text-xs">
+            CHAPTERS
+          </Text>
+        </View>
+        <FlashList
+          contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 16 }}
+          data={chaptersQuery.data}
+          showsVerticalScrollIndicator={false}
+          renderScrollComponent={BottomSheetListScrollable}
+          renderItem={({ item: chapter }) => (
+            <Button
+              size={'lg'}
+              variant={chapter.id == chapterId ? 'secondary' : 'ghost'}
+              key={chapter.id}
+              className="w-full justify-between"
+              onPress={() => {
+                if (chapter.id !== chapterId) {
+                  router.setParams({
+                    chapterId: chapter.id,
+                  })
+                  bottomSheetModalRef.current?.close()
+                }
+              }}
+            >
+              <Text numberOfLines={1} className=" flex-1">
+                {chapter.title}
+              </Text>
+              {chapter.id == chapterId && <Icon as={CheckIcon} />}
+            </Button>
+          )}
+        />
       </BottomSheetModal>
     </>
   )
 }
-
-const styles = StyleSheet.create({
-  contentContainer: {
-    flex: 1,
-    paddingVertical: 24,
-    paddingHorizontal: 16,
-  },
-})
