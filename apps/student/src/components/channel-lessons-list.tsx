@@ -3,9 +3,10 @@ import {
   BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetView,
+  useBottomSheetScrollableCreator,
 } from '@gorhom/bottom-sheet'
 import { FlashList } from '@shopify/flash-list'
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { format, formatDate } from 'date-fns'
 import { Image, ImageBackground } from 'expo-image'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -14,6 +15,7 @@ import {
   ArrowLeftIcon,
   CardsThreeIcon,
   CaretDownIcon,
+  CheckIcon,
   ClockIcon,
   CrownIcon,
   LockLaminatedIcon,
@@ -488,7 +490,7 @@ function ChapterButton({
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null)
   const theme = useColorScheme()
-
+const BottomSheetListScrollable = useBottomSheetScrollableCreator()
   // callbacks
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present()
@@ -531,7 +533,6 @@ function ChapterButton({
           borderColor: THEME[theme ?? 'light'].border,
         }}
         backdropComponent={renderBackdrop}
-        enableDynamicSizing={false}
         handleStyle={{
           borderTopEndRadius: 8,
           borderTopStartRadius: 8,
@@ -540,53 +541,42 @@ function ChapterButton({
         handleIndicatorStyle={{
           backgroundColor: THEME[theme ?? 'light'].mutedForeground,
         }}
-        snapPoints={['60%', '60%']}
-        $modal={false}
-        style={{
-          minHeight: 320,
-        }}
+        snapPoints={['64%', '64%']}
+        enableDynamicSizing={false}
       >
-        <BottomSheetView
-          style={{
-            ...styles.contentContainer,
-          }}
-        >
-          <View className="pb-4">
-            <Text variant={'muted'} className="text-xs">
-              CHAPTERS
-            </Text>
-          </View>
-          <FlashList
-            data={chaptersQuery.data}
-            renderItem={({ item: chapter }) => (
-              <Button
-                size={'lg'}
-                variant={chapter.id == chapterId ? 'secondary' : 'ghost'}
-                key={chapter.id}
-                className="w-full justify-start"
-                onPress={() => {
-                  if (chapter.id !== chapterId) {
-                    router.setParams({
-                      chapterId: chapter.id,
-                    })
-                    bottomSheetModalRef.current?.close()
-                  }
-                }}
-              >
-                <Text>{chapter.title}</Text>
-              </Button>
-            )}
-          />
-        </BottomSheetView>
+        <View className="pb-4 px-6">
+          <Text variant={'muted'} className="text-xs">
+            CHAPTERS
+          </Text>
+        </View>
+        <FlashList
+          contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 16 }}
+          data={chaptersQuery.data}
+          showsVerticalScrollIndicator={false}
+          renderScrollComponent={BottomSheetListScrollable}
+          renderItem={({ item: chapter }) => (
+            <Button
+              size={'lg'}
+              variant={chapter.id == chapterId ? 'secondary' : 'ghost'}
+              key={chapter.id}
+              className="w-full justify-between"
+              onPress={() => {
+                if (chapter.id !== chapterId) {
+                  router.setParams({
+                    chapterId: chapter.id,
+                  })
+                  bottomSheetModalRef.current?.close()
+                }
+              }}
+            >
+              <Text numberOfLines={1} className=" flex-1">
+                {chapter.title}
+              </Text>
+              {chapter.id == chapterId && <Icon as={CheckIcon} />}
+            </Button>
+          )}
+        />
       </BottomSheetModal>
     </>
   )
 }
-
-const styles = StyleSheet.create({
-  contentContainer: {
-    flex: 1,
-    paddingVertical: 24,
-    paddingHorizontal: 16,
-  },
-})
